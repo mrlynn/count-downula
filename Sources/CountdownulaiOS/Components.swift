@@ -16,7 +16,7 @@ struct CountdownArtwork: View {
         StyledBackdrop(
             style: countdown.style,
             photo: image.map { Image(uiImage: $0) },
-            dialRemaining: countdown.isPast(at: now) ? 0 : 1 - countdown.progress(at: now),
+            dialRemaining: countdown.dialRemaining(at: now),
             dialPadding: useThumbnail ? 8 : dialInCorner ? 18 : 40,
             dialAlignment: dialInCorner ? .topTrailing : .center,
             dialMaxWidth: dialInCorner ? 72 : nil
@@ -36,7 +36,7 @@ struct StyledCountdownCard: View {
 
     var body: some View {
         let style = countdown.style
-        let parts = TimeParts(from: now, to: countdown.targetDate)
+        let parts = countdown.timeParts(at: now)
 
         CountdownArtwork(countdown: countdown, now: now, dialInCorner: true, previewImage: previewImage)
             .frame(height: height)
@@ -72,24 +72,6 @@ struct StyledCountdownCard: View {
     }
 }
 
-/// "15d 23h" when far off, a live ticking timer inside the last day, "Done" afterwards.
-struct CountdownTimeText: View {
-    let countdown: Countdown
-    let now: Date
-
-    var body: some View {
-        let parts = TimeParts(from: now, to: countdown.targetDate)
-        if parts.isPast {
-            Text("Done")
-        } else if parts.days > 0 {
-            Text("\(parts.days)d \(parts.hours)h")
-        } else {
-            Text(timerInterval: now...countdown.targetDate, countsDown: true)
-                .monospacedDigit()
-        }
-    }
-}
-
 /// Days / hours / minutes / seconds tiles.
 struct TimeBlocks: View {
     let parts: TimeParts
@@ -108,7 +90,7 @@ struct TimeBlocks: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(parts.isPast
             ? "Finished"
-            : "\(parts.days) days, \(parts.hours) hours, \(parts.minutes) minutes, \(parts.seconds) seconds left")
+            : "\(parts.days) days, \(parts.hours) hours, \(parts.minutes) minutes, \(parts.seconds) seconds \(parts.countsUp ? "so far" : "left")")
     }
 
     private func block(_ value: Int, _ label: String) -> some View {
@@ -170,11 +152,18 @@ struct MilestoneTimeline: View {
     var body: some View {
         let next = countdown.nextMilestone(at: now)
 
+        let all = countdown.scheduledMilestones
+        let reached = all.filter { $0.date <= now }
+        let ahead = all.filter { $0.date > now }
+        // Long lists (a count-up's yearly chips) show the last few reached and the next few ahead.
+        let shown = Array(reached.suffix(3)) + Array(ahead.prefix(3))
+        let hidden = all.count - shown.count
+
         VStack(alignment: .leading, spacing: 0) {
             Text("Milestones")
                 .font(.headline)
                 .padding(.bottom, 8)
-            ForEach(countdown.scheduledMilestones) { scheduled in
+            ForEach(shown) { scheduled in
                 let reached = scheduled.date <= now
                 let isNext = scheduled.id == next?.id
                 HStack(spacing: 12) {
@@ -207,6 +196,12 @@ struct MilestoneTimeline: View {
                 }
                 .padding(.vertical, 6)
                 .opacity(reached || isNext ? 1 : 0.7)
+            }
+            if hidden > 0 {
+                Text("\(hidden) more \(hidden == 1 ? "milestone" : "milestones")")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
             }
         }
     }

@@ -6,6 +6,7 @@ struct Countdown: Identifiable, Codable, Hashable {
     enum Kind: String, Codable, CaseIterable {
         case event   // counts down to a calendar date
         case timer   // counts down a duration from when it was created
+        case countUp // counts up from `targetDate`: time since quitting, getting sober, meeting
     }
 
     var id = UUID()
@@ -20,14 +21,39 @@ struct Countdown: Identifiable, Codable, Hashable {
     var hasImage = false
     var style = CountdownStyle.default
     var milestones: [Milestone] = []
+    var extras = CountdownExtras()
 
-    func isPast(at now: Date) -> Bool { targetDate <= now }
+    var countsUp: Bool { kind == .countUp }
 
-    /// Fraction of the time from creation to target that has elapsed (0...1).
+    /// A count-up is never "done".
+    func isPast(at now: Date) -> Bool { !countsUp && targetDate <= now }
+
+    /// Still counting down: neither finished nor a count-up.
+    func isUpcoming(at now: Date) -> Bool { !countsUp && targetDate > now }
+
+    /// Fraction of the wait that has elapsed (0...1). For a count-up, the way to its next milestone.
     func progress(at now: Date) -> Double {
+        if countsUp {
+            let reached = scheduledMilestones.last { $0.date <= now }?.date ?? startDate
+            guard let next = nextMilestone(at: now)?.date else { return 1 }
+            let total = next.timeIntervalSince(reached)
+            return total > 0 ? min(max(now.timeIntervalSince(reached) / total, 0), 1) : 1
+        }
         let total = targetDate.timeIntervalSince(createdAt)
         guard total > 0 else { return 1 }
         return min(max(now.timeIntervalSince(createdAt) / total, 0), 1)
+    }
+
+    /// How full the fang dial is drawn: draining toward the target, or for a count-up,
+    /// filling toward the next milestone.
+    func dialRemaining(at now: Date) -> Double {
+        if countsUp { return progress(at: now) }
+        return isPast(at: now) ? 0 : 1 - progress(at: now)
+    }
+
+    /// Days / hours / minutes / seconds left, or elapsed for a count-up.
+    func timeParts(at now: Date) -> TimeParts {
+        TimeParts(from: now, to: targetDate, countsUp: countsUp)
     }
 
     /// Key that changes whenever the photo may have changed; use it to invalidate image caches.
@@ -36,7 +62,7 @@ struct Countdown: Identifiable, Codable, Hashable {
 
 extension Countdown {
     private enum CodingKeys: String, CodingKey {
-        case id, title, details, targetDate, kind, isPinned, createdAt, updatedAt, hasNotified, hasImage, style, milestones
+        case id, title, details, targetDate, kind, isPinned, createdAt, updatedAt, hasNotified, hasImage, style, milestones, extras
     }
 
     /// Fields added after 1.1 are optional in the JSON, so snapshots written by an older build still decode.
@@ -55,15 +81,18 @@ extension Countdown {
         // A style written by a newer build may not decode here; fall back rather than drop the countdown.
         style = (try? c.decodeIfPresent(CountdownStyle.self, forKey: .style)) ?? .default
         milestones = (try? c.decodeIfPresent([Milestone].self, forKey: .milestones)) ?? []
+        extras = (try? c.decodeIfPresent(CountdownExtras.self, forKey: .extras)) ?? CountdownExtras()
     }
 }
 
 extension Array where Element == Countdown {
-    /// The countdown complications and other glanceable surfaces show by default:
-    /// the soonest pinned upcoming countdown, else the soonest upcoming one.
+    /// The countdown complications and other glanceable surfaces show by default: the soonest
+    /// pinned upcoming countdown, else a pinned count-up, else the soonest upcoming one.
     func featured(at now: Date) -> Countdown? {
-        let upcoming = filter { !$0.isPast(at: now) }.sorted { $0.targetDate < $1.targetDate }
-        return upcoming.first(where: \.isPinned) ?? upcoming.first
+        let upcoming = filter { $0.isUpcoming(at: now) }.sorted { $0.targetDate < $1.targetDate }
+        return upcoming.first(where: \.isPinned)
+            ?? first { $0.countsUp && $0.isPinned }
+            ?? upcoming.first
     }
 }
 
@@ -73,10 +102,13 @@ struct TimeParts {
     let minutes: Int
     let seconds: Int
     let isPast: Bool
+    /// Elapsed time since `target` rather than time left until it.
+    let countsUp: Bool
 
-    init(from now: Date, to target: Date) {
+    init(from now: Date, to target: Date, countsUp: Bool = false) {
         let interval = target.timeIntervalSince(now)
-        isPast = interval <= 0
+        self.countsUp = countsUp
+        isPast = !countsUp && interval <= 0
         var remaining = Int(abs(interval).rounded(.down))
         days = remaining / 86_400
         remaining %= 86_400
@@ -88,6 +120,28 @@ struct TimeParts {
 }
 
 enum CountdownFormat {
+    /// `compact` for a countdown, or the time since a count-up began: "47d 3h", "3h 05m", "04:59".
+    static func compact(_ countdown: Countdown, at now: Date) -> String {
+        guard countdown.countsUp else { return compact(from: now, to: countdown.targetDate) }
+        let p = countdown.timeParts(at: now)
+        if p.days > 0 { return "\(p.days)d \(p.hours)h" }
+        if p.hours > 0 { return String(format: "%dh %02dm", p.hours, p.minutes) }
+        return String(format: "%02d:%02d", p.minutes, p.seconds)
+    }
+
+    /// "47 days", "1 year, 3 months", "5 hours" since a count-up began, by the calendar.
+    static func elapsed(since start: Date, to now: Date, calendar: Calendar = .current) -> String {
+        guard now > start else { return "Just started" }
+        let c = calendar.dateComponents([.year, .month, .day, .hour], from: start, to: now)
+        func unit(_ n: Int, _ name: String) -> String { "\(n) \(name)\(n == 1 ? "" : "s")" }
+        if let y = c.year, y > 0 {
+            return (c.month ?? 0) > 0 ? "\(unit(y, "year")), \(unit(c.month!, "month"))" : unit(y, "year")
+        }
+        let days = calendar.dateComponents([.day], from: start, to: now).day ?? 0
+        if days > 0 { return unit(days, "day") }
+        return unit(c.hour ?? 0, "hour")
+    }
+
     /// Short form for the menu bar: "12d 4h", "3h 05m", "04:59".
     static func compact(from now: Date, to target: Date) -> String {
         let p = TimeParts(from: now, to: target)

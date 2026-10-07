@@ -12,15 +12,25 @@ struct WatchCountdownList: View {
             TimelineView(.everyMinute) { context in
                 let now = context.date
                 let upcoming = store.upcoming(at: now)
+                let counting = store.countingUp
                 let past = store.past(at: now)
 
                 List {
-                    if upcoming.isEmpty {
+                    if upcoming.isEmpty && counting.isEmpty {
                         EmptyWatchState(onAdd: { showingAdd = true })
                     }
                     ForEach(upcoming) { countdown in
                         NavigationLink(value: countdown.id) {
                             WatchCountdownRow(countdown: countdown, now: now)
+                        }
+                    }
+                    if !counting.isEmpty {
+                        Section("Counting Up") {
+                            ForEach(counting) { countdown in
+                                NavigationLink(value: countdown.id) {
+                                    WatchCountdownRow(countdown: countdown, now: now)
+                                }
+                            }
                         }
                     }
                     if !past.isEmpty {
@@ -90,10 +100,10 @@ struct WatchCountdownRow: View {
                         .scaledToFill()
                         .clipShape(Circle())
                 } else if countdown.style.background != .automatic {
-                    StyledBackdrop(style: countdown.style, dialRemaining: 1 - countdown.progress(at: now), dialPadding: 4)
+                    StyledBackdrop(style: countdown.style, dialRemaining: countdown.dialRemaining(at: now), dialPadding: 4)
                         .clipShape(Circle())
                 } else {
-                    FangDial(remaining: 1 - countdown.progress(at: now))
+                    FangDial(remaining: countdown.dialRemaining(at: now))
                         .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
                 }
             }
@@ -116,24 +126,6 @@ struct WatchCountdownRow: View {
             }
         }
         .padding(.vertical, 2)
-    }
-}
-
-/// "15d 23h" when far off, a live ticking timer inside the last day, "Done" afterwards.
-struct CountdownTimeText: View {
-    let countdown: Countdown
-    let now: Date
-
-    var body: some View {
-        let parts = TimeParts(from: now, to: countdown.targetDate)
-        if parts.isPast {
-            Text("Done")
-        } else if parts.days > 0 {
-            Text("\(parts.days)d \(parts.hours)h")
-        } else {
-            Text(timerInterval: now...countdown.targetDate, countsDown: true)
-                .monospacedDigit()
-        }
     }
 }
 
@@ -161,7 +153,7 @@ struct WatchCountdownDetail: View {
                         .font(countdown.style.font(.title3))
 
                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                        TimeGrid(parts: TimeParts(from: context.date, to: countdown.targetDate), style: countdown.style)
+                        TimeGrid(parts: countdown.timeParts(at: context.date), style: countdown.style)
                     }
 
                     Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
@@ -186,7 +178,7 @@ struct WatchCountdownDetail: View {
                     }
                 }
             }
-            .navigationTitle(countdown.kind == .timer ? "Timer" : "Countdown")
+            .navigationTitle(countdown.kind == .timer ? "Timer" : countdown.countsUp ? "Since" : "Countdown")
             .confirmationDialog("Delete \(countdown.title)?", isPresented: $confirmingDelete) {
                 Button("Delete", role: .destructive) {
                     dismiss()

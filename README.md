@@ -16,7 +16,8 @@ The app shows up as **Count Downula** everywhere you see it. The project, target
 </p>
 
 - Click the fanged timer in the menu bar to see **Upcoming** and **Past** countdowns.
-- Each countdown has a **title**, **description**, **photo**, and either a target **date & time** or a **timer** duration.
+- Each countdown has a **title**, **description**, **photo**, and either a target **date & time**, a **timer** duration, or a **start date to count up from** (time since quitting smoking, getting sober, meeting someone).
+- **Milestones** mark the moments along the way ("Halfway there", "1 week to go", "90 days"), each with its own notification and, on iPhone, a burst of confetti.
 - **Pin** any countdown and it gets its own live menu bar item (photo thumbnail + title + time left). Click it to jump straight to its details.
 - A notification fires when a countdown finishes.
 - **iCloud sync** keeps countdowns and photos in step between your Mac, iPhone and Apple Watch.
@@ -30,6 +31,11 @@ The app shows up as **Count Downula** everywhere you see it. The project, target
 </p>
 
 The iPhone (and iPad) app lists your countdowns with the next one up as a full-bleed card, shows a live days/hours/minutes/seconds view, and lets you add or edit countdowns with a photo from your library. The **+** button also offers one-tap quick timers. It schedules its own alerts and syncs with the Mac and watch through iCloud.
+
+- **Appearance:** give each countdown its own background (your photo, one of 12 built-in scenes, a gradient or a color), font and colors. Widgets, the watch and the Mac use it too.
+- **Count up:** track the time since something began, with standard milestones (24 hours, 1 week, 30/60/90 days, 6 months, every year), money saved per day, and a gentle **Reset** that keeps your history and best run. Templates for Sober, Smoke-Free, Together and New Job.
+- **Repeats every year:** birthdays and anniversaries roll over to next year once the day has passed.
+- **Share as image:** a 1080 × 1350 card of any countdown for Messages or Instagram.
 
 | Where | What |
 |---|---|

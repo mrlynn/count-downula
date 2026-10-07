@@ -27,7 +27,12 @@ final class WatchStore {
     // MARK: - Queries
 
     func upcoming(at now: Date) -> [Countdown] {
-        countdowns.filter { !$0.isPast(at: now) }.sorted { $0.targetDate < $1.targetDate }
+        countdowns.filter { $0.isUpcoming(at: now) }.sorted { $0.targetDate < $1.targetDate }
+    }
+
+    /// Count-ups, longest-running first.
+    var countingUp: [Countdown] {
+        countdowns.filter(\.countsUp).sorted { $0.targetDate < $1.targetDate }
     }
 
     func past(at now: Date) -> [Countdown] {
@@ -75,6 +80,7 @@ final class WatchStore {
     // MARK: - Sync side effects
 
     func reload() {
+        repository.rollOverYearlyCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
         publishToComplications()

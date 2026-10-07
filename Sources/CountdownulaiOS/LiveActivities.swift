@@ -16,7 +16,7 @@ enum LiveActivities {
     static var isEnabled: Bool { ActivityAuthorizationInfo().areActivitiesEnabled }
 
     static func isEligible(_ countdown: Countdown, at now: Date = Date()) -> Bool {
-        !countdown.isPast(at: now) && countdown.targetDate.timeIntervalSince(now) <= window
+        countdown.isUpcoming(at: now) && countdown.targetDate.timeIntervalSince(now) <= window
     }
 
     static func isRunning(_ id: UUID) -> Bool {

@@ -51,8 +51,8 @@ struct CircularComplication: View {
             AccessoryWidgetBackground()
 
             if let countdown = entry.countdown {
-                let parts = TimeParts(from: entry.date, to: countdown.targetDate)
-                FangDial(remaining: parts.isPast ? 0 : 1 - countdown.progress(at: entry.date), trackOpacity: 0.3)
+                let parts = countdown.timeParts(at: entry.date)
+                FangDial(remaining: countdown.dialRemaining(at: entry.date), trackOpacity: 0.3)
                     .foregroundStyle(countdown.style.accentColor)
                     .widgetAccentable()
                     .padding(2)
@@ -83,6 +83,12 @@ struct CircularComplication: View {
                 Text(unit)
                     .font(.system(size: 7, weight: .semibold))
             }
+        } else if parts.countsUp {
+            Text(timerInterval: target...Date.distantFuture, countsDown: false)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .multilineTextAlignment(.center)
+                .frame(width: 30)
         } else {
             Text(timerInterval: entry.date...target, countsDown: true)
                 .font(.system(size: 10, weight: .semibold, design: .rounded))
@@ -149,11 +155,13 @@ struct RectangularComplication: View {
 
     @ViewBuilder
     private func timeText(_ countdown: Countdown, isPast: Bool) -> some View {
-        let parts = TimeParts(from: entry.date, to: countdown.targetDate)
+        let parts = countdown.timeParts(at: entry.date)
         if isPast {
             Text("Done")
         } else if parts.days > 0 {
             Text("\(parts.days)d \(parts.hours)h")
+        } else if parts.countsUp {
+            Text(timerInterval: countdown.targetDate...Date.distantFuture, countsDown: false)
         } else {
             Text(timerInterval: entry.date...countdown.targetDate, countsDown: true)
         }
@@ -168,7 +176,7 @@ struct CornerComplication: View {
 
     var body: some View {
         let countdown = entry.countdown
-        let parts = countdown.map { TimeParts(from: entry.date, to: $0.targetDate) }
+        let parts = countdown.map { $0.timeParts(at: entry.date) }
 
         ZStack {
             AccessoryWidgetBackground()
@@ -184,7 +192,7 @@ struct CornerComplication: View {
         }
         .widgetLabel {
             if let countdown {
-                ProgressView(value: 1 - countdown.progress(at: entry.date)) {
+                ProgressView(value: countdown.dialRemaining(at: entry.date)) {
                     Text(countdown.title)
                 }
                 .tint(Color.countdownulaBlood)
@@ -202,11 +210,13 @@ struct InlineComplication: View {
 
     var body: some View {
         if let countdown = entry.countdown {
-            let parts = TimeParts(from: entry.date, to: countdown.targetDate)
+            let parts = countdown.timeParts(at: entry.date)
             if parts.isPast {
                 Text("\(countdown.title) · Done")
             } else if parts.days > 0 {
                 Text("\(countdown.title) · \(parts.days)d \(parts.hours)h")
+            } else if parts.countsUp {
+                Text("\(countdown.title) · ") + Text(timerInterval: countdown.targetDate...Date.distantFuture, countsDown: false)
             } else {
                 Text("\(countdown.title) · ") + Text(timerInterval: entry.date...countdown.targetDate, countsDown: true)
             }

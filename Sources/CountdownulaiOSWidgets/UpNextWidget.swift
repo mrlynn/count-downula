@@ -22,7 +22,7 @@ struct UpNextEntry: TimelineEntry {
     var thumbnails: [UUID: Data] = [:]
 
     func upcoming(limit: Int) -> [Countdown] {
-        let upcoming = countdowns.filter { !$0.isPast(at: date) }.sorted { $0.targetDate < $1.targetDate }
+        let upcoming = countdowns.filter { $0.isUpcoming(at: date) }.sorted { $0.targetDate < $1.targetDate }
         // Pinned countdowns lead, like everywhere else.
         return Array((upcoming.filter(\.isPinned) + upcoming.filter { !$0.isPinned }).prefix(limit))
     }
@@ -63,7 +63,7 @@ struct UpNextProvider: TimelineProvider {
     }
 
     private func makeEntry(at now: Date) -> UpNextEntry {
-        let all = WidgetSnapshot.read().filter { !$0.isPast(at: now) }
+        let all = WidgetSnapshot.read().filter { $0.isUpcoming(at: now) }
         var thumbnails: [UUID: Data] = [:]
         for countdown in all where countdown.hasImage {
             thumbnails[countdown.id] = WidgetSnapshot.thumbnail(for: countdown.id)

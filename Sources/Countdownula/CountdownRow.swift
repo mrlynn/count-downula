@@ -16,7 +16,7 @@ struct CountdownArtwork: View {
         } else {
             ZStack {
                 LinearGradient(colors: [tint, tint.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                Image(systemName: countdown.kind == .timer ? "timer" : "calendar")
+                Image(systemName: countdown.kind == .timer ? "timer" : countdown.countsUp ? "arrow.up.forward" : "calendar")
                     .font(.system(size: symbolSize, weight: .medium))
                     .foregroundStyle(.white.opacity(0.9))
             }
@@ -73,11 +73,12 @@ struct CountdownRow: View {
             Spacer(minLength: 0)
 
             VStack(alignment: .trailing, spacing: 2) {
-                Text(isPast ? "Done" : CountdownFormat.compact(from: now, to: countdown.targetDate))
+                Text(isPast ? "Done" : CountdownFormat.compact(countdown, at: now))
                     .font(countdown.style.font(size: 15))
                     .monospacedDigit()
                     .foregroundStyle(isPast ? Color.secondary : Color.primary)
-                Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                ((countdown.countsUp ? Text("since ") : Text(""))
+                    + Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute()))
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }

@@ -38,8 +38,8 @@ struct HomeCountdownView: View {
     private func content(_ countdown: Countdown) -> some View {
         let style = style(for: countdown)
         let text = style.foregroundColor
-        let parts = TimeParts(from: entry.date, to: countdown.targetDate)
-        let remaining = parts.isPast ? 0 : 1 - countdown.progress(at: entry.date)
+        let parts = countdown.timeParts(at: entry.date)
+        let remaining = countdown.dialRemaining(at: entry.date)
         // Without a photo, the large size fills its middle with a big dial instead.
         let showsBigDial = isLarge && entry.photo == nil
 
@@ -74,6 +74,12 @@ struct HomeCountdownView: View {
                 Spacer(minLength: 0)
             }
 
+            if isLarge, let savings = countdown.extras.savings, countdown.countsUp {
+                Text("\(savings.formatted(since: countdown.targetDate, at: entry.date)) saved")
+                    .font(style.font(.title3))
+                    .foregroundStyle(style.accentColor)
+            }
+
             if isLarge, !countdown.details.isEmpty {
                 Text(countdown.details)
                     .font(.subheadline)
@@ -98,9 +104,15 @@ struct HomeCountdownView: View {
                 ProgressView(value: countdown.progress(at: entry.date))
                     .tint(style.accentColor)
                     .widgetAccentable()
-                Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.abbreviated).day().hour().minute())
-                    .font(.caption)
-                    .foregroundStyle(text.opacity(0.7))
+                Group {
+                    if countdown.countsUp {
+                        Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
+                    } else {
+                        Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.abbreviated).day().hour().minute())
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(text.opacity(0.7))
             }
         }
         .foregroundStyle(text)
@@ -129,6 +141,13 @@ struct HomeCountdownView: View {
             }
             .lineLimit(1)
             .minimumScaleFactor(0.6)
+        } else if parts.countsUp {
+            Text(timerInterval: target...Date.distantFuture, countsDown: false)
+                .font(style.font(size: valueSize * 0.72))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .widgetAccentable()
         } else {
             Text(timerInterval: entry.date...target, countsDown: true)
                 .font(style.font(size: valueSize * 0.72))

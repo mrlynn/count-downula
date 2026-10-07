@@ -22,6 +22,8 @@ final class CountdownRecord {
     var styleData: Data?
     /// JSON-encoded `[Milestone]`; nil means none.
     var milestonesData: Data?
+    /// JSON-encoded `CountdownExtras` (streaks, savings, yearly repeat); nil means none.
+    var extrasData: Data?
 
     init(uuid: UUID = UUID()) {
         self.uuid = uuid
@@ -45,7 +47,8 @@ final class CountdownRecord {
             hasNotified: hasNotified,
             hasImage: imageData != nil,
             style: styleData.flatMap { try? JSONDecoder().decode(CountdownStyle.self, from: $0) } ?? .default,
-            milestones: decodedMilestones ?? []
+            milestones: decodedMilestones ?? [],
+            extras: extrasData.flatMap { try? JSONDecoder().decode(CountdownExtras.self, from: $0) } ?? CountdownExtras()
         )
     }
 
@@ -69,6 +72,7 @@ final class CountdownRecord {
             // As with styles, only clear milestones this build can read.
             milestonesData = nil
         }
+        extrasData = countdown.extras == CountdownExtras() ? nil : try? JSONEncoder().encode(countdown.extras)
         updatedAt = Date()
     }
 }

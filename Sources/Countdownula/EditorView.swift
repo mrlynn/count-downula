@@ -35,7 +35,7 @@ struct EditorView: View {
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
 
     private var canSave: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind == .event || durationSeconds > 0)
+        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind != .timer || durationSeconds > 0)
     }
 
     var body: some View {
@@ -55,11 +55,14 @@ struct EditorView: View {
                     Picker("Type", selection: $kind) {
                         Text("Date & Time").tag(Countdown.Kind.event)
                         Text("Timer").tag(Countdown.Kind.timer)
+                        Text("Since").tag(Countdown.Kind.countUp)
                     }
                     .pickerStyle(.segmented)
 
                     if kind == .event {
                         DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                    } else if kind == .countUp {
+                        DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
                     } else {
                         Stepper("\(days) day\(days == 1 ? "" : "s")", value: $days, in: 0...365)
                         Stepper("\(hours) hour\(hours == 1 ? "" : "s")", value: $hours, in: 0...23)
@@ -178,7 +181,7 @@ struct EditorView: View {
         countdown.kind = kind
         countdown.isPinned = isPinned
 
-        if kind == .event {
+        if kind == .event || kind == .countUp {
             countdown.targetDate = targetDate
         } else {
             countdown.createdAt = Date()
