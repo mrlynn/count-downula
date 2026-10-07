@@ -97,7 +97,8 @@ struct CountdownProvider: AppIntentTimelineProvider {
         }
         let thumbnail = WidgetSnapshot.thumbnail(for: countdown.id)
         let photo = WidgetSnapshot.photo(for: countdown)
-        let entries = Self.entryDates(for: countdown.targetDate, from: now).map {
+        let milestoneDates = countdown.scheduledMilestones.map(\.date)
+        let entries = Self.entryDates(for: countdown.targetDate, from: now, also: milestoneDates).map {
             CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail, photo: photo)
         }
         return Timeline(entries: entries, policy: .atEnd)
@@ -129,9 +130,11 @@ struct CountdownProvider: AppIntentTimelineProvider {
 
     /// Entries land exactly where the displayed text changes: on each hour boundary before the target
     /// (for "15d 23h" and the dial), each minute in the final hour, and at the target itself.
-    /// The live timer text handles the seconds in between.
-    static func entryDates(for target: Date, from now: Date) -> [Date] {
+    /// The live timer text handles the seconds in between. `extra` adds milestone moments.
+    static func entryDates(for target: Date, from now: Date, also extra: [Date] = []) -> [Date] {
         var dates: Set<Date> = [now]
+        // Milestones change the "Next:" line, so refresh right as each one passes.
+        for date in extra where date > now && date < target { dates.insert(date) }
         let remaining = target.timeIntervalSince(now)
         guard remaining > 0 else { return [now] }
 

@@ -182,9 +182,16 @@ private struct CountdownRow: View {
                             .accessibilityLabel("Pinned")
                     }
                 }
-                Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let next = countdown.nextMilestone(at: now) {
+                    Text("\(next.milestone.displayEmoji) \(next.milestone.title) in \(CountdownFormat.compact(from: now, to: next.date))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                } else {
+                    Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 if !isPast {
                     ProgressView(value: countdown.progress(at: now))
                         .tint(countdown.style.accentColor)

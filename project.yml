@@ -98,6 +98,7 @@ targets:
       - path: Sources/Shared/CountdownStyle.swift
       - path: Sources/Shared/Scenes.swift
       - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/Milestone.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.watchkitapp.widgets
@@ -175,6 +176,7 @@ targets:
       - path: Sources/Shared/CountdownStyle.swift
       - path: Sources/Shared/Scenes.swift
       - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/Milestone.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.widgets

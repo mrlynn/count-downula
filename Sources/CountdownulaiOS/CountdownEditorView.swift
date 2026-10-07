@@ -14,6 +14,8 @@ struct CountdownEditorView: View {
     @State private var minutes = 25
     @State private var isPinned: Bool
     @State private var style: CountdownStyle
+    @State private var milestones: [Milestone]
+    @State private var showingCustomMilestone = false
     @State private var previewImage: UIImage?
     @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isLoadingPhoto = false
@@ -27,6 +29,7 @@ struct CountdownEditorView: View {
             ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
         _isPinned = State(initialValue: original?.isPinned ?? false)
         _style = State(initialValue: original?.style ?? .default)
+        _milestones = State(initialValue: original?.milestones ?? [])
         if let original, original.kind == .timer {
             let remaining = max(0, Int(original.targetDate.timeIntervalSinceNow))
             _days = State(initialValue: remaining / 86_400)
@@ -41,6 +44,7 @@ struct CountdownEditorView: View {
         countdown.title = title
         countdown.kind = kind
         countdown.style = style
+        countdown.milestones = milestones
         countdown.hasImage = previewImage != nil
         if kind == .event {
             countdown.targetDate = targetDate
@@ -104,6 +108,8 @@ struct CountdownEditorView: View {
                     }
                 }
 
+                milestonesSection
+
                 Section {
                     Toggle("Pin", isOn: $isPinned)
                 } footer: {
@@ -123,6 +129,67 @@ struct CountdownEditorView: View {
             }
             .task {
                 if let original { previewImage = store.image(for: original) }
+            }
+        }
+    }
+
+    // MARK: - Milestones
+
+    private var milestonesSection: some View {
+        let countdown = draft
+        let scheduled = countdown.scheduledMilestones
+        let outside = milestones.filter { m in !scheduled.contains { $0.id == m.id } }
+        let presets = MilestonePreset.available(for: countdown, now: Date())
+
+        return Section {
+            ForEach(scheduled) { item in
+                milestoneRow(item.milestone, date: item.date)
+            }
+            .onDelete { offsets in
+                let ids = offsets.map { scheduled[$0].id }
+                milestones.removeAll { ids.contains($0.id) }
+            }
+            ForEach(outside) { milestone in
+                milestoneRow(milestone, date: nil)
+            }
+            .onDelete { offsets in
+                let ids = offsets.map { outside[$0].id }
+                milestones.removeAll { ids.contains($0.id) }
+            }
+
+            Menu {
+                ForEach(presets) { preset in
+                    let milestone = preset.milestone
+                    Button("\(milestone.displayEmoji) \(milestone.title)") { milestones.append(milestone) }
+                }
+                if !presets.isEmpty { Divider() }
+                Button("Custom…", systemImage: "pencil") { showingCustomMilestone = true }
+            } label: {
+                Label("Add Milestone", systemImage: "flag.badge.ellipsis")
+            }
+        } header: {
+            Text("Milestones")
+        } footer: {
+            Text("Little moments along the way. Each one gets a notification and a celebration.")
+        }
+        .sheet(isPresented: $showingCustomMilestone) {
+            CustomMilestoneSheet(range: Date()...max(Date(), countdown.targetDate)) { milestones.append($0) }
+        }
+    }
+
+    private func milestoneRow(_ milestone: Milestone, date: Date?) -> some View {
+        HStack {
+            Text(milestone.displayEmoji)
+            Text(milestone.title)
+            Spacer()
+            if let date {
+                Text(date, format: .dateTime.month(.abbreviated).day().hour().minute())
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Outside this countdown")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -156,6 +223,7 @@ struct CountdownEditorView: View {
         countdown.kind = kind
         countdown.isPinned = isPinned
         countdown.style = style
+        countdown.milestones = milestones
 
         if kind == .event {
             countdown.targetDate = targetDate
@@ -172,5 +240,53 @@ struct CountdownEditorView: View {
         // New timers go live on the Lock Screen right away (pinned countdowns are handled by the store).
         if original == nil, kind == .timer { LiveActivities.start(countdown) }
         dismiss()
+    }
+}
+
+/// Name, emoji and moment for a milestone the presets don't cover.
+private struct CustomMilestoneSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let range: ClosedRange<Date>
+    let onAdd: (Milestone) -> Void
+
+    @State private var title = ""
+    @State private var emoji = "🎉"
+    @State private var date: Date
+
+    init(range: ClosedRange<Date>, onAdd: @escaping (Milestone) -> Void) {
+        self.range = range
+        self.onAdd = onAdd
+        _date = State(initialValue: Date(timeIntervalSince1970:
+            (range.lowerBound.timeIntervalSince1970 + range.upperBound.timeIntervalSince1970) / 2))
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Title", text: $title, prompt: Text("Book the flights"))
+                TextField("Emoji", text: $emoji)
+                    .onChange(of: emoji) { _, new in
+                        // One character is plenty.
+                        if new.count > 1 { emoji = String(new.suffix(1)) }
+                    }
+                DatePicker("When", selection: $date, in: range)
+            }
+            .navigationTitle("New Milestone")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Add") {
+                        onAdd(Milestone(title: title.trimmingCharacters(in: .whitespaces), emoji: emoji,
+                                        trigger: .date(date)))
+                        dismiss()
+                    }
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }

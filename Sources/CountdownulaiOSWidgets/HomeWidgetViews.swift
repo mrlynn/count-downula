@@ -89,6 +89,12 @@ struct HomeCountdownView: View {
                     .font(style.font(.subheadline))
                     .lineLimit(2)
             } else {
+                if let next = countdown.nextMilestone(at: entry.date) {
+                    Text("Next: \(next.milestone.displayEmoji) \(next.milestone.title) · \(CountdownFormat.compact(from: entry.date, to: next.date))")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(text.opacity(0.85))
+                        .lineLimit(1)
+                }
                 ProgressView(value: countdown.progress(at: entry.date))
                     .tint(style.accentColor)
                     .widgetAccentable()

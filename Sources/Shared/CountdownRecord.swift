@@ -20,9 +20,16 @@ final class CountdownRecord {
     @Attribute(.externalStorage) var thumbnailData: Data?
     /// JSON-encoded `CountdownStyle`; nil means the default look. Older builds ignore it and leave it alone.
     var styleData: Data?
+    /// JSON-encoded `[Milestone]`; nil means none.
+    var milestonesData: Data?
 
     init(uuid: UUID = UUID()) {
         self.uuid = uuid
+    }
+
+    /// nil when there are none, or when they were written by a newer build this one can't read.
+    var decodedMilestones: [Milestone]? {
+        milestonesData.flatMap { try? JSONDecoder().decode([Milestone].self, from: $0) }
     }
 
     var countdown: Countdown {
@@ -37,7 +44,8 @@ final class CountdownRecord {
             updatedAt: updatedAt,
             hasNotified: hasNotified,
             hasImage: imageData != nil,
-            style: styleData.flatMap { try? JSONDecoder().decode(CountdownStyle.self, from: $0) } ?? .default
+            style: styleData.flatMap { try? JSONDecoder().decode(CountdownStyle.self, from: $0) } ?? .default,
+            milestones: decodedMilestones ?? []
         )
     }
 
@@ -54,6 +62,12 @@ final class CountdownRecord {
         } else if let styleData, (try? JSONDecoder().decode(CountdownStyle.self, from: styleData)) != nil {
             // Only clear a style this build understands; one from a newer build stays put.
             self.styleData = nil
+        }
+        if !countdown.milestones.isEmpty {
+            milestonesData = try? JSONEncoder().encode(countdown.milestones)
+        } else if decodedMilestones != nil {
+            // As with styles, only clear milestones this build can read.
+            milestonesData = nil
         }
         updatedAt = Date()
     }

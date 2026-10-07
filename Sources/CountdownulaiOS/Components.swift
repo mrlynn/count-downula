@@ -128,3 +128,114 @@ struct TimeBlocks: View {
         .background(tileColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
+
+// MARK: - Milestones
+
+/// A progress bar with a tick for each milestone; reached ticks fill in.
+struct MilestoneProgressBar: View {
+    let countdown: Countdown
+    let now: Date
+
+    var body: some View {
+        let progress = countdown.progress(at: now)
+        let accent = countdown.style.accentColor
+        let total = countdown.targetDate.timeIntervalSince(countdown.startDate)
+
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.primary.opacity(0.1))
+                Capsule().fill(accent).frame(width: geo.size.width * progress)
+                ForEach(countdown.scheduledMilestones) { scheduled in
+                    let fraction = total > 0 ? scheduled.date.timeIntervalSince(countdown.startDate) / total : 0
+                    let reached = scheduled.date <= now
+                    Circle()
+                        .fill(reached ? accent : Color(.systemBackground))
+                        .overlay { Circle().strokeBorder(accent, lineWidth: 2) }
+                        .frame(width: 12, height: 12)
+                        .position(x: geo.size.width * fraction, y: geo.size.height / 2)
+                }
+            }
+        }
+        .frame(height: 12)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(Int((progress * 100).rounded(.down))) percent of the wait is behind you")
+    }
+}
+
+/// Every milestone in order: reached ones checked off, the next one counting down.
+struct MilestoneTimeline: View {
+    let countdown: Countdown
+    let now: Date
+
+    var body: some View {
+        let next = countdown.nextMilestone(at: now)
+
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Milestones")
+                .font(.headline)
+                .padding(.bottom, 8)
+            ForEach(countdown.scheduledMilestones) { scheduled in
+                let reached = scheduled.date <= now
+                let isNext = scheduled.id == next?.id
+                HStack(spacing: 12) {
+                    Text(scheduled.milestone.displayEmoji)
+                        .font(.title3)
+                        .frame(width: 36, height: 36)
+                        .background(
+                            (isNext ? countdown.style.accentColor.opacity(0.18) : Color.primary.opacity(0.06)),
+                            in: Circle()
+                        )
+                        .grayscale(reached || isNext ? 0 : 0.8)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(scheduled.milestone.title)
+                            .font(.subheadline.weight(isNext ? .semibold : .regular))
+                        Text(scheduled.date, format: .dateTime.month(.abbreviated).day().hour().minute())
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if reached {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(countdown.style.accentColor)
+                            .accessibilityLabel("Reached")
+                    } else if isNext {
+                        Text("in \(CountdownFormat.compact(from: now, to: scheduled.date))")
+                            .font(.subheadline.weight(.semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(countdown.style.accentColor)
+                    }
+                }
+                .padding(.vertical, 6)
+                .opacity(reached || isNext ? 1 : 0.7)
+            }
+        }
+    }
+}
+
+/// The toast that drops in with the confetti.
+struct CelebrationBanner: View {
+    let emoji: String
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(emoji)
+                .font(.system(size: 34))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+        .padding(.horizontal)
+        .accessibilityElement(children: .combine)
+    }
+}
