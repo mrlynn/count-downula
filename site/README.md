@@ -7,7 +7,7 @@ Static marketing site. No build step, no dependencies, no cookies, no third-part
 | `index.html` | Home page |
 | `support.html`, `privacy.html`, `terms.html`, `cookies.html` | Generated from `_src/*.html` |
 | `assets/site.css`, `assets/site.js` | Shared styles and behaviour |
-| `assets/fonts/` | Self-hosted Bodoni Moda and Instrument Sans (SIL OFL) |
+| `assets/fonts/` | Self-hosted Young Serif and Instrument Sans (SIL OFL) |
 | `vercel.json` | Clean URLs, security headers, `/download` redirect |
 
 After editing a page body in `_src/`, or the header/footer in `index.html`, rebuild the secondary pages:
