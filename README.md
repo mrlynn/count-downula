@@ -4,12 +4,32 @@
 
 A native macOS menu bar app for countdowns: vacations, launches, birthdays, or a quick timer.
 
-- Click the hourglass in the menu bar to see **Upcoming** and **Past** countdowns.
+[![Download the latest release](https://img.shields.io/github/v/release/mrlynn/count-downula?label=Download&color=c3112d&logo=apple)](https://github.com/mrlynn/count-downula/releases/latest)
+
+<img src="docs/screenshots/menubar.png" width="456" alt="Pinned countdowns in the macOS menu bar">
+
+<p>
+  <img src="docs/screenshots/popover.png" width="380" alt="Countdown list in the menu bar popover">
+  <img src="docs/screenshots/detail.png" width="380" alt="Countdown detail view with photo and days, hours, minutes, seconds">
+</p>
+
+- Click the fanged timer in the menu bar to see **Upcoming** and **Past** countdowns.
 - Each countdown has a **title**, **description**, **photo**, and either a target **date & time** or a **timer** duration.
 - **Pin** any countdown and it gets its own live menu bar item (photo thumbnail + title + time left). Click it to jump straight to its details.
 - A notification fires when a countdown finishes.
 
-## Build & run
+## Download
+
+Grab **Countdownula-x.y.z.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest), unzip it, and drag **Countdownula.app** to `/Applications`.
+It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later.
+
+The app isn't notarized, so macOS blocks the first launch. **Right-click the app → Open → Open**, or run:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Countdownula.app
+```
+
+## Build from source
 
 Requires macOS 14+ and Xcode (Swift 6 toolchain).
 
