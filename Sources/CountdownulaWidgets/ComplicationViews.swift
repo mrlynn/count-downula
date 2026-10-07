@@ -53,7 +53,7 @@ struct CircularComplication: View {
             if let countdown = entry.countdown {
                 let parts = TimeParts(from: entry.date, to: countdown.targetDate)
                 FangDial(remaining: parts.isPast ? 0 : 1 - countdown.progress(at: entry.date), trackOpacity: 0.3)
-                    .foregroundStyle(Color.countdownulaBlood)
+                    .foregroundStyle(countdown.style.accentColor)
                     .widgetAccentable()
                     .padding(2)
 
@@ -106,7 +106,7 @@ struct RectangularComplication: View {
                 VStack(alignment: .leading, spacing: 1) {
                     HStack(spacing: 4) {
                         FangMark()
-                            .foregroundStyle(Color.countdownulaBlood)
+                            .foregroundStyle(countdown.style.accentColor)
                             .widgetAccentable()
                             .frame(width: 13, height: 13)
                         Text(countdown.title)
@@ -119,7 +119,7 @@ struct RectangularComplication: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     ProgressView(value: countdown.progress(at: entry.date))
-                        .tint(Color.countdownulaBlood)
+                        .tint(countdown.style.accentColor)
                         .widgetAccentable()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

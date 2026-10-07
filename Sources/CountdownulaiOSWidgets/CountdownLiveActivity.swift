@@ -7,24 +7,26 @@ import WidgetKit
 struct CountdownLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: CountdownActivityAttributes.self) { context in
-            LockScreenActivityView(state: context.state, kind: context.attributes.kind, isDone: isDone(context))
+            let accent = context.attributes.accent?.color ?? .countdownulaBlood
+            LockScreenActivityView(state: context.state, kind: context.attributes.kind, isDone: isDone(context), accent: accent)
                 .activityBackgroundTint(Color(red: 0.08, green: 0.02, blue: 0.05).opacity(0.92))
-                .activitySystemActionForegroundColor(.countdownulaBlood)
+                .activitySystemActionForegroundColor(accent)
                 .widgetURL(CountdownLink.url(for: context.attributes.countdownID))
         } dynamicIsland: { context in
             let state = context.state
+            let accent = context.attributes.accent?.color ?? .countdownulaBlood
             let done = isDone(context)
 
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    ActivityDial(state: state, isDone: done)
+                    ActivityDial(state: state, isDone: done, accent: accent)
                         .frame(width: 44, height: 44)
                         .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     ActivityTimeText(state: state, isDone: done)
                         .font(.system(size: 30, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.countdownulaBlood)
+                        .foregroundStyle(accent)
                         .frame(maxWidth: 130, alignment: .trailing)
                         .padding(.trailing, 4)
                 }
@@ -35,7 +37,7 @@ struct CountdownLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 6) {
-                        ActivityProgressBar(state: state, isDone: done)
+                        ActivityProgressBar(state: state, isDone: done, accent: accent)
                         Text(state.targetDate, format: .dateTime.weekday(.wide).hour().minute())
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -44,18 +46,18 @@ struct CountdownLiveActivity: Widget {
                 }
             } compactLeading: {
                 FangMark()
-                    .foregroundStyle(Color.countdownulaBlood)
+                    .foregroundStyle(accent)
                     .frame(width: 20, height: 20)
             } compactTrailing: {
                 ActivityTimeText(state: state, isDone: done)
                     .font(.system(.body, design: .rounded).weight(.semibold))
-                    .foregroundStyle(Color.countdownulaBlood)
+                    .foregroundStyle(accent)
                     .frame(maxWidth: 64)
             } minimal: {
-                ActivityDial(state: state, isDone: done)
+                ActivityDial(state: state, isDone: done, accent: accent)
             }
             .widgetURL(CountdownLink.url(for: context.attributes.countdownID))
-            .keylineTint(.countdownulaBlood)
+            .keylineTint(accent)
         }
     }
 
@@ -68,11 +70,12 @@ private struct LockScreenActivityView: View {
     let state: CountdownActivityAttributes.ContentState
     let kind: Countdown.Kind
     let isDone: Bool
+    var accent: Color = .countdownulaBlood
 
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
-                ActivityDial(state: state, isDone: isDone)
+                ActivityDial(state: state, isDone: isDone, accent: accent)
                     .frame(width: 48, height: 48)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -88,10 +91,10 @@ private struct LockScreenActivityView: View {
 
                 ActivityTimeText(state: state, isDone: isDone)
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.countdownulaBlood)
+                    .foregroundStyle(accent)
                     .frame(maxWidth: 130, alignment: .trailing)
             }
-            ActivityProgressBar(state: state, isDone: isDone)
+            ActivityProgressBar(state: state, isDone: isDone, accent: accent)
         }
         .foregroundStyle(.white)
         .padding(16)
@@ -107,6 +110,7 @@ private struct LockScreenActivityView: View {
 private struct ActivityTimeText: View {
     let state: CountdownActivityAttributes.ContentState
     let isDone: Bool
+    var accent: Color = .countdownulaBlood
 
     var body: some View {
         if isDone {
@@ -125,6 +129,7 @@ private struct ActivityTimeText: View {
 private struct ActivityDial: View {
     let state: CountdownActivityAttributes.ContentState
     let isDone: Bool
+    var accent: Color = .countdownulaBlood
 
     var body: some View {
         ZStack {
@@ -132,7 +137,7 @@ private struct ActivityDial: View {
                 Image(systemName: "checkmark.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .foregroundStyle(Color.countdownulaBlood)
+                    .foregroundStyle(accent)
             } else {
                 ProgressView(timerInterval: state.interval, countsDown: true) {
                     EmptyView()
@@ -140,7 +145,7 @@ private struct ActivityDial: View {
                     EmptyView()
                 }
                 .progressViewStyle(.circular)
-                .tint(.countdownulaBlood)
+                .tint(accent)
 
                 FangMark()
                     .foregroundStyle(Color.countdownulaBone)
@@ -153,18 +158,19 @@ private struct ActivityDial: View {
 private struct ActivityProgressBar: View {
     let state: CountdownActivityAttributes.ContentState
     let isDone: Bool
+    var accent: Color = .countdownulaBlood
 
     var body: some View {
         if isDone {
             ProgressView(value: 1)
-                .tint(.countdownulaBlood)
+                .tint(accent)
         } else {
             ProgressView(timerInterval: state.interval, countsDown: false) {
                 EmptyView()
             } currentValueLabel: {
                 EmptyView()
             }
-            .tint(.countdownulaBlood)
+            .tint(accent)
         }
     }
 }

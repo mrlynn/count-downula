@@ -18,6 +18,7 @@ struct Countdown: Identifiable, Codable, Hashable {
     var updatedAt = Date()
     var hasNotified = false
     var hasImage = false
+    var style = CountdownStyle.default
 
     func isPast(at now: Date) -> Bool { targetDate <= now }
 
@@ -30,6 +31,29 @@ struct Countdown: Identifiable, Codable, Hashable {
 
     /// Key that changes whenever the photo may have changed; use it to invalidate image caches.
     var imageCacheKey: String { "\(id.uuidString)-\(updatedAt.timeIntervalSinceReferenceDate)" }
+}
+
+extension Countdown {
+    private enum CodingKeys: String, CodingKey {
+        case id, title, details, targetDate, kind, isPinned, createdAt, updatedAt, hasNotified, hasImage, style
+    }
+
+    /// Fields added after 1.1 are optional in the JSON, so snapshots written by an older build still decode.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        title = try c.decode(String.self, forKey: .title)
+        details = try c.decode(String.self, forKey: .details)
+        targetDate = try c.decode(Date.self, forKey: .targetDate)
+        kind = (try? c.decode(Kind.self, forKey: .kind)) ?? .event
+        isPinned = try c.decodeIfPresent(Bool.self, forKey: .isPinned) ?? false
+        createdAt = try c.decodeIfPresent(Date.self, forKey: .createdAt) ?? Date()
+        updatedAt = try c.decodeIfPresent(Date.self, forKey: .updatedAt) ?? Date()
+        hasNotified = try c.decodeIfPresent(Bool.self, forKey: .hasNotified) ?? false
+        hasImage = try c.decodeIfPresent(Bool.self, forKey: .hasImage) ?? false
+        // A style written by a newer build may not decode here; fall back rather than drop the countdown.
+        style = (try? c.decodeIfPresent(CountdownStyle.self, forKey: .style)) ?? .default
+    }
 }
 
 extension Array where Element == Countdown {

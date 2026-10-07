@@ -147,39 +147,11 @@ private struct HeroCard: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
-            let parts = TimeParts(from: context.date, to: countdown.targetDate)
-
-            CountdownArtwork(countdown: countdown, now: context.date, dialInCorner: true)
-                .frame(height: 260)
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .overlay {
-                    LinearGradient(colors: [.black.opacity(0.15), .black.opacity(0.75)],
-                                   startPoint: .top, endPoint: .bottom)
-                }
-                .overlay(alignment: .bottomLeading) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 6) {
-                            Text(countdown.isPinned ? "PINNED" : "UP NEXT")
-                                .font(.caption2.weight(.bold))
-                                .tracking(1.2)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(Color.countdownulaBlood, in: Capsule())
-                            Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.white.opacity(0.8))
-                        }
-                        Text(countdown.title)
-                            .font(.title.bold())
-                            .lineLimit(2)
-                        TimeBlocks(parts: parts, tileColor: .white.opacity(0.14), size: 30)
-                            .environment(\.colorScheme, .dark)
-                    }
-                    .foregroundStyle(.white)
-                    .padding(16)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            StyledCountdownCard(
+                countdown: countdown, now: context.date,
+                badge: countdown.isPinned ? "PINNED" : "UP NEXT",
+                subtitle: Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
+            )
         }
     }
 }
@@ -215,15 +187,15 @@ private struct CountdownRow: View {
                     .foregroundStyle(.secondary)
                 if !isPast {
                     ProgressView(value: countdown.progress(at: now))
-                        .tint(Color.countdownulaBlood)
+                        .tint(countdown.style.accentColor)
                 }
             }
 
             Spacer(minLength: 8)
 
             CountdownTimeText(countdown: countdown, now: now)
-                .font(.system(.title3, design: .rounded).weight(.bold))
-                .foregroundStyle(isPast ? Color.secondary : Color.countdownulaBlood)
+                .font(countdown.style.font(.title3))
+                .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
                 .lineLimit(1)
                 .fixedSize()
         }

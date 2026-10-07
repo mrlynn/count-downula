@@ -21,7 +21,7 @@ struct CountdownWidget: Widget {
         ) { entry in
             CountdownWidgetView(entry: entry)
                 .containerBackground(for: .widget) {
-                    WidgetBackdrop(photo: entry.photo)
+                    WidgetBackdrop(photo: entry.photo, style: entry.countdown?.style ?? .default)
                 }
                 .widgetURL(entry.countdown.map { CountdownLink.url(for: $0.id) })
         }
@@ -48,22 +48,17 @@ private struct CountdownWidgetView: View {
     }
 }
 
-/// The photo under a dark scrim, or the midnight-to-blood gradient. StandBy and tinted Home Screens
-/// remove it, so everything on top is plain white text that reads on black too.
+/// The countdown's photo, scene, gradient or color under a scrim. StandBy and tinted Home Screens
+/// remove it, so the views on top switch to plain white text there.
 struct WidgetBackdrop: View {
     var photo: Data?
+    var style: CountdownStyle = .default
 
     var body: some View {
-        if let photo, let image = ImageDownsampling.image(from: photo, maxPixelDimension: 700) {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .overlay {
-                    LinearGradient(colors: [.black.opacity(0.1), .black.opacity(0.7)], startPoint: .top, endPoint: .bottom)
-                }
-        } else {
-            LinearGradient(colors: [Color(red: 0.30, green: 0.04, blue: 0.12), Color(red: 0.06, green: 0.02, blue: 0.05)],
-                           startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        let image = photo.flatMap { ImageDownsampling.image(from: $0, maxPixelDimension: 700) }
+        StyledBackdrop(style: style, photo: image.map { Image(uiImage: $0) })
+            .overlay {
+                if image != nil || style.background != .automatic { StyleScrim(style: style) }
+            }
     }
 }
