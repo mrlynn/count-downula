@@ -24,7 +24,19 @@ python3 -m http.server 4173 --directory site
 
 ## Deploy
 
-In Vercel, create a project from this repo with **Root Directory** set to `site` and Framework Preset **Other**. Add `www.countdownula.com` and `countdownula.com` under Domains, redirecting the apex to `www`.
+The Vercel project `countdownula` is connected to this GitHub repo with Root Directory `site`:
+
+- Every push to `main` deploys to production.
+- Other branches and pull requests get preview deployments.
+
+Domains: `www.countdownula.com` (primary) and `countdownula.com` (redirects to `www` via `vercel.json`).
+
+For a manual deploy from the CLI, run it from the repo root, not from `site/`, because the project's Root Directory is already `site`:
+
+```bash
+vercel link --yes --project countdownula   # once, at the repo root
+vercel deploy --prod
+```
 
 If you change the inline script in `index.html`, update its `sha256` hash in the `Content-Security-Policy` header in `vercel.json`.
 
