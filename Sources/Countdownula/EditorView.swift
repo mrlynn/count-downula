@@ -185,6 +185,8 @@ struct EditorView: View {
             countdown.targetDate = Date().addingTimeInterval(TimeInterval(durationSeconds))
         }
 
+        // A newly chosen photo should show even if the iPhone gave this countdown a scene or gradient.
+        if case .set = imageUpdate, !countdown.style.background.usesPhoto { countdown.style.background = .photo }
         store.upsert(countdown, image: imageUpdate)
         onFinish(countdown)
     }

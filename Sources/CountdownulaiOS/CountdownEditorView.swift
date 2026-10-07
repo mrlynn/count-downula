@@ -1,4 +1,3 @@
-import PhotosUI
 import SwiftUI
 
 struct CountdownEditorView: View {
@@ -14,7 +13,7 @@ struct CountdownEditorView: View {
     @State private var hours = 0
     @State private var minutes = 25
     @State private var isPinned: Bool
-    @State private var photoItem: PhotosPickerItem?
+    @State private var style: CountdownStyle
     @State private var previewImage: UIImage?
     @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isLoadingPhoto = false
@@ -27,12 +26,29 @@ struct CountdownEditorView: View {
         _targetDate = State(initialValue: original?.targetDate
             ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
         _isPinned = State(initialValue: original?.isPinned ?? false)
+        _style = State(initialValue: original?.style ?? .default)
         if let original, original.kind == .timer {
             let remaining = max(0, Int(original.targetDate.timeIntervalSinceNow))
             _days = State(initialValue: remaining / 86_400)
             _hours = State(initialValue: remaining % 86_400 / 3_600)
             _minutes = State(initialValue: remaining % 3_600 / 60)
         }
+    }
+
+    /// The countdown as it would be saved, for the live previews.
+    private var draft: Countdown {
+        var countdown = original ?? Countdown(title: "", details: "", targetDate: targetDate)
+        countdown.title = title
+        countdown.kind = kind
+        countdown.style = style
+        countdown.hasImage = previewImage != nil
+        if kind == .event {
+            countdown.targetDate = targetDate
+        } else {
+            countdown.createdAt = Date()
+            countdown.targetDate = Date().addingTimeInterval(TimeInterval(durationSeconds))
+        }
+        return countdown
     }
 
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
@@ -45,9 +61,22 @@ struct CountdownEditorView: View {
         NavigationStack {
             Form {
                 Section {
-                    photoSection
+                    StyledCountdownCard(countdown: draft, now: Date(), previewImage: previewImage, height: 210)
+                        .overlay {
+                            if isLoadingPhoto { ProgressView().controlSize(.large).tint(.white) }
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
                 }
-                .listRowInsets(EdgeInsets())
+
+                Section {
+                    NavigationLink {
+                        StyleEditorView(draft: draft, style: $style, previewImage: $previewImage,
+                                        imageUpdate: $imageUpdate, isLoadingPhoto: $isLoadingPhoto)
+                    } label: {
+                        Label("Appearance", systemImage: "paintpalette")
+                    }
+                }
 
                 Section {
                     TextField("Title", text: $title, prompt: Text("Summer vacation"))
@@ -92,60 +121,8 @@ struct CountdownEditorView: View {
                         .disabled(!canSave)
                 }
             }
-            .onChange(of: photoItem) { _, item in
-                guard let item else { return }
-                loadPhoto(item)
-            }
             .task {
                 if let original { previewImage = store.image(for: original) }
-            }
-        }
-    }
-
-    private var photoSection: some View {
-        PhotosPicker(selection: $photoItem, matching: .images) {
-            ZStack {
-                if let previewImage {
-                    Color.clear.overlay {
-                        Image(uiImage: previewImage)
-                            .resizable()
-                            .scaledToFill()
-                    }
-                } else {
-                    LinearGradient.countdownulaNight
-                    VStack(spacing: 8) {
-                        Image(systemName: "photo.badge.plus")
-                            .font(.system(size: 34))
-                        Text("Add a Photo")
-                            .font(.callout.weight(.medium))
-                    }
-                    .foregroundStyle(.white.opacity(0.85))
-                }
-                if isLoadingPhoto {
-                    ProgressView().controlSize(.large).tint(.white)
-                }
-            }
-            .frame(height: 200)
-            .frame(maxWidth: .infinity)
-            .clipped()
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .overlay(alignment: .topTrailing) {
-            if previewImage != nil {
-                Button {
-                    previewImage = nil
-                    photoItem = nil
-                    imageUpdate = .remove
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 30, height: 30)
-                        .background(.ultraThinMaterial, in: Circle())
-                }
-                .accessibilityLabel("Remove photo")
-                .padding(10)
             }
         }
     }
@@ -171,18 +148,6 @@ struct CountdownEditorView: View {
 
     // MARK: - Actions
 
-    private func loadPhoto(_ item: PhotosPickerItem) {
-        isLoadingPhoto = true
-        Task {
-            defer { isLoadingPhoto = false }
-            guard let data = try? await item.loadTransferable(type: Data.self) else { return }
-            let prepared = await Task.detached(priority: .userInitiated) { PhoneStore.prepareImage(data) }.value
-            guard let prepared else { return }
-            previewImage = prepared.preview
-            imageUpdate = prepared.update
-        }
-    }
-
     private func save() {
         let now = Date()
         var countdown = original ?? Countdown(title: "", details: "", targetDate: now)
@@ -190,6 +155,7 @@ struct CountdownEditorView: View {
         countdown.details = details.trimmingCharacters(in: .whitespacesAndNewlines)
         countdown.kind = kind
         countdown.isPinned = isPinned
+        countdown.style = style
 
         if kind == .event {
             countdown.targetDate = targetDate
@@ -199,7 +165,10 @@ struct CountdownEditorView: View {
             countdown.targetDate = now.addingTimeInterval(TimeInterval(durationSeconds))
         }
 
-        store.upsert(countdown, image: imageUpdate)
+        // A photo hidden behind another background would only waste iCloud space.
+        let image: ImageUpdate = style.background.usesPhoto ? imageUpdate
+            : (original?.hasImage == true || previewImage != nil ? .remove : .unchanged)
+        store.upsert(countdown, image: image)
         // New timers go live on the Lock Screen right away (pinned countdowns are handled by the store).
         if original == nil, kind == .timer { LiveActivities.start(countdown) }
         dismiss()

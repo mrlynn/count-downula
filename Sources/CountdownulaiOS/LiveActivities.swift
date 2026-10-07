@@ -25,7 +25,8 @@ enum LiveActivities {
 
     static func start(_ countdown: Countdown) {
         guard isEnabled, isEligible(countdown), !isRunning(countdown.id) else { return }
-        let attributes = CountdownActivityAttributes(countdownID: countdown.id, kind: countdown.kind)
+        let attributes = CountdownActivityAttributes(countdownID: countdown.id, kind: countdown.kind,
+                                                     accent: countdown.style.accent)
         do {
             _ = try CountdownActivity.request(attributes: attributes, content: content(for: countdown), pushType: nil)
         } catch {

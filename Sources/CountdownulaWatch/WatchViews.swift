@@ -89,9 +89,12 @@ struct WatchCountdownRow: View {
                         .resizable()
                         .scaledToFill()
                         .clipShape(Circle())
+                } else if countdown.style.background != .automatic {
+                    StyledBackdrop(style: countdown.style, dialRemaining: 1 - countdown.progress(at: now), dialPadding: 4)
+                        .clipShape(Circle())
                 } else {
                     FangDial(remaining: 1 - countdown.progress(at: now))
-                        .foregroundStyle(isPast ? Color.secondary : Color.countdownulaBlood)
+                        .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
                 }
             }
             .frame(width: 34, height: 34)
@@ -108,8 +111,8 @@ struct WatchCountdownRow: View {
                     }
                 }
                 CountdownTimeText(countdown: countdown, now: now)
-                    .font(.system(.title3, design: .rounded).weight(.semibold))
-                    .foregroundStyle(isPast ? Color.secondary : Color.countdownulaBlood)
+                    .font(countdown.style.font(.title3))
+                    .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
             }
         }
         .padding(.vertical, 2)
@@ -146,20 +149,19 @@ struct WatchCountdownDetail: View {
         if let countdown = store.countdown(id: id) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    if let image = store.image(for: countdown) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
+                    let image = store.image(for: countdown)
+                    if image != nil || countdown.style.background != .automatic {
+                        StyledBackdrop(style: countdown.style, photo: image.map { Image(uiImage: $0) })
                             .frame(height: 90)
                             .frame(maxWidth: .infinity)
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     Text(countdown.title)
-                        .font(.title3.bold())
+                        .font(countdown.style.font(.title3))
 
                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                        TimeGrid(parts: TimeParts(from: context.date, to: countdown.targetDate))
+                        TimeGrid(parts: TimeParts(from: context.date, to: countdown.targetDate), style: countdown.style)
                     }
 
                     Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
@@ -200,6 +202,7 @@ struct WatchCountdownDetail: View {
 
 private struct TimeGrid: View {
     let parts: TimeParts
+    var style = CountdownStyle.default
 
     var body: some View {
         Grid(horizontalSpacing: 6, verticalSpacing: 6) {
@@ -218,7 +221,7 @@ private struct TimeGrid: View {
     private func block(_ value: Int, _ label: String) -> some View {
         VStack(spacing: 0) {
             Text(String(format: "%02d", value))
-                .font(.system(size: 26, weight: .bold, design: .rounded))
+                .font(style.font(size: 26))
                 .monospacedDigit()
                 .contentTransition(.numericText())
             Text(label)
@@ -227,7 +230,7 @@ private struct TimeGrid: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 6)
-        .background(Color.countdownulaBlood.opacity(0.18), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background(style.accentColor.opacity(0.18), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
 

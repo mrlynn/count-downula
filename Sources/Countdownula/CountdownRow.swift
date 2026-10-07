@@ -7,7 +7,9 @@ struct CountdownArtwork: View {
     var symbolSize: CGFloat = 22
 
     var body: some View {
-        if let image = store.image(for: countdown) {
+        if !countdown.style.background.usesPhoto {
+            StyledBackdrop(style: countdown.style)
+        } else if let image = store.image(for: countdown) {
             Image(nsImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -63,6 +65,7 @@ struct CountdownRow: View {
                 if !isPast {
                     ProgressView(value: countdown.progress(at: now))
                         .progressViewStyle(.linear)
+                        .tint(countdown.style.accentColor)
                         .controlSize(.mini)
                 }
             }
@@ -71,7 +74,7 @@ struct CountdownRow: View {
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text(isPast ? "Done" : CountdownFormat.compact(from: now, to: countdown.targetDate))
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .font(countdown.style.font(size: 15))
                     .monospacedDigit()
                     .foregroundStyle(isPast ? Color.secondary : Color.primary)
                 Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())

@@ -16,12 +16,12 @@ struct DetailView: View {
                     .frame(width: 380, height: 190)
                     .clipped()
                     .overlay(alignment: .bottom) {
-                        LinearGradient(colors: [.clear, .black.opacity(0.55)], startPoint: .center, endPoint: .bottom)
+                        StyleScrim(style: countdown.style)
                     }
                     .overlay(alignment: .bottomLeading) {
                         Text(countdown.title)
-                            .font(.title2.bold())
-                            .foregroundStyle(.white)
+                            .font(countdown.style.font(.title2))
+                            .foregroundStyle(countdown.style.foregroundColor)
                             .lineLimit(2)
                             .shadow(radius: 4)
                             .padding(14)
@@ -41,10 +41,10 @@ struct DetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 8) {
-                        TimeBlock(value: parts.days, label: "Days")
-                        TimeBlock(value: parts.hours, label: "Hours")
-                        TimeBlock(value: parts.minutes, label: "Min")
-                        TimeBlock(value: parts.seconds, label: "Sec")
+                        TimeBlock(value: parts.days, label: "Days", style: countdown.style)
+                        TimeBlock(value: parts.hours, label: "Hours", style: countdown.style)
+                        TimeBlock(value: parts.minutes, label: "Min", style: countdown.style)
+                        TimeBlock(value: parts.seconds, label: "Sec", style: countdown.style)
                     }
                     .opacity(parts.isPast ? 0.5 : 1)
 
@@ -98,11 +98,12 @@ struct DetailView: View {
 private struct TimeBlock: View {
     let value: Int
     let label: String
+    var style = CountdownStyle.default
 
     var body: some View {
         VStack(spacing: 2) {
             Text(String(format: "%02d", value))
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .font(style.font(size: 30))
                 .monospacedDigit()
                 .contentTransition(.numericText())
             Text(label.uppercased())

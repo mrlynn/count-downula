@@ -17,31 +17,21 @@ struct CountdownDetailView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        CountdownArtwork(countdown: countdown, now: now)
-                            .frame(height: 280)
-                            .frame(maxWidth: .infinity)
-                            .clipped()
-                            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        StyledCountdownCard(countdown: countdown, now: now, height: 320)
 
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(countdown.title)
-                                .font(.largeTitle.bold())
-                            Label {
-                                Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.wide).day().year().hour().minute())
-                                + Text(parts.isPast ? "  ·  \(CountdownFormat.relative(from: now, to: countdown.targetDate))" : "")
-                            } icon: {
-                                Image(systemName: parts.isPast ? "checkmark.circle.fill" : "calendar")
-                            }
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        Label {
+                            Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.wide).day().year().hour().minute())
+                            + Text(parts.isPast ? "  ·  \(CountdownFormat.relative(from: now, to: countdown.targetDate))" : "")
+                        } icon: {
+                            Image(systemName: parts.isPast ? "checkmark.circle.fill" : "calendar")
                         }
-
-                        TimeBlocks(parts: parts)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
 
                         if !parts.isPast {
                             VStack(alignment: .leading, spacing: 6) {
                                 ProgressView(value: countdown.progress(at: now))
-                                    .tint(Color.countdownulaBlood)
+                                    .tint(countdown.style.accentColor)
                                 Text("\(Int((countdown.progress(at: now) * 100).rounded(.down)))% of the wait is behind you")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)

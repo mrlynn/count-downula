@@ -18,6 +18,8 @@ final class CountdownRecord {
     @Attribute(.externalStorage) var imageData: Data?
     /// Small JPEG (≤240px) for lists, the menu bar and complications.
     @Attribute(.externalStorage) var thumbnailData: Data?
+    /// JSON-encoded `CountdownStyle`; nil means the default look. Older builds ignore it and leave it alone.
+    var styleData: Data?
 
     init(uuid: UUID = UUID()) {
         self.uuid = uuid
@@ -34,7 +36,8 @@ final class CountdownRecord {
             createdAt: createdAt,
             updatedAt: updatedAt,
             hasNotified: hasNotified,
-            hasImage: imageData != nil
+            hasImage: imageData != nil,
+            style: styleData.flatMap { try? JSONDecoder().decode(CountdownStyle.self, from: $0) } ?? .default
         )
     }
 
@@ -46,6 +49,12 @@ final class CountdownRecord {
         isPinned = countdown.isPinned
         createdAt = countdown.createdAt
         hasNotified = countdown.hasNotified
+        if countdown.style != .default {
+            styleData = try? JSONEncoder().encode(countdown.style)
+        } else if let styleData, (try? JSONDecoder().decode(CountdownStyle.self, from: styleData)) != nil {
+            // Only clear a style this build understands; one from a newer build stays put.
+            self.styleData = nil
+        }
         updatedAt = Date()
     }
 }

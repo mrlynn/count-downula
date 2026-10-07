@@ -93,6 +93,9 @@ targets:
       - path: Sources/Shared/SharedConfig.swift
       - path: Sources/Shared/WidgetSnapshot.swift
       - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.watchkitapp.widgets
@@ -167,6 +170,9 @@ targets:
       - path: Sources/Shared/SharedConfig.swift
       - path: Sources/Shared/WidgetSnapshot.swift
       - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.widgets
@@ -185,6 +191,21 @@ targets:
       path: Resources/iOS/CountdownulaWidgets.entitlements
       properties:
         com.apple.security.application-groups: [group.com.countdownula.app]
+
+  # Unit tests for the platform-neutral model code in Sources/Shared.
+  CountdownulaTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      - Sources/Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: ""
 
 schemes:
   Countdownula:
@@ -218,3 +239,10 @@ schemes:
         "-localOnly": false
     archive:
       config: Release
+  CountdownulaTests:
+    build:
+      targets:
+        CountdownulaTests: [test]
+    test:
+      targets:
+        - CountdownulaTests

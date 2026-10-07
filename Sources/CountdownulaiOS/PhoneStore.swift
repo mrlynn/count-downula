@@ -143,7 +143,7 @@ final class PhoneStore {
         guard repository.fetchAll().isEmpty else { return }
         let now = Date()
         let day: TimeInterval = 86_400
-        let samples = [
+        var samples = [
             Countdown(title: "Sonoma Wine Weekend", details: "Three days of vineyards, long lunches and zero laptops.",
                       targetDate: now + 16 * day + 25_200, isPinned: true, createdAt: now - 30 * day),
             Countdown(title: "Focus Block", details: "Heads down on the release notes",
@@ -155,6 +155,11 @@ final class PhoneStore {
             Countdown(title: "Conference Talk", details: "Nailed it.",
                       targetDate: now - 3 * day, createdAt: now - 60 * day, hasNotified: true),
         ]
+        samples[2].style = CountdownStyle(background: .scene(.balloons), font: .serif, weight: .heavy,
+                                          textColor: RGBAColor(hex: 0x1C1C1E), accent: RGBAColor(hex: 0xFF5D73))
+        samples[3].style = CountdownStyle(background: .gradient(GradientSpec.presets[4].spec), font: .expanded,
+                                          accent: RGBAColor(hex: 0xFFD166))
+        samples[0].style = CountdownStyle(background: .scene(.sunset), font: .rounded)
         samples.forEach { repository.upsert($0) }
     }
     #endif

@@ -15,6 +15,8 @@ struct CountdownActivityAttributes: ActivityAttributes {
 
     var countdownID: UUID
     var kind: Countdown.Kind
+    /// The countdown's accent color when the activity started (nil: Countdownula red).
+    var accent: RGBAColor?
 }
 
 /// `countdownula://countdown/<uuid>` opens a countdown's detail screen (widgets, Live Activities, notifications).

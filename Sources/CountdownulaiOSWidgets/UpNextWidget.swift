@@ -121,7 +121,7 @@ private struct UpNextView: View {
                     FullColorPhoto(image: image)
                 } else {
                     FangDial(remaining: 1 - countdown.progress(at: entry.date), trackOpacity: 0.35)
-                        .foregroundStyle(Color.countdownulaBlood)
+                        .foregroundStyle(countdown.style.accentColor)
                         .widgetAccentable()
                         .padding(4)
                 }
