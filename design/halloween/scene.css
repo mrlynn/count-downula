@@ -1,0 +1,23 @@
+/* Shared backdrop for the Halloween compositions. Fonts and palette come from the site. */
+html,body{margin:0;overflow:hidden}
+body{position:relative;background:
+  radial-gradient(900px 700px at var(--mx) var(--my), rgba(179,18,47,.30), transparent 60%),
+  radial-gradient(1200px 900px at var(--mx) 0, #4a1030, transparent 70%),
+  #1a0612;color:var(--bone);font-family:var(--text)}
+.moon{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 38%,#ff5a72,#c3112d 55%,#7d0618);
+  box-shadow:0 0 120px 40px rgba(195,17,45,.35)}
+.moon::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 30% 60%,rgba(0,0,0,.18) 0 8%,transparent 9%),radial-gradient(circle at 62% 30%,rgba(0,0,0,.14) 0 6%,transparent 7%),radial-gradient(circle at 70% 70%,rgba(0,0,0,.12) 0 10%,transparent 11%)}
+.bat{position:absolute;fill:#0b0509}
+.count{position:absolute}
+.hills{position:absolute;left:0;right:0;bottom:0;fill:#0b0509}
+h1{font-family:var(--display);font-weight:400;letter-spacing:-.03em;line-height:.95;margin:0;color:var(--bone)}
+h1 em{font-style:normal;color:var(--fresh)}
+p{margin:0;color:var(--bone-dim);font-weight:500}
+.brand{display:flex;align-items:center;gap:.4em;font-family:var(--display);color:var(--bone)}
+.brand img{border-radius:22%}
+.num{font-family:var(--display);color:var(--fresh);line-height:.8;letter-spacing:-.04em}
+.brand em{font-style:normal;color:var(--fresh)}
+.sig{font-family:var(--display);color:var(--bone);font-weight:400}
+.sig::before{content:"— ";color:var(--fresh)}
+.eyebrow{color:var(--fresh)} .eyebrow::before{content:none}

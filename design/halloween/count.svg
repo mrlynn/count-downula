@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ece6f2"/>
+      <stop offset="1" stop-color="#c9bdd6"/>
+    </linearGradient>
+    <radialGradient id="cheek" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#9c86b0" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#9c86b0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a1c30"/>
+      <stop offset="1" stop-color="#0b0710"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22141f"/>
+      <stop offset="1" stop-color="#0a0509"/>
+    </linearGradient>
+    <linearGradient id="blood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0304d"/>
+      <stop offset="0.6" stop-color="#c3112d"/>
+      <stop offset="1" stop-color="#7d0618"/>
+    </linearGradient>
+    <linearGradient id="lining" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d8183a"/>
+      <stop offset="1" stop-color="#6e0515"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#e6dac4"/>
+    </linearGradient>
+    <radialGradient id="iris" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#ff5a72"/>
+      <stop offset="0.6" stop-color="#c3112d"/>
+      <stop offset="1" stop-color="#5a0412"/>
+    </radialGradient>
+    <radialGradient id="gold" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#ffe7a3"/>
+      <stop offset="0.5" stop-color="#d9a441"/>
+      <stop offset="1" stop-color="#7a5414"/>
+    </radialGradient>
+    <radialGradient id="dial" cx="0.5" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#4a1030"/>
+      <stop offset="1" stop-color="#14040d"/>
+    </radialGradient>
+    <clipPath id="eyeL"><path d="M288 398 C305 374 360 370 384 400 C360 416 310 418 288 398 Z"/></clipPath>
+    <clipPath id="eyeR"><path d="M512 398 C495 374 440 370 416 400 C440 416 490 418 512 398 Z"/></clipPath>
+  </defs>
+
+  <!-- ===== cape (back) ===== -->
+  <path d="M232 640 C150 700 80 840 40 1000 L760 1000 C720 840 650 700 568 640 Z" fill="url(#cloth)"/>
+  <path d="M232 640 C170 700 110 830 80 1000 L150 1000 C160 860 200 740 262 668 Z" fill="url(#lining)"/>
+  <path d="M568 640 C630 700 690 830 720 1000 L650 1000 C640 860 600 740 538 668 Z" fill="url(#lining)"/>
+
+  <!-- ===== high collar, red inside, black outside ===== -->
+  <path d="M352 610 C290 570 200 470 128 230 C200 300 250 320 300 330 C280 430 300 520 360 585 Z" fill="#0d070c"/>
+  <path d="M352 598 C300 560 228 470 172 300 C215 335 255 348 290 352 C278 440 300 520 358 580 Z" fill="url(#lining)"/>
+  <path d="M448 610 C510 570 600 470 672 230 C600 300 550 320 500 330 C520 430 500 520 440 585 Z" fill="#0d070c"/>
+  <path d="M448 598 C500 560 572 470 628 300 C585 335 545 348 510 352 C522 440 500 520 442 580 Z" fill="url(#lining)"/>
+
+  <!-- ===== torso ===== -->
+  <path d="M250 650 C300 610 350 596 400 596 C450 596 500 610 550 650 L600 1000 L200 1000 Z" fill="url(#cloth)"/>
+  <!-- shirt front + lapels -->
+  <path d="M362 600 L400 760 L438 600 Z" fill="#f3ead8"/>
+  <path d="M340 604 L400 800 L362 600 Z" fill="#1c0f19"/>
+  <path d="M460 604 L400 800 L438 600 Z" fill="#1c0f19"/>
+  <!-- bow tie -->
+  <path d="M400 616 L368 600 L368 638 Z M400 616 L432 600 L432 638 Z" fill="#7d0618"/>
+  <circle cx="400" cy="618" r="9" fill="#a50c25"/>
+  <!-- medallion on a red ribbon -->
+  <path d="M370 640 L400 700 L430 640" fill="none" stroke="#a50c25" stroke-width="10" stroke-linejoin="round"/>
+  <circle cx="400" cy="716" r="24" fill="url(#gold)" stroke="#5c3d0c" stroke-width="3"/>
+  <circle cx="400" cy="716" r="11" fill="#c3112d"/>
+  <circle cx="396" cy="711" r="3.5" fill="#fff" fill-opacity="0.7"/>
+
+  <!-- ===== neck ===== -->
+  <path d="M368 540 L372 604 C390 612 410 612 428 604 L432 540 Z" fill="#b9abc8"/>
+
+  <!-- ===== ears ===== -->
+  <path d="M254 352 C222 334 196 312 170 270 C178 336 210 404 258 432 Z" fill="url(#skin)"/>
+  <path d="M248 372 C228 356 210 336 194 312 C202 352 222 392 252 412 Z" fill="#b3a2c4"/>
+  <path d="M546 352 C578 334 604 312 630 270 C622 336 590 404 542 432 Z" fill="url(#skin)"/>
+  <path d="M552 372 C572 356 590 336 606 312 C598 352 578 392 548 412 Z" fill="#b3a2c4"/>
+
+  <!-- ===== head ===== -->
+  <path d="M400 210 C505 210 562 290 562 382 C562 462 505 536 400 572 C295 536 238 462 238 382 C238 290 295 210 400 210 Z" fill="url(#skin)"/>
+  <!-- hollow cheeks + chin shadow -->
+  <ellipse cx="300" cy="460" rx="40" ry="55" fill="url(#cheek)"/>
+  <ellipse cx="500" cy="460" rx="40" ry="55" fill="url(#cheek)"/>
+  <path d="M370 552 C385 562 415 562 430 552" fill="none" stroke="#9c86b0" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- ===== hair with a dramatic widow's peak ===== -->
+  <path d="M234 384 C222 250 300 168 400 166 C500 168 578 250 566 384 C556 334 540 302 516 286 C476 268 436 276 400 330 C364 276 324 268 284 286 C260 302 244 334 234 384 Z" fill="url(#hair)"/>
+  <path d="M300 214 C340 190 380 186 410 190" fill="none" stroke="#5b4566" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+  <path d="M290 250 C300 236 316 226 334 220" fill="none" stroke="#5b4566" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- ===== brows ===== -->
+  <path d="M276 350 C310 322 350 330 390 372 L380 384 C350 356 316 350 282 362 Z" fill="#120a14"/>
+  <path d="M524 350 C490 322 450 330 410 372 L420 384 C450 356 484 350 518 362 Z" fill="#120a14"/>
+
+  <!-- ===== eyes ===== -->
+  <path d="M288 398 C305 374 360 370 384 400 C360 416 310 418 288 398 Z" fill="#fff6e6"/>
+  <g clip-path="url(#eyeL)">
+    <circle cx="344" cy="398" r="17" fill="url(#iris)"/>
+    <ellipse cx="344" cy="398" rx="3.5" ry="12" fill="#14040d"/>
+    <circle cx="350" cy="391" r="4.5" fill="#fff"/>
+    <path d="M280 370 L392 370 L392 392 C360 378 312 380 280 396 Z" fill="#b3a2c4" opacity="0.9"/>
+  </g>
+  <path d="M286 398 C310 382 360 380 386 400" fill="none" stroke="#120a14" stroke-width="6" stroke-linecap="round"/>
+  <path d="M512 398 C495 374 440 370 416 400 C440 416 490 418 512 398 Z" fill="#fff6e6"/>
+  <g clip-path="url(#eyeR)">
+    <circle cx="456" cy="398" r="17" fill="url(#iris)"/>
+    <ellipse cx="456" cy="398" rx="3.5" ry="12" fill="#14040d"/>
+    <circle cx="462" cy="391" r="4.5" fill="#fff"/>
+    <path d="M520 370 L408 370 L408 392 C440 378 488 380 520 396 Z" fill="#b3a2c4" opacity="0.9"/>
+  </g>
+  <path d="M514 398 C490 382 440 380 414 400" fill="none" stroke="#120a14" stroke-width="6" stroke-linecap="round"/>
+  <!-- bags under the eyes: centuries of no sleep -->
+  <path d="M300 420 C320 432 350 432 370 422" fill="none" stroke="#9c86b0" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M500 420 C480 432 450 432 430 422" fill="none" stroke="#9c86b0" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- ===== long hooked nose ===== -->
+  <path d="M396 404 C396 436 404 462 422 474 C414 484 396 486 382 478" fill="none" stroke="#8f7aa3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ===== sly grin with fangs ===== -->
+  <path d="M326 496 C352 528 430 532 480 488 C446 506 372 512 326 496 Z" fill="#4a0612"/>
+  <path d="M346 507 C380 520 432 518 462 502 C440 526 380 530 346 507 Z" fill="#a50c25" opacity="0.7"/>
+  <path d="M326 496 C372 512 446 506 480 488" fill="none" stroke="#120a14" stroke-width="5" stroke-linecap="round"/>
+  <path d="M352 502 L372 506 L364 540 Q362 545 360 540 Z" fill="url(#bone)"/>
+  <path d="M432 506 L452 500 L448 534 Q446 539 444 534 Z" fill="url(#bone)"/>
+  <!-- a single drop of blood, same as the app icon -->
+  <path d="M446 546 C446 546 437 559 437 566 A9 9 0 0 0 455 566 C455 559 446 546 446 546 Z" fill="#ff3653"/>
+  <circle cx="443" cy="565" r="2.4" fill="#fff" fill-opacity="0.6"/>
+  <!-- smirk dimple -->
+  <path d="M484 480 C490 486 490 494 486 500" fill="none" stroke="#8f7aa3" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- ===== raised arm with the Countdownula pocket watch ===== -->
+  <path d="M548 660 C600 640 640 600 662 548 L706 568 C690 640 640 700 576 730 Z" fill="url(#cloth)"/>
+  <path d="M660 540 L712 562 L704 582 L652 560 Z" fill="#f3ead8"/>
+  <!-- watch: gold case with the fanged ring as its dial -->
+  <g transform="translate(640 728)">
+    <rect x="-14" y="-104" width="28" height="22" rx="6" fill="url(#gold)"/>
+    <circle r="88" fill="url(#gold)" stroke="#5c3d0c" stroke-width="3"/>
+    <circle r="74" fill="url(#dial)"/>
+    <g transform="scale(0.118) translate(-500 -500)">
+      <path d="M781.1 295.7 A347.5 347.5 0 1 1 652.3 187.7" fill="none" stroke="url(#blood)" stroke-width="85" stroke-linecap="round"/>
+      <path d="M206 600 Q252 742 380 740 L620 740 Q748 742 794 600 A312 312 0 0 1 206 600 Z" fill="#a50c25"/>
+      <path d="M362 736 L438 736 L404 818 Q400 826 396 818 Z" fill="url(#bone)"/>
+      <path d="M562 736 L638 736 L604 818 Q600 826 596 818 Z" fill="url(#bone)"/>
+      <path d="M500 500 L658 352.7" stroke="url(#bone)" stroke-width="58" stroke-linecap="round"/>
+      <circle cx="500" cy="500" r="71" fill="url(#bone)"/>
+      <circle cx="500" cy="500" r="22" fill="#a50c25"/>
+    </g>
+    <path d="M-60 -40 A72 72 0 0 1 20 -70" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <!-- bony hand: one long finger raised ("One day closer! Ah-ha!"), the chain pinched in the fist -->
+  <g>
+    <path d="M660 506 C656 484 668 466 690 464 C712 462 726 478 724 500 C722 524 708 546 688 552 C670 554 662 530 660 506 Z" fill="url(#skin)"/>
+    <path d="M682 474 C678 444 680 412 688 392 C692 382 704 384 703 395 C700 420 700 448 702 474 Z" fill="url(#skin)"/>
+    <path d="M688 393 L694 364 L703 396 Z" fill="#2a1c30"/>
+    <path d="M664 488 C650 488 648 502 660 506 C670 508 676 498 672 490 Z" fill="#d8cfe2" stroke="#9c86b0" stroke-width="2"/>
+    <path d="M662 508 C648 510 648 524 660 527 C670 528 676 518 672 510 Z" fill="#d8cfe2" stroke="#9c86b0" stroke-width="2"/>
+    <path d="M666 528 C654 532 656 546 668 546 C678 545 682 536 676 530 Z" fill="#d8cfe2" stroke="#9c86b0" stroke-width="2"/>
+    <path d="M716 480 C730 486 732 504 720 512" fill="none" stroke="#9c86b0" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- watch chain -->
+  <path d="M658 532 C652 560 644 590 640 624" fill="none" stroke="#d9a441" stroke-width="5" stroke-dasharray="7 5" stroke-linecap="round"/>
+</svg>
