@@ -225,9 +225,11 @@ final class PhoneStore {
         smokeFree.extras.savings = Savings(amountPerDay: 12, currencyCode: "USD")
         smokeFree.extras.streak.runs = [.init(start: now - 140 * day, end: now - 47 * day - 5 * 3_600)]
         samples.append(smokeFree)
-        // A years-long count-up with no milestones: the widest time text a row has to fit.
-        samples.append(Countdown(title: "Together", details: "Since the first date.",
-                                 targetDate: now - 4_652 * day, kind: .countUp, createdAt: now))
+        // A years-long count-up: the widest time text a row has to fit.
+        var together = Countdown(title: "Together", details: "Since the first date.",
+                                 targetDate: now - 4_652 * day, kind: .countUp, createdAt: now)
+        together.style = CountdownStyle(background: .scene(.blossoms), font: .serif, accent: RGBAColor(hex: 0xD6336C))
+        samples.append(together)
         samples.forEach { repository.upsert($0) }
     }
     #endif
