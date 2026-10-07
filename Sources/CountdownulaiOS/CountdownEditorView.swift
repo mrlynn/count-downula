@@ -15,6 +15,9 @@ struct CountdownEditorView: View {
     @State private var isPinned: Bool
     @State private var style: CountdownStyle
     @State private var milestones: [Milestone]
+    @State private var extras: CountdownExtras
+    @State private var tracksSavings: Bool
+    @State private var savingsPerDay: Double
     @State private var showingCustomMilestone = false
     @State private var previewImage: UIImage?
     @State private var imageUpdate: ImageUpdate = .unchanged
@@ -30,6 +33,9 @@ struct CountdownEditorView: View {
         _isPinned = State(initialValue: original?.isPinned ?? false)
         _style = State(initialValue: original?.style ?? .default)
         _milestones = State(initialValue: original?.milestones ?? [])
+        _extras = State(initialValue: original?.extras ?? CountdownExtras())
+        _tracksSavings = State(initialValue: original?.extras.savings != nil)
+        _savingsPerDay = State(initialValue: original?.extras.savings?.amountPerDay ?? 10)
         if let original, original.kind == .timer {
             let remaining = max(0, Int(original.targetDate.timeIntervalSinceNow))
             _days = State(initialValue: remaining / 86_400)
@@ -45,8 +51,9 @@ struct CountdownEditorView: View {
         countdown.kind = kind
         countdown.style = style
         countdown.milestones = milestones
+        countdown.extras = finalExtras
         countdown.hasImage = previewImage != nil
-        if kind == .event {
+        if kind == .event || kind == .countUp {
             countdown.targetDate = targetDate
         } else {
             countdown.createdAt = Date()
@@ -55,10 +62,25 @@ struct CountdownEditorView: View {
         return countdown
     }
 
+    /// Extras as they'd be saved: savings only on count-ups, yearly repeat only on dates.
+    private var finalExtras: CountdownExtras {
+        var extras = extras
+        extras.savings = kind == .countUp && tracksSavings && savingsPerDay > 0
+            ? Savings(amountPerDay: savingsPerDay, currencyCode: currencyCode) : nil
+        if kind != .event { extras.repeatsYearly = false }
+        // A new or moved date becomes the anchor the next years are counted from.
+        if !extras.repeatsYearly || targetDate != original?.targetDate { extras.yearlyAnchor = nil }
+        return extras
+    }
+
+    private var currencyCode: String {
+        original?.extras.savings?.currencyCode ?? Locale.current.currency?.identifier ?? "USD"
+    }
+
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
 
     private var canSave: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind == .event || durationSeconds > 0) && !isLoadingPhoto
+        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind != .timer || durationSeconds > 0) && !isLoadingPhoto
     }
 
     var body: some View {
@@ -93,18 +115,45 @@ struct CountdownEditorView: View {
                     Picker("Type", selection: $kind) {
                         Text("Date & Time").tag(Countdown.Kind.event)
                         Text("Timer").tag(Countdown.Kind.timer)
+                        Text("Since").tag(Countdown.Kind.countUp)
                     }
                     .pickerStyle(.segmented)
                     .listRowSeparator(.hidden)
 
-                    if kind == .event {
+                    switch kind {
+                    case .event:
                         DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                    } else {
+                        Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                    case .countUp:
+                        DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
+                    case .timer:
                         durationPicker
                     }
                 } footer: {
-                    if kind == .timer && original?.kind == .timer {
+                    switch kind {
+                    case .timer where original?.kind == .timer:
                         Text("Saving restarts the timer from now.")
+                    case .countUp:
+                        Text("Counts the time since something began: a sober date, a quit date, an anniversary.")
+                    case .event where extras.repeatsYearly:
+                        Text("After the day passes it rolls over to next year. Good for birthdays and anniversaries.")
+                    default:
+                        EmptyView()
+                    }
+                }
+
+                if kind == .countUp {
+                    Section {
+                        Toggle("Track money saved", isOn: $tracksSavings)
+                        if tracksSavings {
+                            LabeledContent("Per day") {
+                                TextField("Amount", value: $savingsPerDay, format: .currency(code: currencyCode))
+                                    .keyboardType(.decimalPad)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                    } footer: {
+                        Text("What it used to cost you each day, like a pack of cigarettes.")
                     }
                 }
 
@@ -117,10 +166,23 @@ struct CountdownEditorView: View {
                 }
             }
             .navigationTitle(original == nil ? "New Countdown" : "Edit Countdown")
+            .onChange(of: kind) { _, new in
+                // A count-up starts in the past; a countdown ends in the future.
+                if new == .countUp, targetDate > Date() { targetDate = Date() }
+                if new == .event, targetDate <= Date() {
+                    targetDate = Calendar.current.date(byAdding: .day, value: 7, to: Date())!
+                }
+                if new == .countUp, milestones.isEmpty { milestones = MilestonePreset.countUpDefaults() }
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                }
+                if original == nil {
+                    ToolbarItem(placement: .principal) {
+                        templatesMenu
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(original == nil ? "Add" : "Save", action: save)
@@ -131,6 +193,37 @@ struct CountdownEditorView: View {
                 if let original { previewImage = store.image(for: original) }
             }
         }
+    }
+
+    // MARK: - Templates
+
+    private var templatesMenu: some View {
+        Menu {
+            Section("Count up from") {
+                ForEach(CountUpTemplate.allCases) { template in
+                    Button(template.name, systemImage: template.symbol) { apply(template) }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text("New Countdown").font(.headline)
+                Image(systemName: "chevron.down.circle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .foregroundStyle(.primary)
+        }
+        .accessibilityLabel("Start from a template")
+    }
+
+    private func apply(_ template: CountUpTemplate) {
+        kind = .countUp
+        title = template.name
+        details = template.details
+        targetDate = Calendar.current.startOfDay(for: Date())
+        style = template.style
+        milestones = MilestonePreset.countUpDefaults()
+        tracksSavings = template.suggestsSavings
     }
 
     // MARK: - Milestones
@@ -157,6 +250,11 @@ struct CountdownEditorView: View {
                 milestones.removeAll { ids.contains($0.id) }
             }
 
+            if countdown.countsUp, milestones.isEmpty {
+                Button("Add Standard Milestones", systemImage: "flag.2.crossed") {
+                    milestones = MilestonePreset.countUpDefaults()
+                }
+            }
             Menu {
                 ForEach(presets) { preset in
                     let milestone = preset.milestone
@@ -173,7 +271,9 @@ struct CountdownEditorView: View {
             Text("Little moments along the way. Each one gets a notification and a celebration.")
         }
         .sheet(isPresented: $showingCustomMilestone) {
-            CustomMilestoneSheet(range: Date()...max(Date(), countdown.targetDate)) { milestones.append($0) }
+            CustomMilestoneSheet(range: countdown.countsUp
+                ? Date()...Date().addingTimeInterval(20 * 365 * 86_400)
+                : Date()...max(Date(), countdown.targetDate)) { milestones.append($0) }
         }
     }
 
@@ -224,8 +324,9 @@ struct CountdownEditorView: View {
         countdown.isPinned = isPinned
         countdown.style = style
         countdown.milestones = milestones
+        countdown.extras = finalExtras
 
-        if kind == .event {
+        if kind == .event || kind == .countUp {
             countdown.targetDate = targetDate
             if original == nil { countdown.createdAt = now }
         } else {
@@ -289,4 +390,49 @@ private struct CustomMilestoneSheet: View {
         }
         .presentationDetents([.medium])
     }
+}
+
+/// Quick starts for count-ups.
+enum CountUpTemplate: CaseIterable, Identifiable {
+    case sober, smokeFree, together, newJob
+
+    var id: Self { self }
+
+    var name: String {
+        switch self {
+        case .sober: "Sober"
+        case .smokeFree: "Smoke-Free"
+        case .together: "Together"
+        case .newJob: "New Job"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .sober: "leaf"
+        case .smokeFree: "nosign"
+        case .together: "heart"
+        case .newJob: "briefcase"
+        }
+    }
+
+    var details: String {
+        switch self {
+        case .sober: "One day at a time."
+        case .smokeFree: "Every day without one counts."
+        case .together: ""
+        case .newJob: ""
+        }
+    }
+
+    var style: CountdownStyle {
+        switch self {
+        case .sober: CountdownStyle(background: .scene(.mountains), font: .rounded, accent: RGBAColor(hex: 0x2F9E6E))
+        case .smokeFree: CountdownStyle(background: .scene(.ocean), font: .rounded, accent: RGBAColor(hex: 0x1F6FB2))
+        case .together: CountdownStyle(background: .scene(.blossoms), font: .serif, accent: RGBAColor(hex: 0xE0457B))
+        case .newJob: CountdownStyle(background: .scene(.city), font: .expanded, accent: RGBAColor(hex: 0xFFC145))
+        }
+    }
+
+    var suggestsSavings: Bool { self == .smokeFree }
 }

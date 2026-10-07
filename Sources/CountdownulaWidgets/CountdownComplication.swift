@@ -98,7 +98,10 @@ struct CountdownProvider: AppIntentTimelineProvider {
         let thumbnail = WidgetSnapshot.thumbnail(for: countdown.id)
         let photo = WidgetSnapshot.photo(for: countdown)
         let milestoneDates = countdown.scheduledMilestones.map(\.date)
-        let entries = Self.entryDates(for: countdown.targetDate, from: now, also: milestoneDates).map {
+        let dates = countdown.countsUp
+            ? Self.countUpEntryDates(since: countdown.targetDate, from: now, also: milestoneDates)
+            : Self.entryDates(for: countdown.targetDate, from: now, also: milestoneDates)
+        let entries = dates.map {
             CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail, photo: photo)
         }
         return Timeline(entries: entries, policy: .atEnd)
@@ -122,10 +125,23 @@ struct CountdownProvider: AppIntentTimelineProvider {
         let all = WidgetSnapshot.read()
         if let id = configuration.countdown?.id,
            let chosen = all.first(where: { $0.id == id }),
-           chosen.targetDate > now - 86_400 {
+           chosen.countsUp || chosen.targetDate > now - 86_400 {
             return chosen
         }
         return all.featured(at: now)
+    }
+
+    /// A count-up's text changes on each hour since it began ("47d 3h"); the dial moves with
+    /// milestones. A day of hourly entries, then the timeline asks again.
+    static func countUpEntryDates(since start: Date, from now: Date, also extra: [Date] = []) -> [Date] {
+        var dates: Set<Date> = [now]
+        let elapsedHours = max(0, Int(now.timeIntervalSince(start) / 3_600))
+        for k in (elapsedHours + 1)...(elapsedHours + 24) {
+            dates.insert(start + TimeInterval(k) * 3_600)
+        }
+        let horizon = now + 86_400
+        for date in extra where date > now && date <= horizon { dates.insert(date) }
+        return dates.sorted()
     }
 
     /// Entries land exactly where the displayed text changes: on each hour boundary before the target

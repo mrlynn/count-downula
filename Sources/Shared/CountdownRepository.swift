@@ -71,6 +71,9 @@ final class CountdownRepository {
     func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
         var countdown = countdown
         countdown.resetMilestonesInFuture(at: Date())
+        // A count-up never "completes". Builds that predate count-ups read it as a finished event,
+        // so mark it notified or they'd post a completion alert for it.
+        if countdown.countsUp { countdown.hasNotified = true }
         let record = record(countdown.id) ?? {
             let new = CountdownRecord(uuid: countdown.id)
             context.insert(new)
@@ -88,6 +91,19 @@ final class CountdownRepository {
             record.thumbnailData = thumbnail
         }
         save()
+    }
+
+    /// Moves yearly countdowns whose day has passed on to next year. Every device does this; the
+    /// result is the same wherever it runs, so it doesn't matter which one gets there first.
+    /// Returns true when anything changed.
+    @discardableResult
+    func rollOverYearlyCountdowns(at now: Date = Date()) -> Bool {
+        var changed = false
+        for var countdown in fetchAll() where countdown.rollToNextYear(at: now) {
+            upsert(countdown)
+            changed = true
+        }
+        return changed
     }
 
     func delete(id: UUID) {

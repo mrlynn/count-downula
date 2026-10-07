@@ -82,7 +82,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             let item = pinnedItems[countdown.id] ?? makePinnedItem(for: countdown.id)
             guard let button = item.button else { continue }
 
-            let time = CountdownFormat.compact(from: store.now, to: countdown.targetDate)
+            let time = CountdownFormat.compact(countdown, at: store.now)
             let title = " \(truncated(countdown.title, to: 18)) · \(time)"
             if button.title != title {
                 button.attributedTitle = NSAttributedString(string: title, attributes: [

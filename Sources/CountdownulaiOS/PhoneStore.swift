@@ -29,7 +29,12 @@ final class PhoneStore {
     // MARK: - Queries
 
     func upcoming(at now: Date) -> [Countdown] {
-        countdowns.filter { !$0.isPast(at: now) }.sorted { $0.targetDate < $1.targetDate }
+        countdowns.filter { $0.isUpcoming(at: now) }.sorted { $0.targetDate < $1.targetDate }
+    }
+
+    /// Count-ups, longest-running first.
+    var countingUp: [Countdown] {
+        countdowns.filter(\.countsUp).sorted { $0.targetDate < $1.targetDate }
     }
 
     func past(at now: Date) -> [Countdown] {
@@ -81,6 +86,13 @@ final class PhoneStore {
 
     func togglePin(_ countdown: Countdown) {
         repository.setPinned(!countdown.isPinned, id: countdown.id)
+        reload()
+    }
+
+    func resetStreak(_ countdown: Countdown) {
+        var countdown = countdown
+        countdown.resetStreak(at: Date())
+        repository.upsert(countdown)
         reload()
     }
 
@@ -137,6 +149,7 @@ final class PhoneStore {
     // MARK: - Sync side effects
 
     func reload() {
+        repository.rollOverYearlyCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
         publishToWidgets()
@@ -200,6 +213,15 @@ final class PhoneStore {
             MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone, MilestonePreset.oneDay.milestone,
         ]
         samples[2].milestones = [MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone]
+        samples[2].extras.repeatsYearly = true
+
+        var smokeFree = Countdown(title: "Smoke-Free", details: "Every day without one counts.",
+                                  targetDate: now - 47 * day - 5 * 3_600, kind: .countUp, createdAt: now - 47 * day)
+        smokeFree.style = CountdownStyle(background: .scene(.ocean), font: .rounded, accent: RGBAColor(hex: 0x1F6FB2))
+        smokeFree.milestones = MilestonePreset.countUpDefaults()
+        smokeFree.extras.savings = Savings(amountPerDay: 12, currencyCode: "USD")
+        smokeFree.extras.streak.runs = [.init(start: now - 140 * day, end: now - 47 * day - 5 * 3_600)]
+        samples.append(smokeFree)
         samples.forEach { repository.upsert($0) }
     }
     #endif

@@ -75,3 +75,25 @@ struct StyleScrim: View {
                        startPoint: .top, endPoint: .bottom)
     }
 }
+
+/// "15d 23h" when far off, a live ticking timer inside the last day, "Done" afterwards.
+/// A count-up shows the time since it began the same way, ticking up.
+struct CountdownTimeText: View {
+    let countdown: Countdown
+    let now: Date
+
+    var body: some View {
+        let parts = countdown.timeParts(at: now)
+        if parts.isPast {
+            Text("Done")
+        } else if parts.days > 0 {
+            Text("\(parts.days)d \(parts.hours)h")
+        } else if parts.countsUp {
+            Text(timerInterval: countdown.targetDate...Date.distantFuture, countsDown: false)
+                .monospacedDigit()
+        } else {
+            Text(timerInterval: now...countdown.targetDate, countsDown: true)
+                .monospacedDigit()
+        }
+    }
+}

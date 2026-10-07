@@ -36,7 +36,8 @@ private struct CountdownListView: View {
     let actions: PopoverActions
     @State private var tab: Tab = .upcoming
 
-    private var items: [Countdown] { tab == .upcoming ? store.upcoming : store.past }
+    /// Count-ups never finish, so they live under Upcoming after the countdowns.
+    private var items: [Countdown] { tab == .upcoming ? store.upcoming + store.countingUp : store.past }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -63,7 +64,7 @@ private struct CountdownListView: View {
             .padding(.bottom, 8)
 
             Picker("", selection: $tab) {
-                Text("Upcoming (\(store.upcoming.count))").tag(Tab.upcoming)
+                Text("Upcoming (\(store.upcoming.count + store.countingUp.count))").tag(Tab.upcoming)
                 Text("Past (\(store.past.count))").tag(Tab.past)
             }
             .pickerStyle(.segmented)

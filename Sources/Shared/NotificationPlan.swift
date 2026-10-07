@@ -14,7 +14,7 @@ enum NotificationPlan {
     static func items(for countdowns: [Countdown], now: Date, limit: Int) -> [Item] {
         var items: [Item] = []
         for countdown in countdowns {
-            if countdown.targetDate > now {
+            if !countdown.countsUp, countdown.targetDate > now {
                 items.append(completion(for: countdown))
             }
             for scheduled in countdown.scheduledMilestones where scheduled.date > now {

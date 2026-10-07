@@ -37,7 +37,12 @@ final class CountdownStore {
     // MARK: - Queries
 
     var upcoming: [Countdown] {
-        countdowns.filter { !$0.isPast(at: now) }.sorted { $0.targetDate < $1.targetDate }
+        countdowns.filter { $0.isUpcoming(at: now) }.sorted { $0.targetDate < $1.targetDate }
+    }
+
+    /// Count-ups, longest-running first.
+    var countingUp: [Countdown] {
+        countdowns.filter(\.countsUp).sorted { $0.targetDate < $1.targetDate }
     }
 
     var past: [Countdown] {
@@ -93,6 +98,7 @@ final class CountdownStore {
     // MARK: - Sync
 
     private func reload() {
+        repository.rollOverYearlyCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
         onUpdate?()
@@ -101,6 +107,9 @@ final class CountdownStore {
     private func tick() {
         now = Date()
         postDueMilestones()
+        if countdowns.contains(where: { $0.nextYearlyOccurrence(after: now) != nil }) {
+            reload()
+        }
         let due = countdowns.filter { $0.isPast(at: now) && !$0.hasNotified }
         if due.isEmpty {
             onUpdate?()

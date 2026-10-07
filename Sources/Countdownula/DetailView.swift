@@ -8,7 +8,7 @@ struct DetailView: View {
     @State private var confirmingDelete = false
 
     var body: some View {
-        let parts = TimeParts(from: store.now, to: countdown.targetDate)
+        let parts = countdown.timeParts(at: store.now)
 
         VStack(spacing: 0) {
             ZStack(alignment: .topLeading) {
@@ -49,10 +49,11 @@ struct DetailView: View {
                     .opacity(parts.isPast ? 0.5 : 1)
 
                     Label {
-                        Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.wide).day().year().hour().minute())
+                        (countdown.countsUp ? Text("Since ") : Text(""))
+                        + Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.wide).day().year().hour().minute())
                         + Text(parts.isPast ? "  ·  \(CountdownFormat.relative(from: store.now, to: countdown.targetDate))" : "")
                     } icon: {
-                        Image(systemName: parts.isPast ? "checkmark.circle.fill" : "calendar")
+                        Image(systemName: parts.isPast ? "checkmark.circle.fill" : countdown.countsUp ? "arrow.up.forward.circle" : "calendar")
                     }
                     .font(.callout)
                     .foregroundStyle(.secondary)

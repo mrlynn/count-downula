@@ -51,6 +51,12 @@ struct CountdownListView: View {
                             ForEach(rest) { row(for: $0, now: now) }
                         }
                     }
+                    let counting = store.countingUp.filter { $0.id != hero?.id }
+                    if !counting.isEmpty {
+                        Section("Counting Up") {
+                            ForEach(counting) { row(for: $0, now: now) }
+                        }
+                    }
                     if !past.isEmpty {
                         Section("Past") {
                             ForEach(past) { row(for: $0, now: now) }
@@ -150,7 +156,9 @@ private struct HeroCard: View {
             StyledCountdownCard(
                 countdown: countdown, now: context.date,
                 badge: countdown.isPinned ? "PINNED" : "UP NEXT",
-                subtitle: Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
+                subtitle: countdown.countsUp
+                    ? Text("Since \(countdown.targetDate.formatted(.dateTime.month().day().year()))")
+                    : Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
             )
         }
     }
@@ -187,6 +195,10 @@ private struct CountdownRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                } else if countdown.countsUp {
+                    Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 } else {
                     Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
                         .font(.caption)

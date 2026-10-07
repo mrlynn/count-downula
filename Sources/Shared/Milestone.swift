@@ -47,14 +47,15 @@ struct ScheduledMilestone: Identifiable, Hashable {
 
 extension Countdown {
     /// When the wait began: progress, "Halfway" and elapsed milestones count from here.
-    var startDate: Date { createdAt }
+    /// A count-up's `targetDate` is its start.
+    var startDate: Date { countsUp ? targetDate : createdAt }
 
     /// Milestones that fall inside the countdown, soonest first. One that resolves before the
     /// countdown began or after it ends (say "100 days to go" on a 30-day countdown) is left out.
     var scheduledMilestones: [ScheduledMilestone] {
         milestones
             .map { ScheduledMilestone(milestone: $0, date: $0.date(for: self)) }
-            .filter { $0.date > startDate && $0.date < targetDate }
+            .filter { $0.date > startDate && (countsUp || $0.date < targetDate) }
             .sorted { $0.date < $1.date }
     }
 
@@ -96,9 +97,28 @@ enum MilestonePreset: CaseIterable, Identifiable {
         }
     }
 
+    /// The chips a count-up starts with: the first day, week and month, then the long haul.
+    static func countUpDefaults() -> [Milestone] {
+        let day: TimeInterval = 86_400
+        var milestones = [
+            Milestone(title: "24 hours", emoji: "🌱", trigger: .elapsed(day)),
+            Milestone(title: "1 week", emoji: "✨", trigger: .elapsed(7 * day)),
+            Milestone(title: "30 days", emoji: "🗓️", trigger: .elapsed(30 * day)),
+            Milestone(title: "60 days", emoji: "💪", trigger: .elapsed(60 * day)),
+            Milestone(title: "90 days", emoji: "🏅", trigger: .elapsed(90 * day)),
+            Milestone(title: "6 months", emoji: "🌟", trigger: .elapsed(182 * day)),
+            Milestone(title: "1 year", emoji: "🏆", trigger: .elapsed(365 * day)),
+        ]
+        for year in 2...10 {
+            milestones.append(Milestone(title: "\(year) years", emoji: "🏆", trigger: .elapsed(Double(year) * 365 * day)))
+        }
+        return milestones
+    }
+
     /// Presets that would land between now and the target.
     static func available(for countdown: Countdown, now: Date) -> [MilestonePreset] {
-        allCases.filter { preset in
+        guard !countdown.countsUp else { return [] }
+        return allCases.filter { preset in
             let date = preset.milestone.date(for: countdown)
             return date > now && date < countdown.targetDate
                 && !countdown.milestones.contains { $0.trigger == preset.milestone.trigger }
