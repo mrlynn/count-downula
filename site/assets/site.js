@@ -1,4 +1,4 @@
-// Countdownula site. No dependencies, no storage, no network.
+// Count Downula site. No dependencies, no storage, no network.
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
