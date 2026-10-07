@@ -1,0 +1,60 @@
+<h1>Support</h1>
+<p class="effective">Something stuck, broken or confusing? Write in. A real person reads every message.</p>
+
+<a class="mailbig" href="mailto:merlynn@gmail.com?subject=Countdownula%20support">merlynn@gmail.com</a>
+
+<p>It helps to include your macOS version, your Countdownula version (in Finder, select the app and choose File, then Get Info), and what you expected to happen. Bugs and feature ideas are also welcome as <a href="https://github.com/mrlynn/count-downula/issues">GitHub issues</a>.</p>
+
+<h2>Common questions</h2>
+<div class="faq">
+  <details>
+    <summary>macOS says Countdownula can't be opened.</summary>
+    <div class="ans">
+      <p>Countdownula isn't notarized by Apple yet, so Gatekeeper blocks the first launch. Right-click the app in Applications, choose Open, then choose Open again in the dialog. You only need to do this once.</p>
+      <p>You can also clear the quarantine flag in Terminal: <code>xattr -dr com.apple.quarantine /Applications/Countdownula.app</code></p>
+    </div>
+  </details>
+  <details>
+    <summary>Where did the window go?</summary>
+    <div class="ans">
+      <p>Countdownula is a menu bar app, so it has no Dock icon and no main window. Look for the fanged timer near the clock at the top right of your screen and click it.</p>
+      <p>If your menu bar is crowded, macOS may hide items behind the notch. Quitting a few other menu bar apps, or holding Command and dragging icons to rearrange them, will bring it back into view.</p>
+    </div>
+  </details>
+  <details>
+    <summary>I'm not getting a notification when a countdown ends.</summary>
+    <div class="ans">
+      <p>Open System Settings, then Notifications, then Countdownula, and make sure Allow notifications is on. Focus modes such as Do Not Disturb can also hold notifications until later.</p>
+    </div>
+  </details>
+  <details>
+    <summary>How do I pin a countdown to the menu bar?</summary>
+    <div class="ans">
+      <p>Open a countdown from the list and choose Pin. It gets its own menu bar item with its photo, title and time left. Choose Unpin in the same place to remove it.</p>
+    </div>
+  </details>
+  <details>
+    <summary>Where are my countdowns stored? How do I back them up?</summary>
+    <div class="ans">
+      <p>Everything lives on your Mac in <code>~/Library/Application Support/Countdownula/</code>: a <code>countdowns.json</code> file plus an <code>images</code> folder for photos. Time Machine backs it up along with the rest of your Library. To move to a new Mac, copy that folder across.</p>
+    </div>
+  </details>
+  <details>
+    <summary>Which Macs does it run on?</summary>
+    <div class="ans">
+      <p>Any Mac running macOS 14 Sonoma or later. It's a universal app, so it runs natively on both Apple silicon and Intel.</p>
+    </div>
+  </details>
+  <details>
+    <summary>How do I uninstall it?</summary>
+    <div class="ans">
+      <p>Click the fang, choose Quit, then drag Countdownula from Applications to the Trash. To remove your countdowns too, delete <code>~/Library/Application Support/Countdownula/</code>.</p>
+    </div>
+  </details>
+  <details>
+    <summary>Does it cost anything?</summary>
+    <div class="ans">
+      <p>No. Countdownula is free, with no ads, accounts or in-app purchases.</p>
+    </div>
+  </details>
+</div>

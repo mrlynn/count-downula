@@ -1,0 +1,4 @@
+_src
+.env*
+.gitignore
+README.md
