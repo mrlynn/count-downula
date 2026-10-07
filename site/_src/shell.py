@@ -10,10 +10,10 @@ header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 
 footer = re.search(r'<footer class="foot">.*?</footer>', index, re.S).group(0)
 
 PAGES = {
-    "support": ("Support", "Get help with Countdownula, the macOS menu bar countdown app."),
-    "privacy": ("Privacy policy", "Countdownula collects no personal data. Here is exactly what happens with your information."),
-    "terms": ("Terms of use", "The terms for using the Countdownula app and website."),
-    "cookies": ("Cookie policy", "The Countdownula website sets no cookies. Here are the details."),
+    "support": ("Support", "Get help with Count Downula, the macOS menu bar countdown app."),
+    "privacy": ("Privacy policy", "Count Downula collects no personal data. Here is exactly what happens with your information."),
+    "terms": ("Terms of use", "The terms for using the Count Downula app and website."),
+    "cookies": ("Cookie policy", "The Count Downula website sets no cookies. Here are the details."),
 }
 
 for name, (title, desc) in PAGES.items():
@@ -23,7 +23,7 @@ for name, (title, desc) in PAGES.items():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title}: Countdownula</title>
+<title>{title}: Count Downula</title>
 <meta name="description" content="{desc}">
 <meta name="theme-color" content="#1a0612">
 <link rel="canonical" href="https://www.countdownula.com/{name}">

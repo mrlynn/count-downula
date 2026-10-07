@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../site/assets/site.css">
+<style>
+html,body{margin:0;width:1600px;height:1000px;overflow:hidden;background:#1a0612;font-family:var(--text)}
+.grid{display:grid;grid-template-columns:1fr 1fr;height:100%}
+.cell{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:22px;border:1px solid var(--line)}
+.cell.light{background:#f3ead8}
+.label{position:absolute;left:28px;top:22px;font:600 18px/1 var(--text);letter-spacing:.08em;text-transform:uppercase;color:var(--bone-dim)}
+.light .label{color:#7a6a5e}
+.wm{display:flex;align-items:center;gap:.38em;font-family:var(--display);font-size:74px;letter-spacing:-.02em;color:var(--bone)}
+.wm img{width:1.15em;height:1.15em;border-radius:22%}
+.light .wm{color:#1a0612}
+.c{color:var(--bone)} .d{color:var(--fresh)}
+.light .c{color:#1a0612} .light .d{color:#c3112d}
+.B .c{color:var(--fresh)} .B .d{color:var(--bone)}
+.note{font-size:22px;color:var(--bone-dim);max-width:600px;text-align:center}
+.light .note{color:#7a6a5e}
+</style></head><body><div class="grid">
+<div class="cell"><div class="label">Today</div>
+  <div class="wm"><img src="../app-icon.svg">Countdownula</div>
+  <div class="note">One color. The Dracula pun is easy to miss.</div></div>
+<div class="cell"><div class="label">A · chosen</div>
+  <div class="wm"><img src="../app-icon.svg"><span><span class="c">Count</span> <span class="d">Downula</span></span></div>
+  <div class="note">"Count" in bone, "Downula" in blood. The site and marketing use this.</div></div>
+<div class="cell B"><div class="label">B</div>
+  <div class="wm"><img src="../app-icon.svg"><span><span class="c">Count</span> <span class="d">Downula</span></span></div>
+  <div class="note">Flipped: the red "Count" jumps out first, but it reads as a label more than a name.</div></div>
+<div class="cell light"><div class="label">A on a light background</div>
+  <div class="wm"><img src="../app-icon.svg"><span><span class="c">Count</span> <span class="d">Downula</span></span></div>
+  <div class="note">Night and blood-red on bone, for print and light themes.</div></div>
+</div></body></html>
