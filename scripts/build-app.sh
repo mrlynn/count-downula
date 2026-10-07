@@ -6,8 +6,12 @@ cd "$(dirname "$0")/.."
 CONFIG="${1:-release}"
 APP="build/Countdownula.app"
 
-swift build -c "$CONFIG"
-BIN="$(swift build -c "$CONFIG" --show-bin-path)/Countdownula"
+# Release builds are universal (Apple Silicon + Intel); debug builds stay native for speed.
+ARCHS=()
+[[ "$CONFIG" == "release" ]] && ARCHS=(--arch arm64 --arch x86_64)
+
+swift build -c "$CONFIG" "${ARCHS[@]}"
+BIN="$(swift build -c "$CONFIG" "${ARCHS[@]}" --show-bin-path)/Countdownula"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
