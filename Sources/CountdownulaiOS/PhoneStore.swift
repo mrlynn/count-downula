@@ -9,6 +9,8 @@ final class PhoneStore {
     private(set) var countdowns: [Countdown] = []
     /// The milestone or finish being celebrated on screen right now.
     var celebration: Celebration?
+    /// The Unlimited purchase and the free-tier limit it lifts.
+    let entitlements = Entitlements()
 
     @ObservationIgnored private let repository: CountdownRepository
     @ObservationIgnored private var imageCache: [String: UIImage] = [:]

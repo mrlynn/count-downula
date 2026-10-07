@@ -4,11 +4,12 @@ Upload these on the app's version page in App Store Connect, under **Previews an
 
 | Folder | Device slot | Size | Screens |
 |---|---|---|---|
-| `iphone/` | iPhone 6.9" Display | 1320 × 2868 | List, countdown detail, count-up, appearance editor |
+| `iphone-6.3/` | iPhone with Dynamic Island (medium display) | 1206 × 2622 | List, countdown detail, count-up, appearance editor |
+| `iphone/` | iPhone 6.9" (if App Store Connect asks for it) | 1320 × 2868 | The same four, at full size |
 | `ipad/` | iPad 13" Display | 2064 × 2752 | List, countdown detail |
 | `watch/` | Apple Watch | 416 × 496 | Watch face with complications, list, detail |
 
-App Store Connect scales the 6.9" and 13" sets down for smaller iPhones and iPads, so these are the only sizes needed.
+Each slot lists the sizes it accepts under its drop area; check there first. The 6.3" set is the 6.9" set scaled down (`sips -z 2622 1206`); the two screens have the same shape to within 0.1%.
 
 ## Retaking them
 

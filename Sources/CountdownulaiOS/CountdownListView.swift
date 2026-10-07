@@ -18,6 +18,7 @@ struct CountdownListView: View {
     @Environment(Router.self) private var router
     @State private var editorTarget: EditorTarget?
     @State private var pendingDelete: Countdown?
+    @State private var showingPaywall = false
 
     private let quickTimers = [5, 10, 15, 25, 45, 60]
 
@@ -62,11 +63,17 @@ struct CountdownListView: View {
                             ForEach(past) { row(for: $0, now: now) }
                         }
                     }
+                    if !store.entitlements.isUnlocked, !store.countdowns.isEmpty {
+                        FreeTierFooter(active: Entitlements.activeCount(in: store.countdowns, at: now)) {
+                            showingPaywall = true
+                        }
+                        .listRowBackground(Color.clear)
+                    }
                 }
                 .listStyle(.insetGrouped)
                 .overlay {
                     if store.countdowns.isEmpty {
-                        EmptyState { editorTarget = .new }
+                        EmptyState { addCountdown() }
                     }
                 }
             }
@@ -77,18 +84,22 @@ struct CountdownListView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
-                        Button("New Countdown", systemImage: "calendar.badge.plus") { editorTarget = .new }
+                        Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
                         Section("Quick Timer") {
                             ForEach(quickTimers, id: \.self) { minutes in
                                 Button(PhoneStore.durationLabel(minutes), systemImage: "timer") {
-                                    store.startQuickTimer(minutes: minutes)
+                                    if store.entitlements.canAdd(to: store.countdowns) {
+                                        store.startQuickTimer(minutes: minutes)
+                                    } else {
+                                        showingPaywall = true
+                                    }
                                 }
                             }
                         }
                     } label: {
                         Image(systemName: "plus")
                     } primaryAction: {
-                        editorTarget = .new
+                        addCountdown()
                     }
                     .accessibilityLabel("New countdown")
                 }
@@ -99,6 +110,7 @@ struct CountdownListView: View {
                 case let .edit(countdown): CountdownEditorView(original: countdown)
                 }
             }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "countdown")?",
                                 isPresented: .init(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
                                 titleVisibility: .visible) {
@@ -107,6 +119,15 @@ struct CountdownListView: View {
                     pendingDelete = nil
                 }
             }
+        }
+    }
+
+    /// Opens the editor, or the paywall once a free user has reached the limit.
+    private func addCountdown() {
+        if store.entitlements.canAdd(to: store.countdowns) {
+            editorTarget = .new
+        } else {
+            showingPaywall = true
         }
     }
 
@@ -238,6 +259,29 @@ private struct CountdownRow: View {
                     .tint(countdown.style.accentColor)
             }
         }
+    }
+}
+
+// MARK: - Free tier
+
+/// "2 of 3 free countdowns · Unlock Unlimited" under the list, so the upgrade and Restore are always reachable.
+private struct FreeTierFooter: View {
+    let active: Int
+    let onUnlock: () -> Void
+
+    var body: some View {
+        Button(action: onUnlock) {
+            VStack(spacing: 4) {
+                Text("\(min(active, SharedConfig.freeActiveLimit)) of \(SharedConfig.freeActiveLimit) free countdowns")
+                    .foregroundStyle(.secondary)
+                Text("Unlock Unlimited")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.countdownulaBlood)
+            }
+            .font(.footnote)
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
     }
 }
 

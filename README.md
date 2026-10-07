@@ -36,6 +36,7 @@ The iPhone (and iPad) app lists your countdowns with the next one up as a full-b
 - **Count up:** track the time since something began, with standard milestones (24 hours, 1 week, 30/60/90 days, 6 months, every year), money saved per day, and a gentle **Reset** that keeps your history and best run. Templates for Sober, Smoke-Free, Together and New Job.
 - **Repeats every year:** birthdays and anniversaries roll over to next year once the day has passed.
 - **Share as image:** a 1080 × 1350 card of any countdown for Messages or Instagram.
+- **Pricing:** free for up to 3 active countdowns (timers and count-ups count, finished ones don't). **Count Downcula Unlimited** is a one-time $2.99 in-app purchase that removes the limit on iPhone, iPad and Apple Watch. The Mac app, distributed directly, is always unlocked (`DIRECT_DISTRIBUTION`).
 
 | Where | What |
 |---|---|
