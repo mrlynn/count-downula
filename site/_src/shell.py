@@ -6,7 +6,7 @@ HERE = pathlib.Path(__file__).parent
 SITE = HERE.parent
 index = (SITE / "index.html").read_text()
 header = re.search(r'<header class="top".*?</header>', index, re.S).group(0)
-header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 'href="/#try"').replace('href="#install"', 'href="/#install"')
+header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 'href="/#try"').replace('href="#watch"', 'href="/#watch"').replace('href="#install"', 'href="/#install"')
 footer = re.search(r'<footer class="foot">.*?</footer>', index, re.S).group(0)
 
 PAGES = {

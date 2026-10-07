@@ -272,5 +272,14 @@
     })
   );
 
+  // ---- watches swing in the first time their section shows up ----
+  const wrist = $(".wrist");
+  if (wrist) {
+    const wio = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { wrist.classList.add("is-in"); wio.disconnect(); }
+    }, { threshold: 0.25 });
+    wio.observe(wrist);
+  }
+
   $$("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));
 })();
