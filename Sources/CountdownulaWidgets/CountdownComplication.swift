@@ -2,6 +2,7 @@ import AppIntents
 import SwiftUI
 import WidgetKit
 
+#if os(watchOS)
 @main
 struct CountdownulaWidgets: WidgetBundle {
     var body: some Widget {
@@ -28,6 +29,7 @@ struct CountdownComplication: Widget {
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryCorner, .accessoryInline])
     }
 }
+#endif
 
 // MARK: - Configuration
 
@@ -84,7 +86,8 @@ struct CountdownProvider: AppIntentTimelineProvider {
         guard let countdown = resolve(configuration, at: now) else {
             return context.isPreview ? .sample : CountdownEntry(date: now, countdown: nil)
         }
-        return CountdownEntry(date: now, countdown: countdown, thumbnail: WidgetSnapshot.thumbnail(for: countdown.id))
+        return CountdownEntry(date: now, countdown: countdown, thumbnail: WidgetSnapshot.thumbnail(for: countdown.id),
+                              photo: WidgetSnapshot.photo(for: countdown))
     }
 
     func timeline(for configuration: SelectCountdownIntent, in context: Context) async -> Timeline<CountdownEntry> {
@@ -93,8 +96,9 @@ struct CountdownProvider: AppIntentTimelineProvider {
             return Timeline(entries: [CountdownEntry(date: now, countdown: nil)], policy: .after(now + 3_600))
         }
         let thumbnail = WidgetSnapshot.thumbnail(for: countdown.id)
+        let photo = WidgetSnapshot.photo(for: countdown)
         let entries = Self.entryDates(for: countdown.targetDate, from: now).map {
-            CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail)
+            CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail, photo: photo)
         }
         return Timeline(entries: entries, policy: .atEnd)
     }

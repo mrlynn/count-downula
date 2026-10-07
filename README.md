@@ -2,7 +2,7 @@
 
 <img src="design/app-icon.png" width="128" alt="Countdownula icon: a blood-red timer ring with fangs">
 
-A native macOS menu bar app for countdowns: vacations, launches, birthdays, or a quick timer.
+Native countdowns for vacations, launches, birthdays, or a quick timer: a macOS menu bar app, an iPhone app with widgets and Live Activities, and an Apple Watch app with complications.
 
 [![Download the latest release](https://img.shields.io/github/v/release/mrlynn/count-downula?label=Download&color=c3112d&logo=apple)](https://github.com/mrlynn/count-downula/releases/latest)
 
@@ -17,7 +17,22 @@ A native macOS menu bar app for countdowns: vacations, launches, birthdays, or a
 - Each countdown has a **title**, **description**, **photo**, and either a target **date & time** or a **timer** duration.
 - **Pin** any countdown and it gets its own live menu bar item (photo thumbnail + title + time left). Click it to jump straight to its details.
 - A notification fires when a countdown finishes.
-- **iCloud sync** keeps countdowns and photos in step between your Mac and Apple Watch.
+- **iCloud sync** keeps countdowns and photos in step between your Mac, iPhone and Apple Watch.
+
+## iPhone
+
+The iPhone (and iPad) app lists your countdowns with the next one up as a full-bleed card, shows a live days/hours/minutes/seconds view, and lets you add or edit countdowns with a photo from your library. The **+** button also offers one-tap quick timers. It schedules its own alerts and syncs with the Mac and watch through iCloud.
+
+| Where | What |
+|---|---|
+| Home Screen | **Countdown** widget (small, medium, large) with the photo behind the time left, and an **Up Next** list (medium, large) |
+| StandBy | The small Countdown widget, drawn to read on black |
+| Lock Screen | Circular, rectangular and inline widgets, the same designs as the watch complications |
+| Live Activity | Lock Screen banner and Dynamic Island with a live timer and progress ring |
+
+The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or a countdown you pick. Tapping any widget or Live Activity opens that countdown.
+
+**Pin** is the iPhone's version of the Mac's menu bar item: a pinned countdown is featured in widgets and goes live on the Lock Screen and in the Dynamic Island once it's in its final 8 hours (iOS ends Live Activities after 8 hours). New timers go live straight away, and any countdown in that window can be put on the Lock Screen from its detail screen.
 
 ## Apple Watch
 
@@ -62,6 +77,8 @@ open build/Countdownula.app
 ```
 
 To use your own team, change `DEVELOPMENT_TEAM` and the `com.countdownula.*` / `iCloud.com.countdownula.app` / `group.com.countdownula.app` identifiers in `project.yml` and `Sources/Shared/SharedConfig.swift`.
+
+**iPhone app:** run `xcodegen generate`, open `Countdownula.xcodeproj`, pick the **CountdownulaiOS** scheme and your iPhone or a simulator, and click Run. The scheme has optional `-seedDemo` (sample data) and `-localOnly` (no iCloud) launch arguments. It shares the Mac app's bundle ID (`com.countdownula.app`) so the two can share an App Store record; the widget extension is `com.countdownula.app.widgets`.
 
 **Watch app:** run `xcodegen generate`, open `Countdownula.xcodeproj`, pick the **CountdownulaWatch** scheme and your watch, and click Run. Xcode registers the watch with your developer account the first time. In the simulator, the scheme has optional launch arguments: `-seedDemo` (sample data), `-complicationGallery` (renders every complication size), and `-localOnly` (no iCloud).
 
