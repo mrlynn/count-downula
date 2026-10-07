@@ -14,7 +14,8 @@ struct EditorView: View {
     @State private var days = 0
     @State private var hours = 0
     @State private var minutes = 25
-    @State private var imageFileName: String?
+    @State private var previewImage: NSImage?
+    @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isPinned: Bool
     @State private var isDropTargeted = false
 
@@ -27,7 +28,7 @@ struct EditorView: View {
         _kind = State(initialValue: original?.kind ?? .event)
         _targetDate = State(initialValue: original?.targetDate
             ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
-        _imageFileName = State(initialValue: original?.imageFileName)
+        _previewImage = State(initialValue: original.flatMap { store.image(for: $0) })
         _isPinned = State(initialValue: original?.isPinned ?? false)
     }
 
@@ -103,7 +104,7 @@ struct EditorView: View {
     private var photoPicker: some View {
         VStack(spacing: 10) {
             ZStack {
-                if let image = store.image(named: imageFileName) {
+                if let image = previewImage {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -136,8 +137,11 @@ struct EditorView: View {
 
             HStack {
                 Button("Choose Photo…", action: choosePhoto)
-                if imageFileName != nil {
-                    Button("Remove", role: .destructive) { replaceImage(with: nil) }
+                if previewImage != nil {
+                    Button("Remove", role: .destructive) {
+                        previewImage = nil
+                        imageUpdate = .remove
+                    }
                 }
                 Spacer()
             }
@@ -158,23 +162,12 @@ struct EditorView: View {
     }
 
     private func setImage(from url: URL) {
-        guard let name = store.importImage(from: url) else { return }
-        replaceImage(with: name)
-    }
-
-    /// Swaps the working image, deleting any image imported during this edit session
-    /// (the original's image is only removed by the store once the edit is saved).
-    private func replaceImage(with name: String?) {
-        if let current = imageFileName, current != original?.imageFileName {
-            store.deleteImage(named: current)
-        }
-        imageFileName = name
+        guard let prepared = CountdownStore.prepareImage(from: url) else { return }
+        previewImage = prepared.preview
+        imageUpdate = prepared.update
     }
 
     private func cancel() {
-        if let current = imageFileName, current != original?.imageFileName {
-            store.deleteImage(named: current)
-        }
         onFinish(nil)
     }
 
@@ -183,7 +176,6 @@ struct EditorView: View {
         countdown.title = title.trimmingCharacters(in: .whitespaces)
         countdown.details = details.trimmingCharacters(in: .whitespacesAndNewlines)
         countdown.kind = kind
-        countdown.imageFileName = imageFileName
         countdown.isPinned = isPinned
 
         if kind == .event {
@@ -193,7 +185,7 @@ struct EditorView: View {
             countdown.targetDate = Date().addingTimeInterval(TimeInterval(durationSeconds))
         }
 
-        store.upsert(countdown)
+        store.upsert(countdown, image: imageUpdate)
         onFinish(countdown)
     }
 }

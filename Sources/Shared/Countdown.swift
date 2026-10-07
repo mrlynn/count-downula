@@ -1,5 +1,7 @@
 import Foundation
 
+/// Value-type view of a countdown, shared by the Mac app, the watch app and the complications.
+/// Persistence lives in `CountdownRecord`; photos are loaded separately so this stays cheap to copy.
 struct Countdown: Identifiable, Codable, Hashable {
     enum Kind: String, Codable, CaseIterable {
         case event   // counts down to a calendar date
@@ -11,10 +13,11 @@ struct Countdown: Identifiable, Codable, Hashable {
     var details: String
     var targetDate: Date
     var kind: Kind = .event
-    var imageFileName: String?
     var isPinned = false
     var createdAt = Date()
+    var updatedAt = Date()
     var hasNotified = false
+    var hasImage = false
 
     func isPast(at now: Date) -> Bool { targetDate <= now }
 
@@ -23,6 +26,18 @@ struct Countdown: Identifiable, Codable, Hashable {
         let total = targetDate.timeIntervalSince(createdAt)
         guard total > 0 else { return 1 }
         return min(max(now.timeIntervalSince(createdAt) / total, 0), 1)
+    }
+
+    /// Key that changes whenever the photo may have changed; use it to invalidate image caches.
+    var imageCacheKey: String { "\(id.uuidString)-\(updatedAt.timeIntervalSinceReferenceDate)" }
+}
+
+extension Array where Element == Countdown {
+    /// The countdown complications and other glanceable surfaces show by default:
+    /// the soonest pinned upcoming countdown, else the soonest upcoming one.
+    func featured(at now: Date) -> Countdown? {
+        let upcoming = filter { !$0.isPast(at: now) }.sorted { $0.targetDate < $1.targetDate }
+        return upcoming.first(where: \.isPinned) ?? upcoming.first
     }
 }
 

@@ -7,7 +7,7 @@ struct CountdownArtwork: View {
     var symbolSize: CGFloat = 22
 
     var body: some View {
-        if let image = store.image(named: countdown.imageFileName) {
+        if let image = store.image(for: countdown) {
             Image(nsImage: image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)

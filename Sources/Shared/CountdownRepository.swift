@@ -1,0 +1,126 @@
+import CoreData
+import Foundation
+import SwiftData
+
+enum ImageUpdate {
+    case unchanged
+    case remove
+    case set(image: Data, thumbnail: Data)
+}
+
+/// Platform-neutral CRUD over the SwiftData store. The Mac and watch stores wrap this
+/// and add their own image decoding, ticking and side effects.
+@MainActor
+final class CountdownRepository {
+    let container: ModelContainer
+    private var context: ModelContext { container.mainContext }
+
+    /// Fires on the main queue when CloudKit imports changes from another device.
+    var onRemoteChange: (() -> Void)?
+
+    init(storeURL: URL) {
+        container = Self.makeContainer(storeURL: storeURL)
+        context.autosaveEnabled = false
+        NotificationCenter.default.addObserver(
+            forName: .NSPersistentStoreRemoteChange, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.onRemoteChange?() }
+        }
+    }
+
+    private static func makeContainer(storeURL: URL) -> ModelContainer {
+        let schema = Schema([CountdownRecord.self])
+        if !SharedConfig.isLocalOnly {
+            let cloud = ModelConfiguration(
+                schema: schema, url: storeURL,
+                cloudKitDatabase: .private(SharedConfig.cloudKitContainer)
+            )
+            if let container = try? ModelContainer(for: schema, configurations: cloud) {
+                return container
+            }
+        }
+        // No iCloud entitlement (unsigned build) or -localOnly: keep working without sync.
+        let local = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
+        do {
+            return try ModelContainer(for: schema, configurations: local)
+        } catch {
+            fatalError("Could not open the Countdownula store: \(error)")
+        }
+    }
+
+    // MARK: - Reads
+
+    func fetchAll() -> [Countdown] {
+        let descriptor = FetchDescriptor<CountdownRecord>(sortBy: [SortDescriptor(\.targetDate)])
+        let records = (try? context.fetch(descriptor)) ?? []
+        // CloudKit can briefly deliver the same record twice during first sync; keep the newest.
+        var seen: [UUID: Countdown] = [:]
+        for record in records {
+            let countdown = record.countdown
+            if let existing = seen[countdown.id], existing.updatedAt >= countdown.updatedAt { continue }
+            seen[countdown.id] = countdown
+        }
+        return seen.values.sorted { $0.targetDate < $1.targetDate }
+    }
+
+    func imageData(for id: UUID) -> Data? { record(id)?.imageData }
+    func thumbnailData(for id: UUID) -> Data? { record(id)?.thumbnailData }
+
+    // MARK: - Writes
+
+    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
+        let record = record(countdown.id) ?? {
+            let new = CountdownRecord(uuid: countdown.id)
+            context.insert(new)
+            return new
+        }()
+        record.apply(countdown)
+        switch image {
+        case .unchanged:
+            break
+        case .remove:
+            record.imageData = nil
+            record.thumbnailData = nil
+        case let .set(full, thumbnail):
+            record.imageData = full
+            record.thumbnailData = thumbnail
+        }
+        save()
+    }
+
+    func delete(id: UUID) {
+        for record in records(id) { context.delete(record) }
+        save()
+    }
+
+    func setPinned(_ pinned: Bool, id: UUID) {
+        guard let record = record(id) else { return }
+        record.isPinned = pinned
+        record.updatedAt = Date()
+        save()
+    }
+
+    func markNotified(ids: [UUID]) {
+        for id in ids { record(id)?.hasNotified = true }
+        save()
+    }
+
+    // MARK: - Helpers
+
+    private func records(_ id: UUID) -> [CountdownRecord] {
+        let descriptor = FetchDescriptor<CountdownRecord>(predicate: #Predicate { $0.uuid == id })
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    private func record(_ id: UUID) -> CountdownRecord? {
+        records(id).max { $0.updatedAt < $1.updatedAt }
+    }
+
+    private func save() {
+        do {
+            try context.save()
+        } catch {
+            print("Countdownula: save failed: \(error)")
+        }
+    }
+}
