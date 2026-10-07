@@ -29,7 +29,7 @@ The Vercel project `countdownula` is connected to this GitHub repo with Root Dir
 - Every push to `main` deploys to production.
 - Other branches and pull requests get preview deployments.
 
-Domains: `www.countdownula.com` (primary) and `countdownula.com` (redirects to `www` via `vercel.json`).
+Domains: `www.countdownula.com` (primary) and `countdownula.com` (redirects to `www` through the domain settings in Vercel).
 
 For a manual deploy from the CLI, run it from the repo root, not from `site/`, because the project's Root Directory is already `site`:
 

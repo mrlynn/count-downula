@@ -36,17 +36,6 @@
   ],
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "countdownula.com"
-        }
-      ],
-      "destination": "https://www.countdownula.com/:path*",
-      "permanent": true
-    },
-    {
       "source": "/download",
       "destination": "https://github.com/mrlynn/count-downula/releases/latest",
       "permanent": false
