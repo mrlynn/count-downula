@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         mainItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = mainItem.button {
             button.image = NSImage.countdownulaMark
-            button.image?.accessibilityDescription = "Countdownula"
+            button.image?.accessibilityDescription = "Count Downula"
             button.target = self
             button.action = #selector(mainItemClicked(_:))
         }
@@ -160,7 +160,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Quit Countdownula", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit Count Downula", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         main.addItem(appItem)
 

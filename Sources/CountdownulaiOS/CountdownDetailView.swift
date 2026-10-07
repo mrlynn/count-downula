@@ -130,7 +130,7 @@ struct CountdownDetailView: View {
 
     private func footnote(for countdown: Countdown, now: Date) -> String {
         if countdown.isPast(at: now) { return "Pinned countdowns are featured in widgets and at the top of the list." }
-        if !LiveActivities.isEnabled { return "Turn on Live Activities for Countdownula in Settings to follow countdowns from the Lock Screen." }
+        if !LiveActivities.isEnabled { return "Turn on Live Activities for Count Downula in Settings to follow countdowns from the Lock Screen." }
         return countdown.isPinned
             ? "Pinned: featured in widgets and shown live on the Lock Screen and in the Dynamic Island during its final 8 hours."
             : "Pin to feature this in widgets and show it live on the Lock Screen during its final 8 hours."
