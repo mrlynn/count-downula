@@ -1,17 +1,10 @@
 /* Countdownula — site styles. Palette is lifted straight from the app icon. */
 
 @font-face {
-  font-family: "Bodoni Moda";
-  src: url("fonts/bodoni.woff2") format("woff2");
-  font-weight: 400 900;
+  font-family: "Young Serif";
+  src: url("fonts/young-serif.woff2") format("woff2");
+  font-weight: 400;
   font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Bodoni Moda";
-  src: url("fonts/bodoni-italic.woff2") format("woff2");
-  font-weight: 400 900;
-  font-style: italic;
   font-display: swap;
 }
 @font-face {
@@ -33,7 +26,7 @@
   --bone-dim: #bda99b;  /* secondary text on night */
   --line: rgba(243, 234, 216, 0.14);
 
-  --display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --display: "Young Serif", Georgia, serif;
   --text: "Instrument Sans", -apple-system, "Helvetica Neue", sans-serif;
 
   --gutter: clamp(16px, 5vw, 72px);
@@ -54,6 +47,7 @@ body {
   font-size: 1.0625rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
   overflow-x: hidden;
 }
 
@@ -87,7 +81,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 }
 .brand {
   display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em;
+  font-family: var(--display); font-size: 1.25rem; letter-spacing: -0.01em;
   text-decoration: none;
 }
 .brand svg { width: 30px; height: 30px; overflow: visible; }
@@ -154,20 +148,17 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
     var(--night);
   isolation: isolate;
 }
-.hero-copy { position: relative; z-index: 2; max-width: 40rem; }
+.hero-copy { position: relative; z-index: 2; max-width: 48rem; }
 
 .hero h1 {
   margin: 0 0 0.35em;
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 500;
-  font-variation-settings: "opsz" 96;
-  font-size: clamp(4rem, 11.5vw, 10.5rem);
-  line-height: 0.86;
-  letter-spacing: -0.035em;
+  font-size: clamp(3.2rem, 7vw, 7.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
 }
 .hero h1 .line { display: block; }
-.hero h1 .line + .line { padding-left: 0.9em; }
+.hero h1 .line + .line { padding-left: 0.5em; }
 .hero h1 .word { display: inline-block; white-space: nowrap; }
 .hero h1 .ch { display: inline-block; }
 .js .hero h1 .ch { opacity: 0; animation: ch-in 1s cubic-bezier(.2, .7, .1, 1) forwards; animation-delay: calc(var(--i) * 45ms + 250ms); }
@@ -254,8 +245,6 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .sec h2 {
   margin: 0 0 0.3em;
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 500;
   font-size: clamp(2.8rem, 7vw, 6rem);
   line-height: 0.95;
   letter-spacing: -0.035em;
@@ -282,8 +271,6 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .step h3 {
   margin: 0 0 0.4em;
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 500;
   font-size: clamp(1.9rem, 3.4vw, 2.8rem);
   line-height: 1.02;
   letter-spacing: -0.02em;
@@ -365,7 +352,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .stage-ghost {
   position: absolute; inset: auto 0 6% 0;
   text-align: center;
-  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-family: var(--display);
   font-size: clamp(2.2rem, 5.6vw, 5rem);
   line-height: 1;
   letter-spacing: -0.04em;
@@ -396,7 +383,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   background: transparent;
   border: 0; border-bottom: 1px solid rgba(243, 234, 216, 0.3);
   color: var(--bone);
-  font: italic 500 1.9rem/1.1 var(--display);
+  font: 400 1.8rem/1.15 var(--display);
   border-radius: 0;
   transition: border-color 0.2s;
 }
@@ -477,7 +464,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   margin: 0;
   max-width: 72rem;
 }
-.facts dt { font-family: var(--display); font-weight: 600; font-size: 1.45rem; line-height: 1.15; margin-bottom: 0.4em; }
+.facts dt { font-family: var(--display); font-size: 1.45rem; line-height: 1.15; margin-bottom: 0.4em; }
 .facts dd { margin: 0; color: var(--bone-dim); }
 
 /* ---------- install ---------- */
@@ -492,11 +479,11 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 }
 .rite li::before {
   content: counter(rite);
-  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-family: var(--display);
   font-size: clamp(2.6rem, 5vw, 3.8rem); line-height: 0.85;
   color: var(--blood);
 }
-.rite h3 { margin: 0 0 0.25em; font-family: var(--display); font-weight: 600; font-size: 1.5rem; }
+.rite h3 { margin: 0 0 0.25em; font-family: var(--display); font-size: 1.5rem; }
 .rite p { margin: 0; color: var(--bone-dim); max-width: var(--measure); }
 .cmd {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -522,7 +509,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 @keyframes ooze { from { transform: scaleY(0.5); } to { transform: scaleY(1.2); } }
 .foot .foot-word {
   margin: 0 0 32px;
-  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-family: var(--display);
   font-size: clamp(3.2rem, 14.5vw, 13rem);
   line-height: 0.9; letter-spacing: -0.045em;
   color: var(--blood);
@@ -537,7 +524,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .doc-inner { max-width: 40rem; }
 .doc h1 {
   margin: 0 0 0.25em;
-  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-family: var(--display);
   font-size: clamp(3rem, 9vw, 6rem); line-height: 0.92; letter-spacing: -0.035em;
 }
 .doc .effective { color: var(--bone-dim); margin: 0 0 2.6rem; }
@@ -545,7 +532,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   font-family: var(--display); font-size: 1.4rem; line-height: 1.4; margin: 0 0 2.6rem;
   padding-left: 20px; border-left: 3px solid var(--blood);
 }
-.doc h2 { font-family: var(--display); font-weight: 600; font-size: 1.6rem; line-height: 1.15; margin: 2.4rem 0 0.6rem; }
+.doc h2 { font-family: var(--display); font-size: 1.6rem; line-height: 1.15; margin: 2.4rem 0 0.6rem; }
 .doc p, .doc li { color: rgba(243, 234, 216, 0.86); }
 .doc ul { padding-left: 1.2em; }
 .doc li { margin-bottom: 0.4em; }
@@ -554,7 +541,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 
 .mailbig {
   display: inline-block;
-  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-family: var(--display);
   font-size: clamp(1.7rem, 5.5vw, 3rem); line-height: 1.1; letter-spacing: -0.02em;
   margin: 0.2em 0 0.6em;
   overflow-wrap: anywhere;
@@ -566,7 +553,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   list-style: none; cursor: pointer;
   display: flex; justify-content: space-between; gap: 16px; align-items: center;
   padding: 20px 0;
-  font-family: var(--display); font-weight: 600; font-size: 1.3rem; line-height: 1.2;
+  font-family: var(--display); font-size: 1.3rem; line-height: 1.2;
 }
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after {
@@ -624,16 +611,18 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 }
 .wrist-copy > p { max-width: var(--measure); color: var(--bone-dim); font-size: 1.15rem; margin: 0 0 2rem; }
 .slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 28px; margin: 0 0 1.6rem; max-width: 34rem; }
-.slots dt { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 1.4rem; line-height: 1.1; margin-bottom: 0.25em; }
+.slots dt { font-family: var(--display); font-size: 1.4rem; line-height: 1.1; margin-bottom: 0.25em; }
 .slots dd { margin: 0; color: var(--bone-dim); font-size: 0.98rem; }
 .wrist-copy .wrist-note { font-size: 0.98rem; margin: 0; }
 
-.watches { position: relative; height: clamp(360px, 42vw, 560px); }
+.watches { position: relative; width: 100%; max-width: 560px; justify-self: center; height: clamp(360px, 42vw, 560px); }
 .watch {
   position: absolute;
-  width: clamp(170px, 20vw, 270px);
+  --w: clamp(170px, 20vw, 270px);
+  width: var(--w);
   aspect-ratio: 416 / 496;
-  padding: 7%;
+  /* bezel sized from the watch itself; % padding would follow the column width */
+  padding: calc(var(--w) * 0.07);
   border-radius: 30%/26%;
   background: linear-gradient(145deg, #3b3236, #120c0f 55%, #2a2226);
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 0 40px 70px -25px rgba(0, 0, 0, 0.9);
@@ -665,13 +654,13 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .sync-line path { animation: march 1.6s linear infinite; }
 @keyframes march { to { stroke-dashoffset: -24; } }
 .sync p { margin: 0; font-family: var(--display); font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.4; color: var(--bone-dim); }
-.sync strong { color: var(--bone); font-weight: 600; }
+.sync strong { color: var(--bone); font-weight: inherit; }
 .soon { margin: 2rem 0 0; color: var(--bone-dim); font-size: 0.95rem; }
 
 @media (max-width: 900px) {
   .wrist-grid { grid-template-columns: 1fr; }
   .watches { height: clamp(320px, 95vw, 460px); }
-  .watch { width: clamp(150px, 44vw, 230px); }
+  .watch { --w: clamp(150px, 44vw, 230px); }
 }
 @media (max-width: 560px) {
   .slots { grid-template-columns: 1fr; }
@@ -709,7 +698,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 }
 .phone figcaption {
   margin-top: 22px; text-align: center;
-  font-family: var(--display); font-style: italic; font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  font-family: var(--display); font-size: clamp(0.95rem, 1.6vw, 1.2rem);
   color: var(--bone-dim);
   rotate: calc(var(--r) * -1); /* keep captions level while the phones tilt */
 }
@@ -727,7 +716,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   gap: 28px clamp(20px, 3vw, 40px);
   margin: 0 0 clamp(40px, 6vw, 64px);
 }
-.surfaces dt { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 1.4rem; line-height: 1.1; margin-bottom: 0.3em; }
+.surfaces dt { font-family: var(--display); font-size: 1.4rem; line-height: 1.1; margin-bottom: 0.3em; }
 .surfaces dd { margin: 0; color: var(--bone-dim); font-size: 0.98rem; }
 
 .pocket-note { max-width: 46rem; margin: 0; font-family: var(--display); font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.4; color: var(--bone-dim); }
