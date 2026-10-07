@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- watchOS icon: full-bleed square (the system masks it to a circle), no transparency. -->
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.75">
+      <stop offset="0" stop-color="#4a1030"/>
+      <stop offset="0.6" stop-color="#22071a"/>
+      <stop offset="1" stop-color="#0c0309"/>
+    </radialGradient>
+    <linearGradient id="blood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0304d"/>
+      <stop offset="0.6" stop-color="#c3112d"/>
+      <stop offset="1" stop-color="#7d0618"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#e6dac4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <g transform="translate(132 122) scale(0.76)">
+    <path d="M781.1 295.7 A347.5 347.5 0 1 1 652.3 187.7" fill="none" stroke="url(#blood)" stroke-width="85" stroke-linecap="round"/>
+    <path d="M206 600 Q252 742 380 740 L620 740 Q748 742 794 600 A312 312 0 0 1 206 600 Z" fill="#a50c25"/>
+    <path d="M362 736 L438 736 L404 818 Q400 826 396 818 Z" fill="url(#bone)"/>
+    <path d="M562 736 L638 736 L604 818 Q600 826 596 818 Z" fill="url(#bone)"/>
+    <path d="M600 832 C600 832 581 860 581 875 A19 19 0 0 0 619 875 C619 860 600 832 600 832 Z" fill="#ff3653"/>
+    <path d="M500 500 L658 352.7" stroke="url(#bone)" stroke-width="58" stroke-linecap="round"/>
+    <circle cx="500" cy="500" r="71" fill="url(#bone)"/>
+    <circle cx="500" cy="500" r="22" fill="#a50c25"/>
+  </g>
+</svg>

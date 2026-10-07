@@ -1,0 +1,131 @@
+name: Countdownula
+
+options:
+  bundleIdPrefix: com.countdownula
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+    watchOS: "10.0"
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: YZ36Z8GSEN
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: 1.1.0
+    CURRENT_PROJECT_VERSION: 2
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+
+targets:
+  # macOS menu bar app
+  Countdownula:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/Countdownula
+      - Sources/Shared
+      - path: Resources/AppIcon.icns
+        buildPhase: resources
+      - path: Resources/MenuBarIcon.png
+        buildPhase: resources
+      - path: Resources/MenuBarIcon@2x.png
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
+        INFOPLIST_FILE: Resources/Info.plist
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: Resources/Countdownula.entitlements
+        ARCHS: "$(ARCHS_STANDARD)"
+    entitlements:
+      path: Resources/Countdownula.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
+        com.apple.developer.icloud-services: [CloudKit]
+        com.apple.developer.aps-environment: development
+
+  # Standalone watchOS app (no iPhone app required)
+  CountdownulaWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - Sources/CountdownulaWatch
+      - Sources/Shared
+      - Sources/CountdownulaWidgets/ComplicationViews.swift
+      - Resources/Watch/Assets.xcassets
+    dependencies:
+      - target: CountdownulaWatchWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.watchkitapp
+        PRODUCT_NAME: Countdownula
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Countdownula
+        INFOPLIST_KEY_WKWatchOnly: YES
+        INFOPLIST_KEY_WKApplication: YES
+        CODE_SIGN_ENTITLEMENTS: Resources/Watch/CountdownulaWatch.entitlements
+    info:
+      path: Resources/Watch/Info.plist
+      properties:
+        CFBundleDisplayName: Countdownula
+        WKApplication: true
+        WKWatchOnly: true
+        UIBackgroundModes: [remote-notification]
+    entitlements:
+      path: Resources/Watch/CountdownulaWatch.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
+        com.apple.developer.icloud-services: [CloudKit]
+        aps-environment: development
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+  # Complications (WidgetKit)
+  CountdownulaWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - Sources/CountdownulaWidgets
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/WidgetSnapshot.swift
+      - path: Sources/Shared/FangMark.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.watchkitapp.widgets
+        CODE_SIGN_ENTITLEMENTS: Resources/Watch/CountdownulaWatchWidgets.entitlements
+        SKIP_INSTALL: YES
+    info:
+      path: Resources/Watch/Widgets-Info.plist
+      properties:
+        CFBundleDisplayName: Countdownula
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Resources/Watch/CountdownulaWatchWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+schemes:
+  Countdownula:
+    build:
+      targets:
+        Countdownula: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+  CountdownulaWatch:
+    build:
+      targets:
+        CountdownulaWatch: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-seedDemo": false
+        "-complicationGallery": false
+        "-localOnly": false
+    archive:
+      config: Release

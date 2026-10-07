@@ -1,23 +1,20 @@
 #!/usr/bin/env bash
-# Builds Countdownula and wraps it into a signed (ad-hoc) .app bundle in ./build.
+# Builds a signed Countdownula.app into ./build using your Apple Developer team (see project.yml).
+# Usage: scripts/build-app.sh [release|debug]
+# For a notarized, distributable build use scripts/release-mac.sh instead.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-CONFIG="${1:-release}"
-APP="build/Countdownula.app"
+case "${1:-release}" in
+  debug|Debug) CONFIG=Debug ;;
+  *) CONFIG=Release ;;
+esac
 
-# Release builds are universal (Apple Silicon + Intel); debug builds stay native for speed.
-ARCHS=()
-[[ "$CONFIG" == "release" ]] && ARCHS=(--arch arm64 --arch x86_64)
+xcodegen generate --quiet
+xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration "$CONFIG" \
+  -derivedDataPath .build/xcode -allowProvisioningUpdates -quiet build
 
-swift build -c "$CONFIG" "${ARCHS[@]}"
-BIN="$(swift build -c "$CONFIG" "${ARCHS[@]}" --show-bin-path)/Countdownula"
-
-rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/Countdownula"
-cp Resources/Info.plist "$APP/Contents/Info.plist"
-cp Resources/AppIcon.icns Resources/MenuBarIcon.png Resources/MenuBarIcon@2x.png "$APP/Contents/Resources/"
-codesign --force --sign - "$APP" >/dev/null
-
-echo "Built $APP"
+rm -rf build/Countdownula.app
+mkdir -p build
+cp -R ".build/xcode/Build/Products/$CONFIG/Countdownula.app" build/
+echo "Built build/Countdownula.app ($CONFIG)"

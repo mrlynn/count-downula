@@ -8,21 +8,23 @@ final class CountdownStore {
     private(set) var countdowns: [Countdown] = []
     private(set) var now = Date()
 
-    /// Called every tick and after every mutation so the menu bar items can refresh.
+    /// Called every tick and after every change so the menu bar items can refresh.
     @ObservationIgnored var onUpdate: (() -> Void)?
 
-    @ObservationIgnored private let fileURL: URL
-    @ObservationIgnored let imagesDirectory: URL
+    @ObservationIgnored private let repository: CountdownRepository
+    @ObservationIgnored private let supportDirectory: URL
     @ObservationIgnored private var imageCache: [String: NSImage] = [:]
     @ObservationIgnored private var timer: Timer?
 
     init() {
-        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        supportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appending(path: "Countdownula", directoryHint: .isDirectory)
-        fileURL = support.appending(path: "countdowns.json")
-        imagesDirectory = support.appending(path: "images", directoryHint: .isDirectory)
-        try? FileManager.default.createDirectory(at: imagesDirectory, withIntermediateDirectories: true)
-        load()
+        try? FileManager.default.createDirectory(at: supportDirectory, withIntermediateDirectories: true)
+
+        repository = CountdownRepository(storeURL: supportDirectory.appending(path: "Countdownula.store"))
+        repository.onRemoteChange = { [weak self] in self?.reload() }
+        LegacyImporter.importIfNeeded(from: supportDirectory, into: repository)
+        reload()
 
         let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
@@ -48,87 +50,106 @@ final class CountdownStore {
 
     // MARK: - Mutations
 
-    func upsert(_ countdown: Countdown) {
+    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
         var countdown = countdown
         if !countdown.isPast(at: Date()) { countdown.hasNotified = false }
-        if let index = countdowns.firstIndex(where: { $0.id == countdown.id }) {
-            let oldImage = countdowns[index].imageFileName
-            countdowns[index] = countdown
-            if let oldImage, oldImage != countdown.imageFileName { deleteImage(named: oldImage) }
-        } else {
-            countdowns.append(countdown)
-        }
-        save()
+        repository.upsert(countdown, image: image)
+        reload()
     }
 
     func delete(_ countdown: Countdown) {
-        countdowns.removeAll { $0.id == countdown.id }
-        if let name = countdown.imageFileName { deleteImage(named: name) }
-        save()
+        repository.delete(id: countdown.id)
+        reload()
     }
 
     func togglePin(_ countdown: Countdown) {
-        guard let index = countdowns.firstIndex(where: { $0.id == countdown.id }) else { return }
-        countdowns[index].isPinned.toggle()
-        save()
+        repository.setPinned(!countdown.isPinned, id: countdown.id)
+        reload()
     }
 
     // MARK: - Images
 
-    func image(named name: String?) -> NSImage? {
-        guard let name else { return nil }
-        if let cached = imageCache[name] { return cached }
-        guard let image = NSImage(contentsOf: imagesDirectory.appending(path: name)) else { return nil }
-        imageCache[name] = image
+    func image(for countdown: Countdown) -> NSImage? {
+        guard countdown.hasImage else { return nil }
+        if let cached = imageCache[countdown.imageCacheKey] { return cached }
+        guard let data = repository.imageData(for: countdown.id), let image = NSImage(data: data) else { return nil }
+        imageCache[countdown.imageCacheKey] = image
         return image
     }
 
-    /// Copies a user-chosen photo into the app's storage, downscaled to a sane size.
-    func importImage(from url: URL) -> String? {
-        guard let source = NSImage(contentsOf: url),
-              let data = source.jpegData(maxPixelDimension: 1400) else { return nil }
-        let name = UUID().uuidString + ".jpg"
-        do {
-            try data.write(to: imagesDirectory.appending(path: name))
-            return name
-        } catch {
-            return nil
-        }
+    /// Reads a user-chosen photo and prepares the display and thumbnail JPEGs that get stored and synced.
+    static func prepareImage(from url: URL) -> (preview: NSImage, update: ImageUpdate)? {
+        guard let source = NSImage(contentsOf: url) else { return nil }
+        return prepareImage(source)
     }
 
-    func deleteImage(named name: String) {
-        imageCache[name] = nil
-        try? FileManager.default.removeItem(at: imagesDirectory.appending(path: name))
+    static func prepareImage(_ source: NSImage) -> (preview: NSImage, update: ImageUpdate)? {
+        guard let full = source.jpegData(maxPixelDimension: 1400),
+              let thumb = source.jpegData(maxPixelDimension: 240, quality: 0.8),
+              let preview = NSImage(data: full) else { return nil }
+        return (preview, .set(image: full, thumbnail: thumb))
     }
 
-    // MARK: - Persistence
+    // MARK: - Sync
 
-    private func load() {
-        guard let data = try? Data(contentsOf: fileURL) else { return }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        countdowns = (try? decoder.decode([Countdown].self, from: data)) ?? []
-    }
-
-    private func save() {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        if let data = try? encoder.encode(countdowns) {
-            try? data.write(to: fileURL, options: .atomic)
-        }
+    private func reload() {
+        let fresh = repository.fetchAll()
+        if fresh != countdowns { countdowns = fresh }
         onUpdate?()
     }
 
     private func tick() {
         now = Date()
-        var changed = false
-        for index in countdowns.indices where countdowns[index].isPast(at: now) && !countdowns[index].hasNotified {
-            countdowns[index].hasNotified = true
-            Notifier.post(for: countdowns[index])
-            changed = true
+        let due = countdowns.filter { $0.isPast(at: now) && !$0.hasNotified }
+        if due.isEmpty {
+            onUpdate?()
+            return
         }
-        if changed { save() } else { onUpdate?() }
+        due.forEach(Notifier.post(for:))
+        repository.markNotified(ids: due.map(\.id))
+        reload()
+    }
+}
+
+/// One-time import of the JSON + images folder used by Countdownula 1.0.
+private enum LegacyImporter {
+    private struct LegacyCountdown: Decodable {
+        var id: UUID
+        var title: String
+        var details: String
+        var targetDate: Date
+        var kind: Countdown.Kind?
+        var imageFileName: String?
+        var isPinned: Bool?
+        var createdAt: Date?
+        var hasNotified: Bool?
+    }
+
+    @MainActor
+    static func importIfNeeded(from directory: URL, into repository: CountdownRepository) {
+        let jsonURL = directory.appending(path: "countdowns.json")
+        guard let data = try? Data(contentsOf: jsonURL) else { return }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let legacy = try? decoder.decode([LegacyCountdown].self, from: data) else { return }
+
+        for old in legacy {
+            let countdown = Countdown(
+                id: old.id, title: old.title, details: old.details, targetDate: old.targetDate,
+                kind: old.kind ?? .event, isPinned: old.isPinned ?? false,
+                createdAt: old.createdAt ?? Date(), hasNotified: old.hasNotified ?? false
+            )
+            var image = ImageUpdate.unchanged
+            if let name = old.imageFileName,
+               let source = NSImage(contentsOf: directory.appending(path: "images").appending(path: name)),
+               let prepared = CountdownStore.prepareImage(source) {
+                image = prepared.update
+            }
+            repository.upsert(countdown, image: image)
+        }
+
+        // Keep the old files around (renamed) rather than deleting the user's data.
+        try? FileManager.default.moveItem(at: jsonURL, to: directory.appending(path: "countdowns.imported.json"))
     }
 }
 

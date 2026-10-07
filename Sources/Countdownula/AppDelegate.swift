@@ -106,11 +106,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     private func menuBarImage(for countdown: Countdown) -> NSImage? {
-        if let name = countdown.imageFileName {
-            if let cached = thumbnailCache[name] { return cached }
-            if let image = store.image(named: name) {
+        if countdown.hasImage {
+            let key = countdown.imageCacheKey
+            if let cached = thumbnailCache[key] { return cached }
+            if let image = store.image(for: countdown) {
                 let thumb = image.roundedThumbnail(side: 16)
-                thumbnailCache[name] = thumb
+                thumbnailCache[key] = thumb
                 return thumb
             }
         }
