@@ -71,8 +71,22 @@ AND THE REST
 PRIVATE BY DESIGN
 Count Downcula collects no data. There are no accounts, ads or trackers. Your countdowns and photos sync between your devices through your own private iCloud storage, which only your Apple Account can read.
 
-Free, with no in-app purchases.
+Free for up to 3 countdowns at a time. Count Downcula Unlimited removes the limit with a one-time purchase: no subscription, no ads.
 ```
+
+## In-app purchase: Count Downcula Unlimited
+
+Create under **Monetization → In-App Purchases** (type **Non-Consumable**), then add it to the version page's **In-App Purchases and Subscriptions** section so it's reviewed with the app.
+
+- Reference name: Count Downcula Unlimited
+- Product ID: `com.countdownula.app.unlimited` (must match `SharedConfig.unlimitedProductID`)
+- Price: $2.99
+- Display name (30): Count Downcula Unlimited
+- Description (45): `Unlimited countdowns on all your devices.`
+- Review screenshot: the paywall (tap + with 3 active countdowns), any iPhone size
+- Review notes: `The free tier allows 3 active countdowns (timers and count-ups included). Add 3, then tap + to see the paywall. Restore Purchases is on the same screen.`
+
+Before it can be sold: sign the **Paid Apps Agreement** (Business → Agreements, with bank and tax details) and, ideally, enroll in the **App Store Small Business Program** (15% commission instead of 30%).
 
 ## Support and marketing URLs
 
@@ -80,10 +94,8 @@ Free, with no in-app purchases.
 - Marketing URL: https://www.countdowncula.com
 - Privacy Policy URL: https://www.countdowncula.com/privacy
 
-Until countdowncula.com is live, use the countdownula.com addresses. They'll redirect once the domain moves.
-
 ## App Review notes
 
 ```
-No sign-in is needed. Tap + to add a countdown, a count-up or a quick timer. Widgets are added from the Home Screen or Lock Screen as usual. A quick timer goes live on the Lock Screen and in the Dynamic Island right away; other countdowns do so once pinned (Pin is on the detail screen) and inside their final eight hours. Sync uses the reviewer's own iCloud account and needs no setup.
+No sign-in is needed. Tap + to add a countdown, a count-up or a quick timer. The free tier allows 3 active countdowns; adding a fourth shows the Count Downcula Unlimited purchase ($2.99, non-consumable), with Restore Purchases on the same screen. Widgets are added from the Home Screen or Lock Screen as usual. A quick timer goes live on the Lock Screen and in the Dynamic Island right away; other countdowns do so once pinned (Pin is on the detail screen) and inside their final eight hours. Sync uses the reviewer's own iCloud account and needs no setup.
 ```

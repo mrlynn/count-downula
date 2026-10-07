@@ -37,6 +37,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
+        # Shipped as a direct download (GitHub), so it's always unlocked and never touches StoreKit.
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DIRECT_DISTRIBUTION"
         INFOPLIST_FILE: Resources/Info.plist
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: Resources/Countdownula.entitlements
@@ -243,6 +245,8 @@ schemes:
         CountdownulaWatch: all
     run:
       config: Debug
+      # Local StoreKit testing for the Unlimited purchase (Debug > StoreKit > Manage Transactions).
+      storeKitConfiguration: Resources/Countdownula.storekit
       commandLineArguments:
         "-seedDemo": false
         "-complicationGallery": false
@@ -255,6 +259,7 @@ schemes:
         CountdownulaiOS: all
     run:
       config: Debug
+      storeKitConfiguration: Resources/Countdownula.storekit
       commandLineArguments:
         "-seedDemo": false
         "-localOnly": false

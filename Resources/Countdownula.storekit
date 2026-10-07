@@ -1,0 +1,33 @@
+{
+  "identifier" : "C0A1D0F1-55E1-4C2B-9D3E-0C0A11D0F1A1",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "6740000001",
+      "localizations" : [
+        {
+          "description" : "Unlimited countdowns, count-ups and timers on all your devices.",
+          "displayName" : "Count Downcula Unlimited",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.countdownula.app.unlimited",
+      "referenceName" : "Count Downcula Unlimited",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
