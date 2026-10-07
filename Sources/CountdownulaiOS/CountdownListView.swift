@@ -169,6 +169,7 @@ private struct HeroCard: View {
 private struct CountdownRow: View {
     let countdown: Countdown
     let now: Date
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         let isPast = countdown.isPast(at: now)
@@ -178,48 +179,65 @@ private struct CountdownRow: View {
                 .frame(width: 52, height: 52)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 4) {
-                    Text(countdown.title)
-                        .font(.headline)
-                        .lineLimit(1)
-                    if countdown.isPinned {
-                        Image(systemName: "pin.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.orange)
-                            .accessibilityLabel("Pinned")
-                    }
+            // At the largest text sizes the time goes under the title instead of
+            // squeezing it into a sliver.
+            if dynamicTypeSize >= .xxxLarge {
+                VStack(alignment: .leading, spacing: 4) {
+                    details(isPast: isPast)
+                    time(isPast: isPast)
                 }
-                if let next = countdown.nextMilestone(at: now) {
-                    Text("\(next.milestone.displayEmoji) \(next.milestone.title) in \(CountdownFormat.compact(from: now, to: next.date))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                } else if countdown.countsUp {
-                    Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                if !isPast {
-                    ProgressView(value: countdown.progress(at: now))
-                        .tint(countdown.style.accentColor)
-                }
+            } else {
+                details(isPast: isPast)
+                Spacer(minLength: 8)
+                time(isPast: isPast)
             }
-
-            Spacer(minLength: 8)
-
-            CountdownTimeText(countdown: countdown, now: now)
-                .font(countdown.style.font(.title3))
-                .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
-                .lineLimit(1)
-                .fixedSize()
         }
         .padding(.vertical, 4)
         .opacity(isPast ? 0.7 : 1)
+    }
+
+    private func time(isPast: Bool) -> some View {
+        CountdownTimeText(countdown: countdown, now: now)
+            .font(countdown.style.font(.title3))
+            .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
+            .lineLimit(1)
+            .fixedSize()
+    }
+
+    private func details(isPast: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 4) {
+                Text(countdown.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                if countdown.isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.orange)
+                        .accessibilityLabel("Pinned")
+                }
+            }
+            if let next = countdown.nextMilestone(at: now) {
+                Text("\(next.milestone.displayEmoji) \(next.milestone.title) in \(CountdownFormat.compact(from: now, to: next.date))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else if countdown.countsUp {
+                Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else {
+                Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            if !isPast {
+                ProgressView(value: countdown.progress(at: now))
+                    .tint(countdown.style.accentColor)
+            }
+        }
     }
 }
 

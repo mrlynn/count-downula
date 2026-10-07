@@ -87,7 +87,7 @@ struct CountdownTimeText: View {
         if parts.isPast {
             Text("Done")
         } else if parts.days > 0 {
-            Text("\(parts.days)d \(parts.hours)h")
+            Text(verbatim: CountdownFormat.compact(countdown, at: now))
         } else if parts.countsUp {
             Text(timerInterval: countdown.targetDate...Date.distantFuture, countsDown: false)
                 .monospacedDigit()
