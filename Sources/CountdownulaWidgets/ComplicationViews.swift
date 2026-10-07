@@ -1,11 +1,13 @@
 import SwiftUI
 import WidgetKit
 
-/// Shared by the widget extension and the watch app's debug gallery.
+/// Shared by the watch and iPhone widget extensions and the watch app's debug gallery.
 struct CountdownEntry: TimelineEntry {
     let date: Date
     let countdown: Countdown?
     var thumbnail: Data?
+    /// Display-size photo for Home Screen widgets (iPhone only).
+    var photo: Data?
 
     static var sample: CountdownEntry {
         let now = Date()
@@ -27,8 +29,10 @@ struct ComplicationView: View {
         switch family {
         case .accessoryRectangular:
             RectangularComplication(entry: entry, showsPhoto: renderingMode == .fullColor)
+        #if os(watchOS)
         case .accessoryCorner:
             CornerComplication(entry: entry)
+        #endif
         case .accessoryInline:
             InlineComplication(entry: entry)
         default:
@@ -156,6 +160,7 @@ struct RectangularComplication: View {
     }
 }
 
+#if os(watchOS)
 // MARK: - Corner: short value with a curved gauge
 
 struct CornerComplication: View {
@@ -187,6 +192,8 @@ struct CornerComplication: View {
         }
     }
 }
+
+#endif
 
 // MARK: - Inline: one line of text at the top of the face
 

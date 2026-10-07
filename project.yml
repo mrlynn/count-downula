@@ -6,6 +6,7 @@ options:
   deploymentTarget:
     macOS: "14.0"
     watchOS: "10.0"
+    iOS: "17.0"
 
 settings:
   base:
@@ -108,6 +109,83 @@ targets:
       properties:
         com.apple.security.application-groups: [group.com.countdownula.app]
 
+  # iPhone / iPad app. Same bundle ID as the Mac app so the two can share an App Store record.
+  CountdownulaiOS:
+    type: application
+    platform: iOS
+    sources:
+      - Sources/CountdownulaiOS
+      - Sources/Shared
+      - Sources/PhoneShared
+      - Resources/iOS/Assets.xcassets
+    dependencies:
+      - target: CountdownulaiOSWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
+        PRODUCT_NAME: Countdownula
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: Resources/iOS/Countdownula.entitlements
+    info:
+      path: Resources/iOS/Info.plist
+      properties:
+        CFBundleDisplayName: Countdownula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIBackgroundModes: [remote-notification]
+        NSSupportsLiveActivities: true
+        CFBundleURLTypes:
+          - CFBundleURLName: com.countdownula.app
+            CFBundleURLSchemes: [countdownula]
+    entitlements:
+      path: Resources/iOS/Countdownula.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
+        com.apple.developer.icloud-services: [CloudKit]
+        aps-environment: development
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+  # Home Screen, Lock Screen and StandBy widgets, plus the Live Activity
+  CountdownulaiOSWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Sources/CountdownulaiOSWidgets
+      - Sources/CountdownulaWidgets
+      - Sources/PhoneShared
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/WidgetSnapshot.swift
+      - path: Sources/Shared/FangMark.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.widgets
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_ENTITLEMENTS: Resources/iOS/CountdownulaWidgets.entitlements
+        SKIP_INSTALL: YES
+    info:
+      path: Resources/iOS/Widgets-Info.plist
+      properties:
+        CFBundleDisplayName: Countdownula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Resources/iOS/CountdownulaWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
 schemes:
   Countdownula:
     build:
@@ -126,6 +204,17 @@ schemes:
       commandLineArguments:
         "-seedDemo": false
         "-complicationGallery": false
+        "-localOnly": false
+    archive:
+      config: Release
+  CountdownulaiOS:
+    build:
+      targets:
+        CountdownulaiOS: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-seedDemo": false
         "-localOnly": false
     archive:
       config: Release
