@@ -70,7 +70,7 @@ struct CountdownListView: View {
                     }
                 }
             }
-            .navigationTitle("Count Downula")
+            .navigationTitle("Count Downcula")
             .navigationDestination(for: UUID.self) { id in
                 CountdownDetailView(id: id, onEdit: { editorTarget = .edit($0) })
             }

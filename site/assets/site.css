@@ -235,7 +235,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   80% { opacity: 0.9; transform: scale(0.2, 0.2); }
   100% { opacity: 0; transform: scale(1.6, 1.6); }
 }
-/* Count Downula stands in front of his clock and rises in once the fangs land */
+/* Count Downcula stands in front of his clock and rises in once the fangs land */
 .hero { overflow: clip; }
 .clock-wrap .count {
   position: absolute; z-index: 2;
@@ -677,6 +677,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .sync p { margin: 0; font-family: var(--display); font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.4; color: var(--bone-dim); }
 .sync strong { color: var(--bone); font-weight: inherit; }
 .soon { margin: 2rem 0 0; color: var(--bone-dim); font-size: 0.95rem; }
+.beta-row { margin-top: 2rem; }
 
 @media (max-width: 900px) {
   .wrist-grid { grid-template-columns: 1fr; }
@@ -753,7 +754,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   .surfaces { grid-template-columns: 1fr; }
 }
 
-/* wordmark: "Count" in bone, "Downula" in blood, so the Dracula pun shows */
+/* wordmark: "Count" in bone, "Downcula" in blood, so the Dracula pun shows */
 .wordmark em, .foot .foot-word em { font-style: normal; color: var(--fresh); }
 .foot .foot-word { color: var(--bone); }
 @media (max-width: 420px) {

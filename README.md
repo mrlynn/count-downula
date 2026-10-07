@@ -1,10 +1,10 @@
-# Count Downula
+# Count Downcula
 
-<img src="design/app-icon.png" width="128" alt="Count Downula icon: a blood-red timer ring with fangs">
+<img src="design/app-icon.png" width="128" alt="Count Downcula icon: a blood-red timer ring with fangs">
 
 Native countdowns for vacations, launches, birthdays, or a quick timer: a macOS menu bar app, an iPhone app with widgets and Live Activities, and an Apple Watch app with complications.
 
-The app shows up as **Count Downula** everywhere you see it. The project, targets and files keep the original one-word name, `Countdownula`.
+The app shows up as **Count Downcula** everywhere you see it. The project, targets, files, bundle IDs and iCloud container keep the original one-word name, `Countdownula`, from when the app was called Count Downula (renamed in October 2026).
 
 [![Download the latest release](https://img.shields.io/github/v/release/mrlynn/count-downula?label=Download&color=c3112d&logo=apple)](https://github.com/mrlynn/count-downula/releases/latest)
 
@@ -25,8 +25,8 @@ The app shows up as **Count Downula** everywhere you see it. The project, target
 ## iPhone
 
 <p>
-  <img src="docs/screenshots/iphone-app.jpg" width="240" alt="Count Downula iPhone app with a pinned countdown as a full-bleed photo card above the upcoming list">
-  <img src="docs/screenshots/iphone-lock.jpg" width="240" alt="Lock Screen with a countdown Live Activity and Count Downula widgets">
+  <img src="docs/screenshots/iphone-app.jpg" width="240" alt="Count Downcula iPhone app with a pinned countdown as a full-bleed photo card above the upcoming list">
+  <img src="docs/screenshots/iphone-lock.jpg" width="240" alt="Lock Screen with a countdown Live Activity and Count Downcula widgets">
   <img src="docs/screenshots/iphone-home.jpg" width="240" alt="Home Screen with Up Next and photo countdown widgets, and a timer in the Dynamic Island">
 </p>
 
@@ -51,8 +51,8 @@ The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or 
 ## Apple Watch
 
 <p>
-  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Count Downula corner and circular complications">
-  <img src="docs/screenshots/watch-app.png" width="208" alt="Count Downula watch app listing countdowns">
+  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Count Downcula corner and circular complications">
+  <img src="docs/screenshots/watch-app.png" width="208" alt="Count Downcula watch app listing countdowns">
 </p>
 
 The watch app ships inside the iPhone app and runs on its own once installed (it doesn't need the phone nearby). It lists your countdowns, shows a live days/hours/minutes/seconds view, and lets you start a quick timer or add a date right from your wrist. Countdowns sync with the Mac and iPhone through iCloud, and the watch schedules its own alerts.
@@ -68,12 +68,12 @@ The watch app ships inside the iPhone app and runs on its own once installed (it
 
 Each complication can follow **Next Up** (your soonest pinned countdown, otherwise the soonest one) or a specific countdown.
 
-Apple doesn't allow third-party watch faces. To share a "Count Downula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
+Apple doesn't allow third-party watch faces. To share a "Count Downcula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
 
 ## Download
 
 Grab **Countdownula-x.y.z.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest), unzip it, and drag **Countdownula.app** to `/Applications`.
-It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downula.
+It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downcula.
 
 The app isn't notarized, so macOS blocks the first launch. **Right-click the app → Open → Open**, or run:
 
