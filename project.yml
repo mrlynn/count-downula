@@ -247,6 +247,7 @@ schemes:
       commandLineArguments:
         "-seedDemo": false
         "-localOnly": false
+        "-initializeCloudKitSchema": false
     archive:
       config: Release
   CountdownulaTests:

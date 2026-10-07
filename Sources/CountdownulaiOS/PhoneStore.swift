@@ -15,6 +15,9 @@ final class PhoneStore {
     @ObservationIgnored private var thumbnailCache: [String: UIImage] = [:]
 
     init() {
+        #if DEBUG
+        CloudKitSchemaInitializer.runIfRequested()
+        #endif
         let directory = URL.applicationSupportDirectory
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         repository = CountdownRepository(storeURL: directory.appending(path: "Countdownula.store"))
