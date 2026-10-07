@@ -57,6 +57,15 @@ struct DetailView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
 
+                    if let next = countdown.nextMilestone(at: store.now) {
+                        Label {
+                            Text("Next: \(next.milestone.title) · in \(CountdownFormat.compact(from: store.now, to: next.date))")
+                        } icon: {
+                            Text(next.milestone.displayEmoji)
+                        }
+                        .font(.callout)
+                    }
+
                     if !countdown.details.isEmpty {
                         Text(countdown.details)
                             .font(.body)

@@ -8,6 +8,10 @@ struct CountdownDetailView: View {
     @State private var confirmingDelete = false
     /// Bumped after starting or ending a Live Activity, since ActivityKit state isn't observable.
     @State private var activityRevision = 0
+    /// Lives in the store: saving the celebration reloads the store, which can rebuild this view.
+    private var celebration: Celebration? {
+        store.celebration?.countdownID == id ? store.celebration : nil
+    }
 
     var body: some View {
         if let countdown = store.countdown(id: id) {
@@ -30,8 +34,7 @@ struct CountdownDetailView: View {
 
                         if !parts.isPast {
                             VStack(alignment: .leading, spacing: 6) {
-                                ProgressView(value: countdown.progress(at: now))
-                                    .tint(countdown.style.accentColor)
+                                MilestoneProgressBar(countdown: countdown, now: now)
                                 Text("\(Int((countdown.progress(at: now) * 100).rounded(.down)))% of the wait is behind you")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -44,11 +47,40 @@ struct CountdownDetailView: View {
                                 .textSelection(.enabled)
                         }
 
+                        if !countdown.scheduledMilestones.isEmpty {
+                            MilestoneTimeline(countdown: countdown, now: now)
+                        }
+
                         actions(for: countdown, now: now)
                     }
                     .padding()
                 }
+                .task(id: celebrationKey(for: countdown, at: now)) {
+                    celebrateIfNeeded(countdown, at: now)
+                }
             }
+            .overlay {
+                if let celebration {
+                    ConfettiView(accent: countdown.style.accentColor)
+                        .ignoresSafeArea()
+                        .id(celebration.id)
+                }
+            }
+            .overlay(alignment: .top) {
+                if let celebration {
+                    CelebrationBanner(emoji: celebration.emoji, title: celebration.title, subtitle: celebration.subtitle)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .onTapGesture { store.celebration = nil }
+                }
+            }
+            .animation(.spring(duration: 0.45), value: celebration)
+            .task(id: celebration?.id) {
+                guard let shown = celebration else { return }
+                // A cancelled sleep throws; bail out rather than clearing a banner that's still showing.
+                do { try await Task.sleep(for: .seconds(4)) } catch { return }
+                if store.celebration?.id == shown.id { store.celebration = nil }
+            }
+            .sensoryFeedback(.success, trigger: celebration?.id) { _, new in new != nil }
             .navigationTitle(countdown.kind == .timer ? "Timer" : "Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -116,6 +148,32 @@ struct CountdownDetailView: View {
         }
         .controlSize(.large)
         .padding(.top, 4)
+    }
+
+    // MARK: - Celebrations
+
+    /// Changes whenever there's something new to celebrate, so the task above re-runs.
+    private func celebrationKey(for countdown: Countdown, at now: Date) -> String {
+        let milestones = countdown.uncelebratedMilestones(at: now).map(\.id.uuidString).joined(separator: ",")
+        return "\(milestones)|\(store.shouldCelebrateCompletion(of: countdown, at: now))"
+    }
+
+    private func celebrateIfNeeded(_ countdown: Countdown, at now: Date) {
+        if store.shouldCelebrateCompletion(of: countdown, at: now) {
+            store.markCompletionCelebrated(countdown)
+            // Finishing outranks any milestone reached along the way; mark those too.
+            let pending = countdown.uncelebratedMilestones(at: now)
+            if !pending.isEmpty { store.markCelebrated(pending, of: countdown) }
+            store.celebration = Celebration(countdownID: countdown.id, emoji: countdown.kind == .timer ? "⏰" : "🎉",
+                                            title: countdown.title,
+                                      subtitle: countdown.kind == .timer ? "Time's up!" : "The wait is over!")
+            return
+        }
+        let pending = countdown.uncelebratedMilestones(at: now)
+        guard let latest = pending.last else { return }
+        store.markCelebrated(pending, of: countdown)
+        store.celebration = Celebration(countdownID: countdown.id, emoji: latest.milestone.displayEmoji,
+                                        title: latest.milestone.title, subtitle: countdown.title)
     }
 
     private func footnote(for countdown: Countdown, now: Date) -> String {

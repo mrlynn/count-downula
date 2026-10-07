@@ -19,6 +19,7 @@ struct Countdown: Identifiable, Codable, Hashable {
     var hasNotified = false
     var hasImage = false
     var style = CountdownStyle.default
+    var milestones: [Milestone] = []
 
     func isPast(at now: Date) -> Bool { targetDate <= now }
 
@@ -35,7 +36,7 @@ struct Countdown: Identifiable, Codable, Hashable {
 
 extension Countdown {
     private enum CodingKeys: String, CodingKey {
-        case id, title, details, targetDate, kind, isPinned, createdAt, updatedAt, hasNotified, hasImage, style
+        case id, title, details, targetDate, kind, isPinned, createdAt, updatedAt, hasNotified, hasImage, style, milestones
     }
 
     /// Fields added after 1.1 are optional in the JSON, so snapshots written by an older build still decode.
@@ -53,6 +54,7 @@ extension Countdown {
         hasImage = try c.decodeIfPresent(Bool.self, forKey: .hasImage) ?? false
         // A style written by a newer build may not decode here; fall back rather than drop the countdown.
         style = (try? c.decodeIfPresent(CountdownStyle.self, forKey: .style)) ?? .default
+        milestones = (try? c.decodeIfPresent([Milestone].self, forKey: .milestones)) ?? []
     }
 }
 

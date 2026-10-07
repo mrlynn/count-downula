@@ -88,20 +88,20 @@ final class WatchStore {
         }
     }
 
-    /// The watch can't rely on the Mac being awake, so it schedules its own completion alerts.
+    /// The watch can't rely on the Mac being awake, so it schedules its own completion and milestone alerts.
     private func scheduleNotifications() {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
         let now = Date()
-        for countdown in upcoming(at: now).prefix(50) {
-            let content = UNMutableNotificationContent()
-            content.title = countdown.kind == .timer ? "⏰ \(countdown.title)" : "🎉 \(countdown.title)"
-            content.body = countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
-            content.sound = .default
-            let interval = countdown.targetDate.timeIntervalSince(now)
+        for item in NotificationPlan.items(for: countdowns, now: now, limit: 50) {
+            let interval = item.date.timeIntervalSince(now)
             guard interval > 1 else { continue }
+            let content = UNMutableNotificationContent()
+            content.title = item.title
+            content.body = item.body
+            content.sound = .default
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
-            center.add(UNNotificationRequest(identifier: countdown.id.uuidString, content: content, trigger: trigger))
+            center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }
     }
 

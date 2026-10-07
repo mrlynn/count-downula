@@ -100,6 +100,7 @@ final class CountdownStore {
 
     private func tick() {
         now = Date()
+        postDueMilestones()
         let due = countdowns.filter { $0.isPast(at: now) && !$0.hasNotified }
         if due.isEmpty {
             onUpdate?()
@@ -108,6 +109,30 @@ final class CountdownStore {
         due.forEach(Notifier.post(for:))
         repository.markNotified(ids: due.map(\.id))
         reload()
+    }
+
+    /// Milestone alerts reached in the last day that this Mac hasn't shown yet. Tracked per device
+    /// in UserDefaults; the phone and watch schedule their own.
+    private func postDueMilestones() {
+        let key = "Notifier.postedMilestones"
+        var posted = Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
+        var live: Set<String> = []
+        var changed = false
+        for countdown in countdowns {
+            for scheduled in countdown.scheduledMilestones where scheduled.date > now - 86_400 {
+                let item = NotificationPlan.milestone(scheduled, of: countdown)
+                let id = "\(item.identifier)@\(Int(item.date.timeIntervalSince1970))"
+                live.insert(id)
+                guard item.date <= now, !posted.contains(id) else { continue }
+                Notifier.post(item)
+                posted.insert(id)
+                changed = true
+            }
+        }
+        // Forget milestones that are over a day old, edited or deleted.
+        if changed || !posted.isSubset(of: live) {
+            UserDefaults.standard.set(Array(posted.intersection(live)), forKey: key)
+        }
     }
 }
 
@@ -162,12 +187,16 @@ enum Notifier {
     }
 
     static func post(for countdown: Countdown) {
+        post(NotificationPlan.completion(for: countdown))
+    }
+
+    static func post(_ item: NotificationPlan.Item) {
         guard isAvailable else { return }
         let content = UNMutableNotificationContent()
-        content.title = countdown.kind == .timer ? "⏰ \(countdown.title)" : "🎉 \(countdown.title)"
-        content.body = countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
+        content.title = item.title
+        content.body = item.body
         content.sound = .default
-        let request = UNNotificationRequest(identifier: countdown.id.uuidString, content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: item.identifier, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
     }
 }

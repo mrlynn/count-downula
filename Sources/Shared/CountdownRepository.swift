@@ -69,6 +69,8 @@ final class CountdownRepository {
     // MARK: - Writes
 
     func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
+        var countdown = countdown
+        countdown.resetMilestonesInFuture(at: Date())
         let record = record(countdown.id) ?? {
             let new = CountdownRecord(uuid: countdown.id)
             context.insert(new)
@@ -97,6 +99,17 @@ final class CountdownRepository {
         guard let record = record(id) else { return }
         record.isPinned = pinned
         record.updatedAt = Date()
+        save()
+    }
+
+    /// Records that milestone celebrations played. Leaves `updatedAt` alone so photo caches stay valid.
+    func markCelebrated(milestoneIDs: Set<UUID>, id: UUID, at date: Date = Date()) {
+        guard let record = record(id) else { return }
+        var milestones = record.countdown.milestones
+        for index in milestones.indices where milestoneIDs.contains(milestones[index].id) {
+            milestones[index].celebratedAt = date
+        }
+        record.milestonesData = try? JSONEncoder().encode(milestones)
         save()
     }
 

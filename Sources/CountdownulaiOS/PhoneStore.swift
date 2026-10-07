@@ -7,6 +7,8 @@ import WidgetKit
 @Observable
 final class PhoneStore {
     private(set) var countdowns: [Countdown] = []
+    /// The milestone or finish being celebrated on screen right now.
+    var celebration: Celebration?
 
     @ObservationIgnored private let repository: CountdownRepository
     @ObservationIgnored private var imageCache: [String: UIImage] = [:]
@@ -82,6 +84,39 @@ final class PhoneStore {
         reload()
     }
 
+    // MARK: - Celebrations
+
+    func markCelebrated(_ milestones: [ScheduledMilestone], of countdown: Countdown) {
+        repository.markCelebrated(milestoneIDs: Set(milestones.map(\.id)), id: countdown.id)
+        reload()
+    }
+
+    /// Whether the "it's here" confetti should play: finished within the last day and not yet shown
+    /// on this device. Kept per device; it's a small moment, not worth a sync round trip.
+    func shouldCelebrateCompletion(of countdown: Countdown, at now: Date) -> Bool {
+        guard countdown.isPast(at: now), countdown.targetDate > now - 86_400 else { return false }
+        return !celebratedCompletions.contains(completionKey(countdown))
+    }
+
+    func markCompletionCelebrated(_ countdown: Countdown) {
+        var keys = celebratedCompletions
+        keys.insert(completionKey(countdown))
+        // Only countdowns that still exist are worth remembering.
+        let ids = Set(countdowns.map(\.id.uuidString))
+        keys = keys.filter { ids.contains(String($0.prefix(36))) }
+        UserDefaults.standard.set(Array(keys), forKey: Self.celebratedCompletionsKey)
+    }
+
+    private static let celebratedCompletionsKey = "Celebrations.completions"
+
+    private var celebratedCompletions: Set<String> {
+        Set(UserDefaults.standard.stringArray(forKey: Self.celebratedCompletionsKey) ?? [])
+    }
+
+    private func completionKey(_ countdown: Countdown) -> String {
+        "\(countdown.id.uuidString)@\(Int(countdown.targetDate.timeIntervalSince1970))"
+    }
+
     /// One-tap timer from the list's + menu. Timers go live on the Lock Screen straight away.
     func startQuickTimer(minutes: Int) {
         let now = Date()
@@ -119,22 +154,22 @@ final class PhoneStore {
         if changed { WidgetCenter.shared.reloadAllTimelines() }
     }
 
-    /// The phone can't rely on the Mac being awake, so it schedules its own completion alerts.
+    /// The phone can't rely on the Mac being awake, so it schedules its own completion and milestone alerts.
     private func scheduleNotifications() {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
         let now = Date()
         // iOS keeps at most 64 pending requests per app.
-        for countdown in upcoming(at: now).prefix(60) {
-            let content = UNMutableNotificationContent()
-            content.title = countdown.kind == .timer ? "⏰ \(countdown.title)" : "🎉 \(countdown.title)"
-            content.body = countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
-            content.sound = .default
-            content.userInfo = ["countdownID": countdown.id.uuidString]
-            let interval = countdown.targetDate.timeIntervalSince(now)
+        for item in NotificationPlan.items(for: countdowns, now: now, limit: 60) {
+            let interval = item.date.timeIntervalSince(now)
             guard interval > 1 else { continue }
+            let content = UNMutableNotificationContent()
+            content.title = item.title
+            content.body = item.body
+            content.sound = .default
+            content.userInfo = ["countdownID": item.countdownID.uuidString]
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
-            center.add(UNNotificationRequest(identifier: countdown.id.uuidString, content: content, trigger: trigger))
+            center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }
     }
 
@@ -160,7 +195,21 @@ final class PhoneStore {
         samples[3].style = CountdownStyle(background: .gradient(GradientSpec.presets[4].spec), font: .expanded,
                                           accent: RGBAColor(hex: 0xFFD166))
         samples[0].style = CountdownStyle(background: .scene(.sunset), font: .rounded)
+        samples[0].milestones = [
+            Milestone(title: "Flights booked", emoji: "✈️", trigger: .date(now - 3_600)),
+            MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone, MilestonePreset.oneDay.milestone,
+        ]
+        samples[2].milestones = [MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone]
         samples.forEach { repository.upsert($0) }
     }
     #endif
+}
+
+/// Confetti and a banner for a milestone or a finished countdown.
+struct Celebration: Equatable {
+    let id = UUID()
+    let countdownID: UUID
+    let emoji: String
+    let title: String
+    let subtitle: String
 }
