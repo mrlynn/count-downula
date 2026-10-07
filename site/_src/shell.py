@@ -10,10 +10,10 @@ header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 
 footer = re.search(r'<footer class="foot">.*?</footer>', index, re.S).group(0)
 
 PAGES = {
-    "support": ("Support", "Get help with Count Downula, the countdown app for your Mac menu bar, iPhone and Apple Watch."),
-    "privacy": ("Privacy policy", "Count Downula collects no personal data. Here is exactly what happens with your information."),
-    "terms": ("Terms of use", "The terms for using the Count Downula app and website."),
-    "cookies": ("Cookie policy", "The Count Downula website sets no cookies. Here are the details."),
+    "support": ("Support", "Get help with Count Downcula, the countdown app for your Mac menu bar, iPhone and Apple Watch."),
+    "privacy": ("Privacy policy", "Count Downcula collects no personal data. Here is exactly what happens with your information."),
+    "terms": ("Terms of use", "The terms for using the Count Downcula app and website."),
+    "cookies": ("Cookie policy", "The Count Downcula website sets no cookies. Here are the details."),
 }
 
 for name, (title, desc) in PAGES.items():
@@ -23,10 +23,10 @@ for name, (title, desc) in PAGES.items():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title}: Count Downula</title>
+<title>{title}: Count Downcula</title>
 <meta name="description" content="{desc}">
 <meta name="theme-color" content="#1a0612">
-<link rel="canonical" href="https://www.countdownula.com/{name}">
+<link rel="canonical" href="https://www.countdowncula.com/{name}">
 <link rel="icon" href="/assets/app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/app-icon.png">
 <link rel="stylesheet" href="/assets/site.css">

@@ -1,3 +1,3 @@
 /* Finder and System Settings show this name; the bundle stays Countdownula.app so install paths don't change. */
-"CFBundleDisplayName" = "Count Downula";
-"CFBundleName" = "Count Downula";
+"CFBundleDisplayName" = "Count Downcula";
+"CFBundleName" = "Count Downcula";
