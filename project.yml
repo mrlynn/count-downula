@@ -48,7 +48,7 @@ targets:
         com.apple.developer.icloud-services: [CloudKit]
         com.apple.developer.aps-environment: development
 
-  # Standalone watchOS app (no iPhone app required)
+  # watchOS app. Ships inside the iPhone app but runs on its own (no iPhone needed at runtime).
   CountdownulaWatch:
     type: application
     platform: watchOS
@@ -57,6 +57,8 @@ targets:
       - Sources/Shared
       - Sources/CountdownulaWidgets/ComplicationViews.swift
       - Resources/Watch/Assets.xcassets
+      - path: Resources/Watch/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - target: CountdownulaWatchWidgets
     settings:
@@ -67,7 +69,8 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Count Downula
-        INFOPLIST_KEY_WKWatchOnly: YES
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.countdownula.app
+        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: YES
         INFOPLIST_KEY_WKApplication: YES
         CODE_SIGN_ENTITLEMENTS: Resources/Watch/CountdownulaWatch.entitlements
     info:
@@ -75,7 +78,9 @@ targets:
       properties:
         CFBundleDisplayName: Count Downula
         WKApplication: true
-        WKWatchOnly: true
+        WKCompanionAppBundleIdentifier: com.countdownula.app
+        WKRunsIndependentlyOfCompanionApp: true
+        ITSAppUsesNonExemptEncryption: false
         UIBackgroundModes: [remote-notification]
     entitlements:
       path: Resources/Watch/CountdownulaWatch.entitlements
@@ -109,6 +114,8 @@ targets:
       path: Resources/Watch/Widgets-Info.plist
       properties:
         CFBundleDisplayName: Count Downula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
@@ -125,8 +132,11 @@ targets:
       - Sources/Shared
       - Sources/PhoneShared
       - Resources/iOS/Assets.xcassets
+      - path: Resources/iOS/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - target: CountdownulaiOSWidgets
+      - target: CountdownulaWatch
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
@@ -151,6 +161,7 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         UIBackgroundModes: [remote-notification]
         NSSupportsLiveActivities: true
+        ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: com.countdownula.app
             CFBundleURLSchemes: [countdownula]
