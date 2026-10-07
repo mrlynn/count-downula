@@ -34,7 +34,7 @@ struct WatchCountdownList: View {
                     }
                 }
             }
-            .navigationTitle("Countdownula")
+            .navigationTitle("Count Downula")
             .navigationDestination(for: UUID.self) { id in
                 WatchCountdownDetail(id: id)
             }
@@ -63,7 +63,7 @@ private struct EmptyWatchState: View {
                 .frame(width: 44, height: 44)
             Text("No countdowns yet")
                 .font(.headline)
-            Text("Add one here or in Countdownula on your Mac.")
+            Text("Add one here or in Count Downula on your Mac.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

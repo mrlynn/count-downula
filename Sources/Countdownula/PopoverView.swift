@@ -42,7 +42,7 @@ private struct CountdownListView: View {
         VStack(spacing: 0) {
             HStack {
                 Label {
-                    Text("Countdownula")
+                    Text("Count Downula")
                 } icon: {
                     if let mark = NSImage.countdownulaMark {
                         Image(nsImage: mark).foregroundStyle(.red)

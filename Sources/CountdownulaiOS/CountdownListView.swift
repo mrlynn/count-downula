@@ -64,7 +64,7 @@ struct CountdownListView: View {
                     }
                 }
             }
-            .navigationTitle("Countdownula")
+            .navigationTitle("Count Downula")
             .navigationDestination(for: UUID.self) { id in
                 CountdownDetailView(id: id, onEdit: { editorTarget = .edit($0) })
             }
