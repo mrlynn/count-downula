@@ -6,11 +6,11 @@ HERE = pathlib.Path(__file__).parent
 SITE = HERE.parent
 index = (SITE / "index.html").read_text()
 header = re.search(r'<header class="top".*?</header>', index, re.S).group(0)
-header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 'href="/#try"').replace('href="#watch"', 'href="/#watch"').replace('href="#install"', 'href="/#install"')
+header = header.replace('href="#tour"', 'href="/#tour"').replace('href="#try"', 'href="/#try"').replace('href="#iphone"', 'href="/#iphone"').replace('href="#watch"', 'href="/#watch"').replace('href="#install"', 'href="/#install"')
 footer = re.search(r'<footer class="foot">.*?</footer>', index, re.S).group(0)
 
 PAGES = {
-    "support": ("Support", "Get help with Countdownula, the macOS menu bar countdown app."),
+    "support": ("Support", "Get help with Countdownula, the countdown app for your Mac menu bar, iPhone and Apple Watch."),
     "privacy": ("Privacy policy", "Countdownula collects no personal data. Here is exactly what happens with your information."),
     "terms": ("Terms of use", "The terms for using the Countdownula app and website."),
     "cookies": ("Cookie policy", "The Countdownula website sets no cookies. Here are the details."),

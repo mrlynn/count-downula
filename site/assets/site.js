@@ -272,14 +272,13 @@
     })
   );
 
-  // ---- watches swing in the first time their section shows up ----
-  const wrist = $(".wrist");
-  if (wrist) {
-    const wio = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) { wrist.classList.add("is-in"); wio.disconnect(); }
+  // ---- phones and watches swing in the first time their section shows up ----
+  $$(".pocket, .wrist").forEach((section) => {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { section.classList.add("is-in"); io.disconnect(); }
     }, { threshold: 0.25 });
-    wio.observe(wrist);
-  }
+    io.observe(section);
+  });
 
   $$("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));
 })();
