@@ -43,6 +43,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         store.onUpdate = { [weak self] in self?.refreshPinnedItems() }
         refreshPinnedItems()
         Notifier.requestAuthorization()
+
+        #if DEBUG
+        // Screenshots: launch with -openPopover to show the list without clicking the menu bar.
+        if ProcessInfo.processInfo.arguments.contains("-openPopover"), let button = mainItem.button {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                self?.togglePopover(from: button, selecting: nil)
+            }
+        }
+        #endif
     }
 
     // MARK: - Popover

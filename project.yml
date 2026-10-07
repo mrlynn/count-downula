@@ -195,6 +195,10 @@ schemes:
         Countdownula: all
     run:
       config: Debug
+      commandLineArguments:
+        "-seedDemo": false
+        "-openPopover": false
+        "-localOnly": false
     archive:
       config: Release
   CountdownulaWatch:

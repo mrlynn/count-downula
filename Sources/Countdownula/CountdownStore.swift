@@ -24,6 +24,9 @@ final class CountdownStore {
         repository = CountdownRepository(storeURL: supportDirectory.appending(path: "Countdownula.store"))
         repository.onRemoteChange = { [weak self] in self?.reload() }
         LegacyImporter.importIfNeeded(from: supportDirectory, into: repository)
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-seedDemo") { seedDemoData() }
+        #endif
         reload()
 
         let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
@@ -97,6 +100,37 @@ final class CountdownStore {
         if fresh != countdowns { countdowns = fresh }
         onUpdate?()
     }
+
+    #if DEBUG
+    /// Sample countdowns for screenshots, with macOS wallpapers standing in for photos.
+    private func seedDemoData() {
+        guard repository.fetchAll().isEmpty else { return }
+        let now = Date()
+        let day: TimeInterval = 86_400
+        let wallpapers = URL(filePath: "/System/Library/Desktop Pictures/.thumbnails")
+        func photo(_ name: String) -> ImageUpdate {
+            Self.prepareImage(from: wallpapers.appending(path: "\(name).heic"))?.update ?? .unchanged
+        }
+        let halloween = Calendar.current.nextDate(
+            after: now, matching: DateComponents(month: 10, day: 31, hour: 19), matchingPolicy: .nextTime
+        ) ?? now + 24 * day
+        let samples: [(Countdown, ImageUpdate)] = [
+            (Countdown(title: "Focus Block", details: "Heads down on the release notes",
+                       targetDate: now + 18 * 60, kind: .timer, isPinned: true, createdAt: now - 7 * 60), .unchanged),
+            (Countdown(title: "Sam's 30th Birthday", details: "Dinner at 7 — pick up the cake!",
+                       targetDate: now + 9 * day + 10_800, createdAt: now - 20 * day), photo("Light Stream Pink")),
+            (Countdown(title: "Sonoma Wine Weekend", details: "Three days of vineyards, long lunches and zero laptops.",
+                       targetDate: now + 16 * day + 25_200, isPinned: true, createdAt: now - 30 * day), photo("Sonoma")),
+            (Countdown(title: "Halloween", details: "Costume: obviously Dracula.",
+                       targetDate: halloween, createdAt: now - 10 * day), photo("Hello Metallic Purple")),
+            (Countdown(title: "v2.0 Launch", details: "Ship it.",
+                       targetDate: now + 41 * day, createdAt: now - 5 * day), photo("Chroma Blue")),
+            (Countdown(title: "Conference Talk", details: "Nailed it.",
+                       targetDate: now - 3 * day, createdAt: now - 60 * day, hasNotified: true), .unchanged),
+        ]
+        for (countdown, image) in samples { repository.upsert(countdown, image: image) }
+    }
+    #endif
 
     private func tick() {
         now = Date()
