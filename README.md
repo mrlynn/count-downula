@@ -1,8 +1,10 @@
-# Countdownula
+# Count Downula
 
-<img src="design/app-icon.png" width="128" alt="Countdownula icon: a blood-red timer ring with fangs">
+<img src="design/app-icon.png" width="128" alt="Count Downula icon: a blood-red timer ring with fangs">
 
 Native countdowns for vacations, launches, birthdays, or a quick timer: a macOS menu bar app, an iPhone app with widgets and Live Activities, and an Apple Watch app with complications.
+
+The app shows up as **Count Downula** everywhere you see it. The project, targets and files keep the original one-word name, `Countdownula`.
 
 [![Download the latest release](https://img.shields.io/github/v/release/mrlynn/count-downula?label=Download&color=c3112d&logo=apple)](https://github.com/mrlynn/count-downula/releases/latest)
 
@@ -21,6 +23,12 @@ Native countdowns for vacations, launches, birthdays, or a quick timer: a macOS 
 
 ## iPhone
 
+<p>
+  <img src="docs/screenshots/iphone-app.jpg" width="240" alt="Count Downula iPhone app with a pinned countdown as a full-bleed photo card above the upcoming list">
+  <img src="docs/screenshots/iphone-lock.jpg" width="240" alt="Lock Screen with a countdown Live Activity and Count Downula widgets">
+  <img src="docs/screenshots/iphone-home.jpg" width="240" alt="Home Screen with Up Next and photo countdown widgets, and a timer in the Dynamic Island">
+</p>
+
 The iPhone (and iPad) app lists your countdowns with the next one up as a full-bleed card, shows a live days/hours/minutes/seconds view, and lets you add or edit countdowns with a photo from your library. The **+** button also offers one-tap quick timers. It schedules its own alerts and syncs with the Mac and watch through iCloud.
 
 | Where | What |
@@ -37,11 +45,11 @@ The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or 
 ## Apple Watch
 
 <p>
-  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Countdownula corner and circular complications">
-  <img src="docs/screenshots/watch-app.png" width="208" alt="Countdownula watch app listing countdowns">
+  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Count Downula corner and circular complications">
+  <img src="docs/screenshots/watch-app.png" width="208" alt="Count Downula watch app listing countdowns">
 </p>
 
-A standalone watch app (no iPhone app needed) lists your countdowns, shows a live days/hours/minutes/seconds view, and lets you start a quick timer or add a date right from your wrist. Countdowns sync with the Mac through iCloud, and the watch schedules its own alerts.
+A standalone watch app (no iPhone app needed) lists your countdowns, shows a live days/hours/minutes/seconds view, and lets you start a quick timer or add a date right from your wrist. Countdowns sync with the Mac and iPhone through iCloud, and the watch schedules its own alerts.
 
 **Complications** (WidgetKit) work on any face that has slots:
 
@@ -54,12 +62,12 @@ A standalone watch app (no iPhone app needed) lists your countdowns, shows a liv
 
 Each complication can follow **Next Up** (your soonest pinned countdown, otherwise the soonest one) or a specific countdown.
 
-Apple doesn't allow third-party watch faces. To share a "Countdownula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
+Apple doesn't allow third-party watch faces. To share a "Count Downula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
 
 ## Download
 
 Grab **Countdownula-x.y.z.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest), unzip it, and drag **Countdownula.app** to `/Applications`.
-It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later.
+It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downula.
 
 The app isn't notarized, so macOS blocks the first launch. **Right-click the app → Open → Open**, or run:
 
@@ -69,11 +77,17 @@ xattr -dr com.apple.quarantine /Applications/Countdownula.app
 
 ## Build from source
 
-Requires Xcode 16+ (macOS 14 / watchOS 10 deployment targets), [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`), and an Apple Developer account. iCloud needs real signing. The project is defined in `project.yml`; the `.xcodeproj` is generated and not committed.
+Requires Xcode 16+ (macOS 14 / iOS 17 / watchOS 10 deployment targets), [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`), and an Apple Developer account. iCloud needs real signing. The project is defined in `project.yml`; the `.xcodeproj` is generated and not committed.
 
 ```bash
 ./scripts/build-app.sh          # signed Mac build → build/Countdownula.app
 open build/Countdownula.app
+```
+
+Debug Mac builds take optional launch arguments for screenshots: `-seedDemo` (sample countdowns, using macOS wallpapers as photos), `-openPopover` (opens the list at launch) and `-localOnly` (no iCloud). To keep them away from your real countdowns, build with `scripts/build-app.sh debug` and point the app at a scratch home folder:
+
+```bash
+CFFIXED_USER_HOME=/tmp/cd-demo .build/xcode/Build/Products/Debug/Countdownula.app/Contents/MacOS/Countdownula -localOnly -seedDemo -openPopover
 ```
 
 To use your own team, change `DEVELOPMENT_TEAM` and the `com.countdownula.*` / `iCloud.com.countdownula.app` / `group.com.countdownula.app` identifiers in `project.yml` and `Sources/Shared/SharedConfig.swift`.
@@ -103,7 +117,7 @@ swift scripts/render-icons.swift
 
 ## Data
 
-Countdowns live in a SwiftData store (`~/Library/Application Support/Countdownula/Countdownula.store` on the Mac) that syncs through your **private** iCloud database. Photos are stored as a 1400px JPEG plus a 240px thumbnail. Countdownula 1.0's `countdowns.json` is imported automatically on first launch and renamed to `countdowns.imported.json`.
+Countdowns live in a SwiftData store (`~/Library/Application Support/Countdownula/Countdownula.store` on the Mac) that syncs through your **private** iCloud database. Photos are stored as a 1400px JPEG plus a 240px thumbnail. Version 1.0's `countdowns.json` is imported automatically on first launch and renamed to `countdowns.imported.json`.
 
 ## Layout
 
@@ -111,5 +125,8 @@ Countdowns live in a SwiftData store (`~/Library/Application Support/Countdownul
 |---|---|
 | `Sources/Shared/` | `Countdown` model and formatting, SwiftData `CountdownRecord`, `CountdownRepository` (CRUD + CloudKit), `WidgetSnapshot` (App Group hand-off to complications), `FangMark` (the logo drawn in SwiftUI, doubling as a progress dial) |
 | `Sources/Countdownula/` | Mac app: status items and popover (`AppDelegate`), `CountdownStore`, popover and editor views |
+| `Sources/CountdownulaiOS/` | iPhone and iPad app: `PhoneStore` (sync, snapshot, alerts), `LiveActivities`, list, detail and editor views |
+| `Sources/CountdownulaiOSWidgets/` | iPhone widget extension: Home Screen and StandBy widgets, Up Next list, Live Activity and Dynamic Island |
+| `Sources/PhoneShared/` | Shared by the iPhone app and its widgets: Live Activity attributes, deep links, image downsampling |
 | `Sources/CountdownulaWatch/` | Watch app: `WatchStore` (sync, snapshot, alerts), list, detail and add views, debug complication gallery |
-| `Sources/CountdownulaWidgets/` | Complication extension: configuration intent, timeline provider, per-family views |
+| `Sources/CountdownulaWidgets/` | Configuration intent, timeline provider and accessory views shared by the watch complications and iPhone Lock Screen widgets |
