@@ -1,0 +1,116 @@
+import SwiftUI
+
+struct DetailView: View {
+    let countdown: Countdown
+    let store: CountdownStore
+    let onBack: () -> Void
+    let onEdit: () -> Void
+    @State private var confirmingDelete = false
+
+    var body: some View {
+        let parts = TimeParts(from: store.now, to: countdown.targetDate)
+
+        VStack(spacing: 0) {
+            ZStack(alignment: .topLeading) {
+                CountdownArtwork(countdown: countdown, store: store, symbolSize: 48)
+                    .frame(width: 380, height: 190)
+                    .clipped()
+                    .overlay(alignment: .bottom) {
+                        LinearGradient(colors: [.clear, .black.opacity(0.55)], startPoint: .center, endPoint: .bottom)
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        Text(countdown.title)
+                            .font(.title2.bold())
+                            .foregroundStyle(.white)
+                            .lineLimit(2)
+                            .shadow(radius: 4)
+                            .padding(14)
+                    }
+
+                Button(action: onBack) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(width: 28, height: 28)
+                        .background(.ultraThinMaterial, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut(.cancelAction)
+                .padding(10)
+            }
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 8) {
+                        TimeBlock(value: parts.days, label: "Days")
+                        TimeBlock(value: parts.hours, label: "Hours")
+                        TimeBlock(value: parts.minutes, label: "Min")
+                        TimeBlock(value: parts.seconds, label: "Sec")
+                    }
+                    .opacity(parts.isPast ? 0.5 : 1)
+
+                    Label {
+                        Text(countdown.targetDate, format: .dateTime.weekday(.wide).month(.wide).day().year().hour().minute())
+                        + Text(parts.isPast ? "  ·  \(CountdownFormat.relative(from: store.now, to: countdown.targetDate))" : "")
+                    } icon: {
+                        Image(systemName: parts.isPast ? "checkmark.circle.fill" : "calendar")
+                    }
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
+                    if !countdown.details.isEmpty {
+                        Text(countdown.details)
+                            .font(.body)
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(16)
+            }
+
+            Divider()
+
+            HStack {
+                Button {
+                    store.togglePin(countdown)
+                } label: {
+                    Label(countdown.isPinned ? "Unpin" : "Pin to Menu Bar",
+                          systemImage: countdown.isPinned ? "pin.slash" : "pin")
+                }
+                Spacer()
+                if confirmingDelete {
+                    Button("Cancel") { confirmingDelete = false }
+                    Button("Delete", role: .destructive) {
+                        onBack()
+                        store.delete(countdown)
+                    }
+                    .tint(.red)
+                } else {
+                    Button { confirmingDelete = true } label: { Image(systemName: "trash") }
+                        .help("Delete")
+                    Button("Edit", action: onEdit)
+                }
+            }
+            .padding(12)
+        }
+    }
+}
+
+private struct TimeBlock: View {
+    let value: Int
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(String(format: "%02d", value))
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .contentTransition(.numericText())
+            Text(label.uppercased())
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.primary.opacity(0.05)))
+    }
+}

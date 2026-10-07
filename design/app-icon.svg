@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- night sky: midnight plum fading to near-black -->
+    <radialGradient id="bg" cx="0.5" cy="0.32" r="0.8">
+      <stop offset="0" stop-color="#4a1030"/>
+      <stop offset="0.55" stop-color="#22071a"/>
+      <stop offset="1" stop-color="#0c0309"/>
+    </radialGradient>
+    <!-- soft blood-moon glow behind the mark -->
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#b3122f" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#b3122f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="blood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0304d"/>
+      <stop offset="0.6" stop-color="#c3112d"/>
+      <stop offset="1" stop-color="#7d0618"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#e6dac4"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.14"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- macOS icon grid: 824pt body inset 100pt, ~185pt corner radius -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  <circle cx="512" cy="500" r="360" fill="url(#glow)"/>
+
+  <!-- the mark, scaled from its 1000-unit artboard -->
+  <g transform="translate(162 152) scale(0.7)">
+    <path d="M781.1 295.7 A347.5 347.5 0 1 1 652.3 187.7" fill="none" stroke="url(#blood)" stroke-width="85" stroke-linecap="round"/>
+    <path d="M206 600 Q252 742 380 740 L620 740 Q748 742 794 600 A312 312 0 0 1 206 600 Z" fill="#a50c25"/>
+    <!-- fangs -->
+    <path d="M362 736 L438 736 L404 818 Q400 826 396 818 Z" fill="url(#bone)"/>
+    <path d="M562 736 L638 736 L604 818 Q600 826 596 818 Z" fill="url(#bone)"/>
+    <!-- a single drop of blood falling from the right fang -->
+    <path d="M600 832 C600 832 581 860 581 875 A19 19 0 0 0 619 875 C619 860 600 832 600 832 Z" fill="#ff3653"/>
+    <circle cx="593" cy="873" r="5" fill="#fff" fill-opacity="0.6"/>
+    <!-- hand + hub -->
+    <path d="M500 500 L658 352.7" stroke="url(#bone)" stroke-width="58" stroke-linecap="round"/>
+    <circle cx="500" cy="500" r="71" fill="url(#bone)"/>
+    <circle cx="500" cy="500" r="22" fill="#a50c25"/>
+  </g>
+
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 100 800 800">
+  <!-- Menu bar variant of mark.svg: cropped tight, deeper jaw and oversized fangs
+       so the bite still reads at 18pt. -->
+  <defs>
+    <mask id="fangs" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+      <rect width="1000" height="1000" fill="#fff"/>
+      <path d="M335 690 L450 690 L398 818 Q392 830 386 818 Z" fill="#000"/>
+      <path d="M550 690 L665 690 L614 818 Q608 830 602 818 Z" fill="#000"/>
+    </mask>
+  </defs>
+  <g mask="url(#fangs)" fill="#000">
+    <path d="M781.1 295.7 A347.5 347.5 0 1 1 652.3 187.7" fill="none" stroke="#000" stroke-width="95" stroke-linecap="round"/>
+    <path d="M190 560 Q240 694 370 692 L630 692 Q760 694 810 560 A312 312 0 0 1 190 560 Z"/>
+    <path d="M500 500 L650 360" stroke="#000" stroke-width="80" stroke-linecap="round"/>
+    <circle cx="500" cy="500" r="85"/>
+  </g>
+</svg>

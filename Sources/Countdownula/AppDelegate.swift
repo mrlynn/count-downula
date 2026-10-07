@@ -1,0 +1,186 @@
+import AppKit
+import SwiftUI
+
+/// Which screen the popover is showing.
+@MainActor
+@Observable
+final class PopoverNavigation {
+    var selectedID: UUID?
+}
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+    private let store = CountdownStore()
+    private let navigation = PopoverNavigation()
+    private let popover = NSPopover()
+    private var mainItem: NSStatusItem!
+    private var pinnedItems: [UUID: NSStatusItem] = [:]
+    private var thumbnailCache: [String: NSImage] = [:]
+    private var editorWindow: NSWindow?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        installMainMenu()
+
+        mainItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        if let button = mainItem.button {
+            button.image = NSImage.countdownulaMark
+            button.image?.accessibilityDescription = "Countdownula"
+            button.target = self
+            button.action = #selector(mainItemClicked(_:))
+        }
+
+        let actions = PopoverActions(
+            add: { [weak self] in self?.openEditor(for: nil) },
+            edit: { [weak self] countdown in self?.openEditor(for: countdown) },
+            quit: { NSApp.terminate(nil) }
+        )
+        let host = NSHostingController(rootView: PopoverView(store: store, navigation: navigation, actions: actions))
+        host.sizingOptions = .preferredContentSize
+        popover.contentViewController = host
+        popover.behavior = .transient
+        popover.animates = true
+
+        store.onUpdate = { [weak self] in self?.refreshPinnedItems() }
+        refreshPinnedItems()
+        Notifier.requestAuthorization()
+    }
+
+    // MARK: - Popover
+
+    @objc private func mainItemClicked(_ sender: NSStatusBarButton) {
+        togglePopover(from: sender, selecting: nil)
+    }
+
+    @objc private func pinnedItemClicked(_ sender: NSStatusBarButton) {
+        let id = sender.identifier.flatMap { UUID(uuidString: $0.rawValue) }
+        togglePopover(from: sender, selecting: id)
+    }
+
+    private func togglePopover(from button: NSStatusBarButton, selecting id: UUID?) {
+        if popover.isShown {
+            popover.performClose(nil)
+            return
+        }
+        navigation.selectedID = id
+        NSApp.activate(ignoringOtherApps: true)
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        popover.contentViewController?.view.window?.makeKey()
+    }
+
+    // MARK: - Pinned menu bar items
+
+    private func refreshPinnedItems() {
+        let pinned = store.countdowns.filter(\.isPinned)
+        let pinnedIDs = Set(pinned.map(\.id))
+
+        for (id, item) in pinnedItems where !pinnedIDs.contains(id) {
+            NSStatusBar.system.removeStatusItem(item)
+            pinnedItems[id] = nil
+        }
+
+        for countdown in pinned {
+            let item = pinnedItems[countdown.id] ?? makePinnedItem(for: countdown.id)
+            guard let button = item.button else { continue }
+
+            let time = CountdownFormat.compact(from: store.now, to: countdown.targetDate)
+            let title = " \(truncated(countdown.title, to: 18)) · \(time)"
+            if button.title != title {
+                button.attributedTitle = NSAttributedString(string: title, attributes: [
+                    .font: NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
+                    .baselineOffset: 0.5,
+                ])
+            }
+            button.image = menuBarImage(for: countdown)
+            button.imagePosition = .imageLeading
+            button.toolTip = countdown.details.isEmpty ? countdown.title : "\(countdown.title)\n\(countdown.details)"
+        }
+    }
+
+    private func makePinnedItem(for id: UUID) -> NSStatusItem {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        item.button?.identifier = NSUserInterfaceItemIdentifier(id.uuidString)
+        item.button?.target = self
+        item.button?.action = #selector(pinnedItemClicked(_:))
+        pinnedItems[id] = item
+        return item
+    }
+
+    private func menuBarImage(for countdown: Countdown) -> NSImage? {
+        if let name = countdown.imageFileName {
+            if let cached = thumbnailCache[name] { return cached }
+            if let image = store.image(named: name) {
+                let thumb = image.roundedThumbnail(side: 16)
+                thumbnailCache[name] = thumb
+                return thumb
+            }
+        }
+        let symbol = countdown.kind == .timer ? "timer" : "calendar"
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+        image?.isTemplate = true
+        return image
+    }
+
+    private func truncated(_ text: String, to length: Int) -> String {
+        text.count > length ? String(text.prefix(length - 1)) + "…" : text
+    }
+
+    // MARK: - Editor window
+
+    private func openEditor(for countdown: Countdown?) {
+        popover.performClose(nil)
+        editorWindow?.close()
+
+        let view = EditorView(store: store, original: countdown) { [weak self] saved in
+            self?.editorWindow?.close()
+            if let saved { self?.navigation.selectedID = saved.id }
+        }
+        let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+        window.title = countdown == nil ? "New Countdown" : "Edit Countdown"
+        window.styleMask = [.titled, .closable]
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        window.center()
+        editorWindow = window
+
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        if (notification.object as? NSWindow) === editorWindow { editorWindow = nil }
+    }
+
+    // MARK: - Main menu
+
+    /// Menu-bar-only apps have no visible main menu, but text fields still need one
+    /// for ⌘C / ⌘V / ⌘A / ⌘Z key equivalents to work.
+    private func installMainMenu() {
+        let main = NSMenu()
+
+        let appItem = NSMenuItem()
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "Quit Countdownula", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appItem.submenu = appMenu
+        main.addItem(appItem)
+
+        let editItem = NSMenuItem()
+        let editMenu = NSMenu(title: "Edit")
+        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        editMenu.addItem(.separator())
+        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editItem.submenu = editMenu
+        main.addItem(editItem)
+
+        let windowItem = NSMenuItem()
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        windowItem.submenu = windowMenu
+        main.addItem(windowItem)
+
+        NSApp.mainMenu = main
+    }
+}

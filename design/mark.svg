@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <!-- Countdownula mark: a timer ring whose lower jaw bares two fangs. -->
+  <defs>
+    <mask id="fangs" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+      <rect width="1000" height="1000" fill="#fff"/>
+      <path d="M362 736 L438 736 L404 818 Q400 826 396 818 Z" fill="#000"/>
+      <path d="M562 736 L638 736 L604 818 Q600 826 596 818 Z" fill="#000"/>
+    </mask>
+  </defs>
+  <g mask="url(#fangs)" fill="#000">
+    <!-- ring, open at about one o'clock -->
+    <path d="M781.1 295.7 A347.5 347.5 0 1 1 652.3 187.7" fill="none" stroke="#000" stroke-width="85" stroke-linecap="round"/>
+    <!-- jaw: fills the bottom of the ring up to a flat lip -->
+    <path d="M206 600 Q252 742 380 740 L620 740 Q748 742 794 600 A312 312 0 0 1 206 600 Z"/>
+    <!-- hand + hub -->
+    <path d="M500 500 L658 352.7" stroke="#000" stroke-width="58" stroke-linecap="round"/>
+    <circle cx="500" cy="500" r="71"/>
+  </g>
+</svg>
