@@ -235,6 +235,27 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   80% { opacity: 0.9; transform: scale(0.2, 0.2); }
   100% { opacity: 0; transform: scale(1.6, 1.6); }
 }
+/* Count Downula stands in front of his clock and rises in once the fangs land */
+.hero { overflow: clip; }
+.clock-wrap .count {
+  position: absolute; z-index: 2;
+  left: -12%; top: 50%; width: 50%; height: auto;
+  filter: drop-shadow(0 30px 40px rgba(12, 3, 9, 0.6));
+  -webkit-mask-image: linear-gradient(#000 72%, transparent 96%);
+  mask-image: linear-gradient(#000 72%, transparent 96%);
+  transform: translateY(40%); opacity: 0;
+  animation: count-in 1s cubic-bezier(.2, .9, .3, 1.1) 2.3s forwards;
+}
+@keyframes count-in { to { transform: none; opacity: 1; } }
+/* when the clock overlaps the copy, he moves to the clock's right side, mirrored so he still points at it */
+@media (max-width: 1240px) {
+  .clock-wrap .count { left: auto; right: -8%; top: 52%; width: 42%; scale: -1 1; }
+}
+/* stacked layout: copy is below the clock, so he goes back to the left, smaller */
+@media (max-width: 900px) {
+  .clock-wrap .count { left: -6%; right: auto; top: 50%; width: 36%; scale: none; }
+}
+
 .clock .glow { animation: pulse 1s ease-in-out infinite alternate; transform-box: view-box; transform-origin: 500px 500px; }
 @keyframes pulse { from { opacity: 0.55; } to { opacity: 0.9; } }
 
