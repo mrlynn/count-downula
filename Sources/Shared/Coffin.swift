@@ -27,8 +27,15 @@ enum Coffin {
     static let maxText = 500
 
     /// The slug and key this device uses for a countdown's coffin: the owner's for one you
-    /// published, the member's for one you joined. Count-ups have no coffin.
+    /// published, the member's for one you joined. Count-ups have no coffin, and neither do public
+    /// crypt countdowns (thousands of strangers, no owner to moderate).
     static func access(for countdown: Countdown) -> (slug: String, token: String)? {
+        guard countdown.extras.subscription?.isPublic != true else { return nil }
+        return sharedAccess(for: countdown)
+    }
+
+    /// The slug and owner or member key for any shared countdown, public ones included.
+    static func sharedAccess(for countdown: Countdown) -> (slug: String, token: String)? {
         guard !countdown.countsUp else { return nil }
         if let link = countdown.extras.link, let token = OwnerTokens.token(for: countdown.id) {
             return (link.slug, token)

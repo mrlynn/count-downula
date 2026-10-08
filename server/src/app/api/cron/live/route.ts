@@ -24,6 +24,7 @@ export async function GET(request: Request) {
   const due = await countdowns
     .find({
       kind: { $ne: "countUp" },
+      floating: { $exists: false },
       targetDate: { $gt: new Date(now.getTime() - END_GRACE_MS), $lte: new Date(now.getTime() + START_WINDOW_MS) },
     })
     .project<LiveCountdown>({ slug: 1, title: 1, kind: 1, targetDate: 1, createdAt: 1, style: 1, liveEndedFor: 1 })

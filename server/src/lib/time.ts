@@ -90,3 +90,11 @@ export function dialRemaining(now: Date, created: Date, target: Date, kind: Kind
   if (total <= 0 || now >= target) return 0;
   return Math.min(Math.max(1 - (now.getTime() - created.getTime()) / total, 0), 1);
 }
+
+/**
+ * The real moment a countdown hits zero for this viewer. A floating time ("2027-01-01T00:00:00")
+ * has no zone, so JavaScript reads it on the viewer's own clock.
+ */
+export function viewerTarget(countdown: { targetDate: string; floating?: string }): Date {
+  return countdown.floating ? new Date(countdown.floating) : new Date(countdown.targetDate);
+}

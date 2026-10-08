@@ -151,4 +151,27 @@ final class SharedCountdownTests: XCTestCase {
         XCTAssertNil(Coffin.access(for: countUp))
         XCTAssertNil(Coffin.access(for: Countdown(title: "Mine", details: "", targetDate: Date())), "Not shared")
     }
+
+    // MARK: - Crypt
+
+    func testAFloatingCryptTimeIsMidnightOnThisDevicesClock() throws {
+        let json = Data("""
+        {"url":"https://go.countdowncula.com/c/new-year-2027","memberCount":120,
+         "countdown":{"slug":"new-year-2027","title":"New Year 2027","details":"",
+          "targetDate":"2027-01-01T00:00:00.000Z","createdAt":"2026-10-07T00:00:00.000Z",
+          "updatedAt":"2026-10-08T00:00:00.000Z","kind":"event","timeZone":"UTC",
+          "style":{"background":{"scene":{"_0":"confetti"}},"font":"serif","weight":"bold"},
+          "hasPhoto":false,"floating":"2027-01-01T00:00:00","isPublic":true}}
+        """.utf8)
+        let remote = try RemoteCountdown.decode(json)
+        let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: remote.targetDate)
+        XCTAssertEqual([parts.year, parts.month, parts.day, parts.hour, parts.minute], [2027, 1, 1, 0, 0])
+        XCTAssertTrue(remote.isPublic)
+
+        let countdown = SharedCountdowns.makeCountdown(from: remote, slug: "new-year-2027",
+                                                       url: URL(string: "https://go.countdowncula.com/c/new-year-2027")!,
+                                                       now: date("2026-10-08T12:00:00Z"))
+        XCTAssertEqual(countdown.extras.subscription?.isPublic, true)
+        XCTAssertNil(Coffin.access(for: countdown), "Public countdowns have no coffin")
+    }
 }

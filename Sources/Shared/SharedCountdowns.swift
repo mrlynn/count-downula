@@ -60,6 +60,7 @@ enum SharedCountdowns {
         if countdown.targetDate != local.targetDate { countdown.hasNotified = false }
         countdown.extras.subscription?.remoteUpdatedAt = remote.updatedAt
         countdown.extras.subscription?.memberCount = remote.memberCount
+        countdown.extras.subscription?.isPublic = remote.isPublic ? true : nil
         return countdown
     }
 
@@ -119,6 +120,8 @@ enum SharedCountdowns {
         guard let subscription = local.extras.subscription else { return false }
         return subscription.remoteUpdatedAt.map { remote.updatedAt > $0 } ?? true
             || subscription.memberCount != remote.memberCount
+            // A floating time moves with the device's time zone.
+            || (remote.floating != nil && local.targetDate != remote.targetDate)
     }
 }
 
@@ -136,6 +139,9 @@ struct RemoteCountdown: Equatable {
     var memberCount: Int
     /// The public link, as the server spells it.
     var url: URL?
+    /// A floating local time ("2027-01-01T00:00:00") that `targetDate` was read from on this device.
+    var floating: String? = nil
+    var isPublic = false
 }
 
 extension RemoteCountdown {
@@ -155,6 +161,8 @@ extension RemoteCountdown {
         let style: Lenient<CountdownStyle>?
         let milestones: Lenient<[Milestone]>?
         let hasPhoto: Bool
+        let floating: String?
+        let isPublic: Bool?
     }
 
     /// A style or milestone list written by a newer app can fail to decode here; fall back rather
@@ -170,11 +178,23 @@ extension RemoteCountdown {
         let envelope = try LiveLinkAPI.decoder.decode(Envelope.self, from: data)
         let body = envelope.countdown
         return RemoteCountdown(
-            title: body.title, details: body.details, targetDate: body.targetDate, createdAt: body.createdAt,
+            title: body.title, details: body.details,
+            // A floating time is midnight (or whenever) on this device's own clock.
+            targetDate: body.floating.flatMap(localDate) ?? body.targetDate, createdAt: body.createdAt,
             updatedAt: body.updatedAt, kind: Countdown.Kind(rawValue: body.kind) ?? .event,
             style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
-            hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url
+            hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url,
+            floating: body.floating, isPublic: body.isPublic ?? false
         )
+    }
+
+    /// "2027-01-01T00:00:00" on this device's clock.
+    static func localDate(_ text: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.date(from: text)
     }
 }
 

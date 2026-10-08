@@ -4,7 +4,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import type { PublicCountdown } from "@/lib/countdowns.ts";
 import { webStyle } from "@/lib/style.ts";
-import { dialRemaining, timeParts } from "@/lib/time.ts";
+import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
 
 const DOWNLOAD = "https://www.countdowncula.com";
 
@@ -73,7 +73,8 @@ export function LiveCountdown({
     return () => clearInterval(id);
   }, []);
 
-  const target = new Date(countdown.targetDate);
+  // Floating times only become real on the viewer's clock, so wait for the browser before using one.
+  const target = countdown.floating && !mounted ? new Date(countdown.targetDate) : viewerTarget(countdown);
   const created = new Date(countdown.createdAt);
   const countsUp = countdown.kind === "countUp";
   const p = timeParts(now, target, countsUp);

@@ -189,6 +189,8 @@ How it works: countdowns with `visibility: public` and a `curated` flag. A staff
 
 Depends on: features 1 and 2.
 
+Built (version one, October 8, 2026): a curated list only, no user submissions yet. Entries come from `server/crypt/launch.json` (the approved list is in `docs/specs/crypt-launch-list.md`) and are upserted by slug through `PUT /api/admin/crypt` with `CRYPT_ADMIN_TOKEN` (`node scripts/seed-crypt.mjs`). Holidays use **floating local times**: the server stores `floating: "2027-01-01T00:00:00"`, and the browser and the app each read it on their own clock, so New Year hits zero at local midnight everywhere. Astronomical events are one exact UTC moment. Pages at `/crypt` and `/crypt/[category]` (holidays, sky, sports, fun), with scene backdrops pre-rendered from the app's `SceneArt` into `server/public/scenes`. Public entries are indexable; link-only ones stay `noindex`. In the app, Browse the Crypt in the + menu joins an entry like any shared countdown. Public countdowns have no coffin, and floating ones skip the synchronized zero push, since zero isn't one moment. Entries drop off a day after zero; rolling holidays to next year is a manual reseed for now.
+
 ### 12. Date pools (phase 4, size S to M)
 
 What it is: friends guess when something will happen, like the baby's arrival, a ship date or the first snow. When the real date gets set, the countdown fills in and the closest guess wins bragging rights.

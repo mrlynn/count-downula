@@ -37,7 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
     },
     twitter: { card: "summary_large_image", title: doc.title, description, images: [image] },
-    robots: { index: false },
+    // Public crypt entries can be found in search; private links can't.
+    robots: { index: doc.visibility === "public" },
     // Safari's App Clip card: open the countdown in the clip, no install needed.
     other: { "apple-itunes-app": "app-id=6820183254, app-clip-bundle-id=com.countdownula.app.Clip, app-clip-display=card" },
   };
