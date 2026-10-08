@@ -11,8 +11,14 @@ case "${1:-release}" in
 esac
 
 xcodegen generate --quiet
+# DIRECT=1 builds the GitHub flavor (always unlocked, not sandboxed) instead of the Mac App Store one.
+OVERRIDES=()
+if [[ "${DIRECT:-0}" == "1" ]]; then
+  OVERRIDES=(SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DISTRIBUTION'
+             CODE_SIGN_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements)
+fi
 xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration "$CONFIG" \
-  -derivedDataPath .build/xcode -allowProvisioningUpdates -quiet build
+  -derivedDataPath .build/xcode -allowProvisioningUpdates ${OVERRIDES[@]+"${OVERRIDES[@]}"} -quiet build
 
 rm -rf build/Countdownula.app
 mkdir -p build
