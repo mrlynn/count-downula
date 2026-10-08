@@ -7,6 +7,7 @@ Upload these on the app's version page in App Store Connect, under **Previews an
 | `iphone-6.3/` | iPhone with Dynamic Island (medium display) | 1206 × 2622 | List, countdown detail, date pool, the Crypt, appearance editor (occasion scenes), count-up |
 | `iphone/` | iPhone 6.9" (if App Store Connect asks for it) | 1320 × 2868 | The same six, at full size |
 | `ipad/` | iPad 13" Display | 2064 × 2752 | List, countdown detail, the Crypt |
+| `mac/` | Mac | 1440 × 900 | Menu bar list and detail, editor, free tier and Unlimited |
 | `watch/` | Apple Watch | 416 × 496 | Watch face with complications, list, detail |
 | `iap-review-paywall.png` | In-app purchase → Review Information → Screenshot | 1206 × 2622 | The Count Downcula Unlimited paywall (for Apple's reviewer only) |
 
@@ -23,6 +24,8 @@ The iPhone and iPad shots come from the iOS Simulator with the debug demo data:
 The date pool and the Crypt need a server. Run one locally (`server/`, `npx next dev --port 4319` against a local MongoDB), seed the Crypt with `scripts/seed-crypt.mjs`, and add `-linkServer http://localhost:4319` to the launch arguments. The demo's "Baby Chen Arrives" has a date pool: share its live link from the detail screen, add a few guesses with `POST /api/countdowns/<slug>/pool/guesses`, then guess from the app so one row reads "(you)".
 
 To open a specific countdown, use its link: `xcrun simctl openurl booted countdownula://countdown/<uuid>`. The UUIDs are in `ZCOUNTDOWNRECORD` in the app's `Library/Application Support/Countdownula.store`.
+
+The Mac shots are the Debug build's own windows, captured with `screencapture -l <window id>` and placed on the Mountains scene rendered at 1440 × 900. Launch arguments: `-localOnly` plus `-openPopover` (add `-select "Sonoma Wine Weekend"` for the detail), `-openEditor "Sam's 30th Birthday"`, or `-freeTier -openPaywall` / `-freeTier -openPopover`. The sandboxed app keeps its data in `~/Library/Containers/com.countdownula.app`; move that store aside (and back afterwards) so `-seedDemo` seeds.
 
 The watch shots come from an Apple Watch Series 11 (46mm) simulator running the `CountdownulaWatch` scheme with `-seedDemo -localOnly`. The watch-face shot was taken on a real watch and is shared with `docs/screenshots/watch-face.png`.
 
