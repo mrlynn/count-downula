@@ -2,11 +2,12 @@ import { after, NextResponse } from "next/server";
 import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, updateCountdown } from "@/lib/countdowns.ts";
 import { notifyMembers } from "@/lib/notify.ts";
 import { purgeCoffin } from "@/lib/coffin.ts";
+import { purgePool } from "@/lib/pool.ts";
 import { forgetLiveDevices } from "@/lib/live.ts";
 import { forgetPass, pushPassUpdates } from "@/lib/walletPass.ts";
 import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
-import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
+import { isSlug, poolFlag, validateCountdown, validatePhoto } from "@/lib/validate.ts";
 
 type Context = { params: Promise<{ slug: string }> };
 
@@ -41,7 +42,7 @@ export async function PUT(request: Request, { params }: Context) {
   const photo = validatePhoto(body?.photo);
   if (!photo.ok) return errorResponse(422, photo.error);
 
-  const { result, doc } = await updateCountdown(slug, bearer(request), countdown.value, photo.value);
+  const { result, doc } = await updateCountdown(slug, bearer(request), countdown.value, photo.value, poolFlag(body?.countdown));
   if (result === "not-found") return errorResponse(404, "Not found.");
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");
   // Members' apps fetch the new copy as soon as they're woken.
@@ -64,6 +65,7 @@ export async function DELETE(request: Request, { params }: Context) {
   after(() => notifyMembers(slug, targets).catch(() => {}));
   // Sealed notes and photos go with it.
   after(() => purgeCoffin(slug).catch(() => {}));
+  after(() => purgePool(slug).catch(() => {}));
   after(() => forgetLiveDevices(slug).catch(() => {}));
   after(() => forgetPass(slug).catch(() => {}));
   return new NextResponse(null, { status: 204 });

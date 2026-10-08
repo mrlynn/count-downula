@@ -174,4 +174,36 @@ final class SharedCountdownTests: XCTestCase {
         XCTAssertEqual(countdown.extras.subscription?.isPublic, true)
         XCTAssertNil(Coffin.access(for: countdown), "Public countdowns have no coffin")
     }
+
+    // MARK: - Date pools
+
+    func testAPoolComesWithTheCopyAndTheSwitchGoesOutWithEveryEdit() throws {
+        let json = Data("""
+        {"url":"https://go.countdowncula.com/c/Y9YST58b","memberCount":2,
+         "countdown":{"slug":"Y9YST58b","title":"Baby Lynn","details":"",
+          "targetDate":"2026-11-30T12:00:00.000Z","createdAt":"2026-10-01T00:00:00.000Z",
+          "updatedAt":"2026-10-08T00:00:00.000Z","kind":"event","timeZone":"America/New_York",
+          "style":{"background":{"scene":{"_0":"baby"}},"font":"rounded","weight":"bold"},
+          "hasPhoto":false,"pool":{"closed":true,"answer":"2026-11-28T04:12:00.000Z"}}}
+        """.utf8)
+        let remote = try RemoteCountdown.decode(json)
+        XCTAssertEqual(remote.pool, DatePool(closed: true, answer: date("2026-11-28T04:12:00Z")))
+        let joined = SharedCountdowns.makeCountdown(from: remote, slug: "Y9YST58b",
+                                                    url: URL(string: "https://go.countdowncula.com/c/Y9YST58b")!)
+        XCTAssertEqual(joined.extras.pool?.isSettled, true)
+
+        var mine = Countdown(title: "Ship date", details: "", targetDate: date("2027-03-01T00:00:00Z"))
+        let off = try JSONSerialization.jsonObject(with: LiveLinkAPI.Payload(mine, backdrop: .unchanged).json()) as! [String: Any]
+        XCTAssertEqual((off["countdown"] as! [String: Any])["pool"] as? Bool, false, "Sent even when off, so turning it off reaches the server")
+        mine.extras.pool = DatePool()
+        let on = try JSONSerialization.jsonObject(with: LiveLinkAPI.Payload(mine, backdrop: .unchanged).json()) as! [String: Any]
+        XCTAssertEqual((on["countdown"] as! [String: Any])["pool"] as? Bool, true)
+    }
+
+    func testOffByReadsLikeAPerson() {
+        XCTAssertEqual(DatePool.offBy(20), "spot on")
+        XCTAssertEqual(DatePool.offBy(25 * 60), "off by 25m")
+        XCTAssertEqual(DatePool.offBy(3 * 3_600 + 120), "off by 3h 2m")
+        XCTAssertEqual(DatePool.offBy(2 * 86_400 + 4 * 3_600), "off by 2d 4h")
+    }
 }

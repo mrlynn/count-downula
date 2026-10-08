@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { PublicCountdown } from "@/lib/countdowns.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
+import PoolPanel from "./PoolPanel.tsx";
 
 const DOWNLOAD = "https://www.countdowncula.com";
 
@@ -129,7 +130,13 @@ export function LiveCountdown({
             {countdown.title}
           </Typography>
           <Typography sx={{ opacity: 0.85, minHeight: "1.5em", mb: 3 }} suppressHydrationWarning>
-            {p.isPast ? `It's here! ${dateLine}` : countsUp ? `Since ${dateLine}` : dateLine}
+            {p.isPast
+              ? `It's here! ${dateLine}`
+              : countsUp
+                ? `Since ${dateLine}`
+                : countdown.pool && !countdown.pool.answer
+                  ? `Expected ${dateLine}`
+                  : dateLine}
           </Typography>
           <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
             <Unit value={p.days} label="days" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
@@ -153,6 +160,7 @@ export function LiveCountdown({
         </Box>
         </Box>
       </Box>
+      {countdown.pool ? <PoolPanel slug={countdown.slug} estimate={countdown.targetDate} /> : null}
       <Box sx={{ bgcolor: "background.default", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
         <Stack
           direction={{ xs: "column", sm: "row" }}

@@ -58,6 +58,9 @@ struct CountdownDetailView: View {
                             MilestoneTimeline(countdown: countdown, now: now)
                         }
 
+                        // Friends guess when it happens; the closest guess wins.
+                        PoolSection(countdown: countdown)
+
                         // Shared countdowns only: notes and photos sealed until zero.
                         CoffinSection(countdown: countdown, now: now)
 

@@ -21,10 +21,12 @@ struct CountdownExtras: Codable, Hashable {
     var voice: NotificationVoice = .standard
     /// Set on the built-in sunrise, sunset and full moon countdowns, which roll on to the next one.
     var auto: AutoDate?
+    /// A date pool: friends guess when it happens. Set by the owner; members get it with the copy.
+    var pool: DatePool?
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto }
+    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -36,7 +38,20 @@ struct CountdownExtras: Codable, Hashable {
         subscription = try? c.decodeIfPresent(SharedSubscription.self, forKey: .subscription)
         voice = (try? c.decodeIfPresent(NotificationVoice.self, forKey: .voice)) ?? .standard
         auto = try? c.decodeIfPresent(AutoDate.self, forKey: .auto)
+        pool = try? c.decodeIfPresent(DatePool.self, forKey: .pool)
     }
+}
+
+/// A date pool on a countdown: friends guess when it happens, and when the owner sets the real
+/// date, the closest guess wins. Bragging rights only. The countdown's own date is the owner's
+/// estimate until then.
+struct DatePool: Codable, Hashable {
+    /// No more guesses.
+    var closed = false
+    /// The real date, once the owner sets it. The countdown's target becomes this too.
+    var answer: Date?
+
+    var isSettled: Bool { answer != nil }
 }
 
 enum NotificationVoice: String, Codable, Hashable {

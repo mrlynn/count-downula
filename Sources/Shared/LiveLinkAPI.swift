@@ -55,12 +55,15 @@ enum LiveLinkAPI {
             let timeZone: String
             let style: CountdownStyle
             let milestones: [Milestone]
+            /// Always sent, so turning a pool off reaches the server. Older builds leave it out.
+            let pool: Bool
         }
 
         init(_ countdown: Countdown, backdrop: Backdrop, timeZone: TimeZone = .current) {
             self.countdown = Body(title: countdown.title, details: countdown.details, targetDate: countdown.targetDate,
                                   createdAt: countdown.createdAt, kind: countdown.kind, timeZone: timeZone.identifier,
-                                  style: countdown.style, milestones: countdown.milestones)
+                                  style: countdown.style, milestones: countdown.milestones,
+                                  pool: countdown.extras.pool != nil)
             self.backdrop = backdrop
         }
 

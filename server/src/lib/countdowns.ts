@@ -29,6 +29,15 @@ export interface CountdownDoc {
   /** In the public crypt. */
   curated?: boolean;
   category?: string;
+  /** A date pool: people guess when it happens (see pool.ts). */
+  pool?: PoolState;
+}
+
+export interface PoolState {
+  closed: boolean;
+  /** The real date, once the owner sets it. */
+  answer?: Date;
+  settledAt?: Date;
 }
 
 /** Someone counting down with a shared countdown. No account: just a random key their devices keep. */
@@ -63,6 +72,7 @@ export interface PublicCountdown {
   floating?: string;
   isPublic?: boolean;
   category?: string;
+  pool?: { closed: boolean; answer?: string };
 }
 
 let indexesReady: Promise<unknown> | undefined;
@@ -106,6 +116,9 @@ export function toPublic(doc: CountdownDoc): PublicCountdown {
     ...(doc.floating ? { floating: doc.floating } : {}),
     ...(doc.visibility === "public" ? { isPublic: true } : {}),
     ...(doc.category ? { category: doc.category } : {}),
+    ...(doc.pool
+      ? { pool: { closed: doc.pool.closed, ...(doc.pool.answer ? { answer: doc.pool.answer.toISOString() } : {}) } }
+      : {}),
   };
 }
 
@@ -119,7 +132,7 @@ async function writePhoto(photos: Collection<PhotoDoc>, slug: string, photo: Pho
   return true;
 }
 
-export async function createCountdown(input: CountdownInput, photo: PhotoInput) {
+export async function createCountdown(input: CountdownInput, photo: PhotoInput, pool = false) {
   const { countdowns, photos } = await collections();
   const ownerToken = randomBytes(32).toString("base64url");
   const now = new Date();
@@ -134,6 +147,7 @@ export async function createCountdown(input: CountdownInput, photo: PhotoInput) 
       hasPhoto: false,
       visibility: "link",
       stats: { views: 0 },
+      ...(pool ? { pool: { closed: false } } : {}),
     };
     try {
       await countdowns.insertOne(doc);
@@ -180,16 +194,25 @@ export async function updateCountdown(
   token: string | null,
   input: CountdownInput,
   photo: PhotoInput,
+  /** true turns a date pool on, false turns it off; undefined (older apps) leaves it alone. */
+  pool?: boolean,
 ): Promise<{ result: OwnerResult; doc?: CountdownDoc }> {
   const result = await authorize(slug, token);
   if (result !== "ok") return { result };
   const { countdowns, photos } = await collections();
   const hasPhoto = await writePhoto(photos, slug, photo);
-  const doc = await countdowns.findOneAndUpdate(
-    { slug },
-    { $set: { ...input, updatedAt: new Date(), ...(hasPhoto === undefined ? {} : { hasPhoto }) } },
-    { returnDocument: "after" },
-  );
+  const current = await getCountdown(slug);
+  const update: Record<string, object> = {
+    $set: {
+      ...input,
+      updatedAt: new Date(),
+      ...(hasPhoto === undefined ? {} : { hasPhoto }),
+      ...(pool === true && !current?.pool ? { pool: { closed: false } } : {}),
+    },
+  };
+  // A settled pool stays: its result is history now.
+  if (pool === false && current?.pool && !current.pool.answer) update.$unset = { pool: "" };
+  const doc = await countdowns.findOneAndUpdate({ slug }, update, { returnDocument: "after" });
   return { result, doc: doc ?? undefined };
 }
 

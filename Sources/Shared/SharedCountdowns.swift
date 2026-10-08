@@ -61,6 +61,7 @@ enum SharedCountdowns {
         countdown.extras.subscription?.remoteUpdatedAt = remote.updatedAt
         countdown.extras.subscription?.memberCount = remote.memberCount
         countdown.extras.subscription?.isPublic = remote.isPublic ? true : nil
+        countdown.extras.pool = remote.pool
         return countdown
     }
 
@@ -142,6 +143,7 @@ struct RemoteCountdown: Equatable {
     /// A floating local time ("2027-01-01T00:00:00") that `targetDate` was read from on this device.
     var floating: String? = nil
     var isPublic = false
+    var pool: DatePool? = nil
 }
 
 extension RemoteCountdown {
@@ -163,6 +165,7 @@ extension RemoteCountdown {
         let hasPhoto: Bool
         let floating: String?
         let isPublic: Bool?
+        let pool: Lenient<DatePool>?
     }
 
     /// A style or milestone list written by a newer app can fail to decode here; fall back rather
@@ -184,7 +187,7 @@ extension RemoteCountdown {
             updatedAt: body.updatedAt, kind: Countdown.Kind(rawValue: body.kind) ?? .event,
             style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
             hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url,
-            floating: body.floating, isPublic: body.isPublic ?? false
+            floating: body.floating, isPublic: body.isPublic ?? false, pool: body.pool?.value
         )
     }
 
