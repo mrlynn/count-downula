@@ -95,6 +95,8 @@ How it works: a new `CountdownulaClip` target in `project.yml`, sharing `Countdo
 
 Depends on: feature 1, an App Clip bundle ID (`com.countdownula.app.Clip`), App Store Connect App Clip experience setup.
 
+Built (October 8, 2026), iPhone only: the `CountdownulaClip` target (about 5 MB) shows the shared countdown live with its member count, Keep It and Share. Keep It leaves the slug in the App Group and opens the App Store overlay; the full app joins it the first time it opens. The server's AASA lists the clip and live pages carry the Safari App Clip card tag. The Live Activity offer is deferred: the clip doesn't include the widget extension that draws Live Activities, so it can't start one yet.
+
 ### 4. The sealed coffin (phase 3, size L)
 
 What it is: on a shared countdown, anyone can drop in a note, photo or short video. Contributions stay sealed until zero, then open together with confetti and a reveal sequence.

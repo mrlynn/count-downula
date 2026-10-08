@@ -80,7 +80,9 @@ console.log("members ok");
 res = await fetch(`${base}/.well-known/apple-app-site-association`);
 assert.equal(res.status, 200);
 assert.match(res.headers.get("content-type"), /json/);
-assert.deepEqual((await res.json()).applinks.details[0].appIDs, ["YZ36Z8GSEN.com.countdownula.app"]);
+const aasa = await res.json();
+assert.deepEqual(aasa.applinks.details[0].appIDs, ["YZ36Z8GSEN.com.countdownula.app"]);
+assert.deepEqual(aasa.appclips.apps, ["YZ36Z8GSEN.com.countdownula.app.Clip"]);
 console.log("aasa ok");
 
 res = await fetch(`${base}/api/countdowns/${created.slug}`, { method: "DELETE", headers: { authorization: `Bearer ${created.ownerToken}` } });

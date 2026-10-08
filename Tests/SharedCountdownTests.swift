@@ -112,4 +112,18 @@ final class SharedCountdownTests: XCTestCase {
         countdowns.append(joined)
         XCTAssertTrue(Entitlements.canAdd(to: countdowns, unlocked: false, at: now))
     }
+
+    // MARK: - App Clip handoff
+
+    func testTheClipsKeptCountdownsWaitForTheAppOnce() {
+        for slug in ClipHandoff.pending { ClipHandoff.done(slug) }
+        ClipHandoff.keep("EPdLHJj9")
+        ClipHandoff.keep("EPdLHJj9")
+        ClipHandoff.keep("cb4TV7jV")
+        XCTAssertEqual(ClipHandoff.pending, ["EPdLHJj9", "cb4TV7jV"], "Keeping twice doesn't join twice")
+        ClipHandoff.done("EPdLHJj9")
+        XCTAssertEqual(ClipHandoff.pending, ["cb4TV7jV"])
+        ClipHandoff.done("cb4TV7jV")
+        XCTAssertTrue(ClipHandoff.pending.isEmpty)
+    }
 }
