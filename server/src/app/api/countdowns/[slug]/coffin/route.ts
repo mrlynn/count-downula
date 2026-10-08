@@ -44,6 +44,7 @@ export async function POST(request: Request, { params }: Context) {
   if (!doc) return errorResponse(404, "Not found.");
   if (!role) return errorResponse(403, "Join this countdown to add to its coffin.");
   if (doc.kind === "countUp") return errorResponse(422, "Count-ups don't have a coffin.");
+  if (doc.visibility === "public") return errorResponse(422, "Public countdowns don't have a coffin.");
   if (isOpen(doc)) return errorResponse(409, "The coffin is already open.");
 
   const verdict = await checkLimits([

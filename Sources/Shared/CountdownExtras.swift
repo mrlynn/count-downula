@@ -106,6 +106,8 @@ struct SharedSubscription: Codable, Hashable {
     var remoteUpdatedAt: Date?
     /// How many people are counting down, as of the last refresh.
     var memberCount: Int?
+    /// A public crypt countdown (no coffin; anyone can join).
+    var isPublic: Bool?
 }
 
 /// A countdown's public page on the Count Downcula server.

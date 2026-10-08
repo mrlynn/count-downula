@@ -20,6 +20,15 @@ export interface CountdownDoc {
   hasPhoto: boolean;
   visibility: "link" | "public";
   stats: { views: number };
+  /**
+   * A floating local time ("2027-01-01T00:00:00"): each viewer counts to that moment on their own
+   * clock. For these, targetDate holds the same wall-clock time read as UTC and timeZone is "UTC",
+   * so the server's dates and sorting work unchanged; only the viewer turns it into a real moment.
+   */
+  floating?: string;
+  /** In the public crypt. */
+  curated?: boolean;
+  category?: string;
 }
 
 /** Someone counting down with a shared countdown. No account: just a random key their devices keep. */
@@ -51,6 +60,9 @@ export interface PublicCountdown {
   style: Record<string, unknown>;
   milestones: unknown[];
   hasPhoto: boolean;
+  floating?: string;
+  isPublic?: boolean;
+  category?: string;
 }
 
 let indexesReady: Promise<unknown> | undefined;
@@ -91,6 +103,9 @@ export function toPublic(doc: CountdownDoc): PublicCountdown {
     style: doc.style,
     milestones: doc.milestones,
     hasPhoto: doc.hasPhoto,
+    ...(doc.floating ? { floating: doc.floating } : {}),
+    ...(doc.visibility === "public" ? { isPublic: true } : {}),
+    ...(doc.category ? { category: doc.category } : {}),
   };
 }
 

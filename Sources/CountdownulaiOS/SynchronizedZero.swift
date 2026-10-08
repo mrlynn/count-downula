@@ -61,7 +61,7 @@ enum SynchronizedZero {
         guard let startToken else { return }
         var done = registered
         for countdown in store.countdowns {
-            guard done[countdown.id.uuidString] != startToken, let access = Coffin.access(for: countdown) else { continue }
+            guard done[countdown.id.uuidString] != startToken, let access = Coffin.sharedAccess(for: countdown) else { continue }
             if (try? await LiveLinkAPI.registerLive(slug: access.slug, token: access.token, deviceID: deviceID,
                                                      countdownID: countdown.id, startToken: startToken,
                                                      activityToken: nil, sandbox: sandbox)) != nil {
@@ -76,7 +76,7 @@ enum SynchronizedZero {
         Task {
             for await data in activity.pushTokenUpdates {
                 guard let countdown = store.countdown(id: activity.attributes.countdownID),
-                      let access = Coffin.access(for: countdown) else { continue }
+                      let access = Coffin.sharedAccess(for: countdown) else { continue }
                 try? await LiveLinkAPI.registerLive(slug: access.slug, token: access.token, deviceID: deviceID,
                                                     countdownID: countdown.id, startToken: startToken,
                                                     activityToken: hex(data), sandbox: sandbox)

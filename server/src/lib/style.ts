@@ -53,6 +53,10 @@ const FONTS: Record<string, string> = {
   expanded: `"Instrument Sans", system-ui, sans-serif`,
 };
 
+/** Scenes with a pre-rendered image in public/scenes (scripts/render-scenes.swift). */
+const SCENES = new Set(["midnight", "starfield", "aurora", "sunset", "mountains", "ocean", "snowfall", "blossoms",
+  "city", "confetti", "balloons", "harvestMoon"]);
+
 const WEIGHTS: Record<string, number> = { regular: 400, medium: 500, semibold: 600, bold: 700, heavy: 800, black: 900 };
 
 export function webStyle(style: unknown, hasImage: boolean): WebStyle {
@@ -71,7 +75,11 @@ export function webStyle(style: unknown, hasImage: boolean): WebStyle {
     case "photo":
     case "scene":
       // The app uploads its rendered scene as the backdrop image, so scenes look the same on the web.
+      // Without one (crypt entries, older links), use the same scene rendered once from the app's code.
       useImage = hasImage;
+      if (!hasImage && typeof payload === "string" && SCENES.has(payload)) {
+        background = `center / cover no-repeat url(/scenes/${payload}.jpg), ${background}`;
+      }
       break;
     case "gradient":
       if (payload && typeof payload === "object" && Array.isArray((payload as { stops?: unknown }).stops)) {

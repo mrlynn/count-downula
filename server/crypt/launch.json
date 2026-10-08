@@ -1,0 +1,22 @@
+[
+  { "slug": "halloween-2026", "title": "Halloween", "details": "The Count's favorite night of the year.", "category": "holidays", "scene": "harvestMoon", "local": "2026-10-31T00:00:00" },
+  { "slug": "dst-ends-2026", "title": "Daylight Saving Time Ends (US)", "details": "Clocks fall back an hour. One more hour of darkness, you're welcome.", "category": "holidays", "scene": "midnight", "local": "2026-11-01T02:00:00" },
+  { "slug": "dia-de-muertos-2026", "title": "Día de los Muertos", "details": "Remembering the ones we love, November 1 and 2.", "category": "holidays", "scene": "harvestMoon", "local": "2026-11-02T00:00:00" },
+  { "slug": "thanksgiving-2026", "title": "Thanksgiving (US)", "details": "The fourth Thursday of November.", "category": "holidays", "scene": "mountains", "local": "2026-11-26T00:00:00" },
+  { "slug": "christmas-2026", "title": "Christmas", "details": "", "category": "holidays", "scene": "snowfall", "local": "2026-12-25T00:00:00" },
+  { "slug": "new-year-2027", "title": "New Year 2027", "details": "Midnight, wherever you are.", "category": "holidays", "scene": "confetti", "local": "2027-01-01T00:00:00" },
+  { "slug": "lunar-new-year-2027", "title": "Lunar New Year", "details": "Welcome the Year of the Goat.", "category": "holidays", "scene": "confetti", "local": "2027-02-06T00:00:00" },
+  { "slug": "valentines-2027", "title": "Valentine's Day", "details": "", "category": "holidays", "scene": "blossoms", "local": "2027-02-14T00:00:00" },
+  { "slug": "pi-day-2027", "title": "Pi Day", "details": "3.14, at 1:59.", "category": "fun", "scene": "starfield", "local": "2027-03-14T13:59:00" },
+  { "slug": "st-patricks-2027", "title": "St. Patrick's Day", "details": "", "category": "holidays", "scene": "mountains", "local": "2027-03-17T00:00:00" },
+  { "slug": "april-fools-2027", "title": "April Fools' Day", "details": "Trust no countdown.", "category": "fun", "scene": "balloons", "local": "2027-04-01T00:00:00" },
+  { "slug": "star-wars-day-2027", "title": "Star Wars Day", "details": "May the Fourth be with you.", "category": "fun", "scene": "starfield", "local": "2027-05-04T00:00:00" },
+  { "slug": "geminids-2026", "title": "Geminid Meteor Shower Peak", "details": "Up to 150 meteors an hour under dark skies. Best after midnight.", "category": "sky", "scene": "starfield", "at": "2026-12-14T05:44:00Z" },
+  { "slug": "winter-solstice-2026", "title": "Winter Solstice", "details": "The longest night of the year in the Northern Hemisphere.", "category": "sky", "scene": "snowfall", "at": "2026-12-21T20:50:00Z" },
+  { "slug": "spring-equinox-2027", "title": "Spring Equinox", "details": "Day and night, nearly equal.", "category": "sky", "scene": "blossoms", "at": "2027-03-20T20:24:00Z" },
+  { "slug": "summer-solstice-2027", "title": "Summer Solstice", "details": "The longest day in the Northern Hemisphere. The Count is not a fan.", "category": "sky", "scene": "sunset", "at": "2027-06-21T14:11:00Z" },
+  { "slug": "eclipse-2027", "title": "Eclipse of the Century", "details": "Total solar eclipse across Spain, North Africa and Egypt, up to 6 minutes 23 seconds of totality.", "category": "sky", "scene": "starfield", "at": "2027-08-02T10:07:00Z" },
+  { "slug": "perseids-2027", "title": "Perseid Meteor Shower Peak", "details": "The night of August 12 to 13. Look up after moonset.", "category": "sky", "scene": "starfield", "local": "2027-08-13T00:00:00" },
+  { "slug": "super-bowl-lxi", "title": "Super Bowl LXI", "details": "SoFi Stadium, Inglewood. Kickoff time to be announced.", "category": "sports", "scene": "city", "local": "2027-02-14T00:00:00" },
+  { "slug": "la-2028-opening", "title": "LA 2028 Olympics Opening", "details": "Opening ceremony at the Coliseum and SoFi Stadium. Time to be announced.", "category": "sports", "scene": "city", "local": "2028-07-14T00:00:00" }
+]
