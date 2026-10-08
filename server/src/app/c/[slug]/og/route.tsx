@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import { getCountdown, getPhoto } from "@/lib/countdowns.ts";
+import { backdropSrc } from "@/lib/backdrop.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, headline } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -26,6 +27,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const [serif, sans500, sans700, icon] = await assets;
   const photo = doc.hasPhoto ? await getPhoto(slug) : null;
   const style = webStyle(doc.style, !!photo);
+  const backdrop = await backdropSrc(style, photo);
   const now = new Date();
   const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone);
   const remaining = dialRemaining(now, doc.createdAt, doc.targetDate, doc.kind);
@@ -44,15 +46,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
           height: HEIGHT,
           display: "flex",
           position: "relative",
-          background: style.background,
+          background: style.baseBackground,
           color: style.text,
           fontFamily: "Instrument Sans",
         }}
       >
-        {style.useImage && photo ? (
+        {backdrop ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`data:image/jpeg;base64,${photo.toString("base64")}`}
+            src={backdrop}
             width={WIDTH}
             height={HEIGHT}
             style={{ position: "absolute", inset: 0, objectFit: "cover" }}

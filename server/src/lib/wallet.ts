@@ -68,6 +68,8 @@ export interface PassOptions {
 /** pass.json for a countdown. Pure, for tests. */
 export function passJSON(doc: CountdownDoc, { url, webServiceURL, memberCount }: PassOptions) {
   const when = isoInZone(doc.targetDate, doc.timeZone);
+  // A floating local time ("midnight wherever you are") reads the same wall-clock time on every device.
+  const floating = Boolean(doc.floating);
   const accent = (doc.style as { accent?: Rgba }).accent;
   const backFields: object[] = [];
   if (doc.details) backFields.push({ key: "details", label: "About", value: doc.details });
@@ -82,7 +84,6 @@ export function passJSON(doc: CountdownDoc, { url, webServiceURL, memberCount }:
     serialNumber: doc.slug,
     organizationName: "Count Downcula",
     description: `${doc.title} countdown`,
-    logoText: "Count Downcula",
     foregroundColor: "rgb(250, 242, 227)",
     backgroundColor: "rgb(20, 6, 10)",
     labelColor: rgb(accent, "rgb(217, 23, 58)"),
@@ -99,7 +100,8 @@ export function passJSON(doc: CountdownDoc, { url, webServiceURL, memberCount }:
       secondaryFields: [
         { key: "time", label: "AT", value: when, dateStyle: "PKDateStyleNone", timeStyle: "PKDateStyleShort", ignoresTimeZone: true },
         // Wallet keeps this current on its own: "in 5 days", "in 3 hours".
-        { key: "countdown", label: "COUNTDOWN", value: when, isRelative: true, dateStyle: "PKDateStyleShort", timeStyle: "PKDateStyleShort" },
+        { key: "countdown", label: "COUNTDOWN", value: when, isRelative: true, dateStyle: "PKDateStyleShort", timeStyle: "PKDateStyleShort",
+          ...(floating ? { ignoresTimeZone: true } : {}) },
       ],
       auxiliaryFields: memberCount > 0
         ? [{ key: "members", label: "COUNTING DOWN", value: memberCount === 1 ? "1 person" : `${memberCount} people` }]

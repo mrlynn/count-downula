@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  // The preview image route reads its fonts from disk at runtime.
+  // Routes that draw images read their fonts, icon and scene backdrops from disk at runtime.
   outputFileTracingIncludes: {
-    "/c/[slug]/og": ["./assets/fonts/**"],
+    "/c/[slug]/og": ["./assets/**", "./public/scenes/**"],
+    "/c/[slug]/pass": ["./assets/**", "./public/scenes/**"],
+    "/api/wallet/v1/passes/[passType]/[serial]": ["./assets/**", "./public/scenes/**"],
   },
   async headers() {
     return [

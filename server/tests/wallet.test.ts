@@ -41,6 +41,17 @@ test("the pass is an event ticket that surfaces on the day and links back to the
   assert.ok(pass.authenticationToken.length >= 16, "Wallet needs at least 16 characters");
 });
 
+test("a floating local time reads the same wall-clock time on every device", () => {
+  const newYear = { ...doc, slug: "new-year-2027", title: "New Year 2027", timeZone: "UTC",
+    targetDate: new Date("2027-01-01T00:00:00Z"), floating: "2027-01-01T00:00:00" };
+  const pass = passJSON(newYear, { url: "https://go.countdowncula.com/c/new-year-2027", webServiceURL: "https://go.countdowncula.com/api/wallet", memberCount: 0 });
+  const dates = [...pass.eventTicket.headerFields, ...pass.eventTicket.secondaryFields] as { ignoresTimeZone?: boolean }[];
+  assert.ok(dates.every((f) => f.ignoresTimeZone), "Midnight, not 7 PM the night before in New York");
+  const owned = passJSON(doc, { url: "https://go.countdowncula.com/c/cb4TV7jV", webServiceURL: "https://go.countdowncula.com/api/wallet", memberCount: 0 });
+  assert.equal((owned.eventTicket.secondaryFields[1] as { ignoresTimeZone?: boolean }).ignoresTimeZone, undefined,
+    "An exact moment still converts, so \"in 3 hours\" is right everywhere");
+});
+
 test("only Wallet holding the pass's own token gets in", () => {
   const token = authenticationToken("cb4TV7jV", "secret");
   assert.ok(authorized(`ApplePass ${token}`, "cb4TV7jV", "secret"));
