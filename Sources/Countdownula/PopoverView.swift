@@ -83,12 +83,16 @@ private struct CountdownListView: View {
                             CountdownRow(countdown: countdown, store: store)
                                 .onTapGesture { navigation.selectedID = countdown.id }
                                 .contextMenu {
-                                    Button("Edit…") { actions.edit(countdown) }
+                                    if countdown.extras.subscription == nil {
+                                        Button("Edit…") { actions.edit(countdown) }
+                                    }
                                     Button(countdown.isPinned ? "Unpin from Menu Bar" : "Pin to Menu Bar") {
                                         store.togglePin(countdown)
                                     }
                                     Divider()
-                                    Button("Delete", role: .destructive) { store.delete(countdown) }
+                                    Button(countdown.extras.subscription == nil ? "Delete" : "Leave", role: .destructive) {
+                                        store.delete(countdown)
+                                    }
                                 }
                         }
                     }

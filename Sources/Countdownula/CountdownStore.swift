@@ -15,6 +15,7 @@ final class CountdownStore {
     @ObservationIgnored private let supportDirectory: URL
     @ObservationIgnored private var imageCache: [String: NSImage] = [:]
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var sharedTimer: Timer?
 
     init() {
         supportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -35,6 +36,25 @@ final class CountdownStore {
         // .common keeps the timer firing while menus are tracking.
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
+
+        // Shared countdowns joined on the phone sync here through iCloud; the Mac keeps them in step
+        // with the owner too, since it may be the only device awake.
+        Task { await refreshShared() }
+        let sharedTimer = Timer(timeInterval: SharedCountdowns.refreshInterval, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { _ = Task { await self?.refreshShared() } }
+        }
+        RunLoop.main.add(sharedTimer, forMode: .common)
+        self.sharedTimer = sharedTimer
+    }
+
+    func refreshShared() async {
+        _ = await SharedCountdowns.refresh(
+            countdowns,
+            shouldCheck: { _ in true },
+            latest: { self.countdown(id: $0) },
+            prepareImage: { NSImage(data: $0).flatMap(Self.prepareImage)?.update },
+            save: { upsert($0, image: $1) }
+        )
     }
 
     // MARK: - Queries
@@ -66,6 +86,8 @@ final class CountdownStore {
     }
 
     func delete(_ countdown: Countdown) {
+        // Deleting someone else's shared countdown means leaving it.
+        SharedCountdowns.leaveRemotely(countdown)
         repository.delete(id: countdown.id)
         reload()
     }

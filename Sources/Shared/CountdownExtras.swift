@@ -14,6 +14,9 @@ struct CountdownExtras: Codable, Hashable {
     /// Set once the countdown is published as a live link. Synced, so every device shows the link;
     /// only devices holding the owner token (iCloud Keychain) can edit or unpublish it.
     var link: PublishedLink?
+    /// Set when this is someone else's shared countdown you joined. The owner's edits arrive
+    /// through it; your pin, alerts and voice stay yours.
+    var subscription: SharedSubscription?
     /// How alerts read: plainly, or in Count Downcula's voice.
     var voice: NotificationVoice = .standard
     /// Set on the built-in sunrise, sunset and full moon countdowns, which roll on to the next one.
@@ -21,7 +24,7 @@ struct CountdownExtras: Codable, Hashable {
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, voice, auto }
+    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -30,6 +33,7 @@ struct CountdownExtras: Codable, Hashable {
         repeatsYearly = (try? c.decodeIfPresent(Bool.self, forKey: .repeatsYearly)) ?? false
         yearlyAnchor = try? c.decodeIfPresent(Date.self, forKey: .yearlyAnchor)
         link = try? c.decodeIfPresent(PublishedLink.self, forKey: .link)
+        subscription = try? c.decodeIfPresent(SharedSubscription.self, forKey: .subscription)
         voice = (try? c.decodeIfPresent(NotificationVoice.self, forKey: .voice)) ?? .standard
         auto = try? c.decodeIfPresent(AutoDate.self, forKey: .auto)
     }
@@ -91,6 +95,17 @@ struct AutoDate: Codable, Hashable {
 
     /// How long one stays "done" before moving on, so its alert and confetti get their moment.
     var gracePeriod: TimeInterval { kind == .fullMoon ? 6 * 3_600 : 15 * 60 }
+}
+
+/// Someone else's countdown you're counting down with.
+struct SharedSubscription: Codable, Hashable {
+    var slug: String
+    var url: URL
+    var joinedAt: Date
+    /// The owner's last edit you've applied, so a refresh only rewrites the countdown when it changed.
+    var remoteUpdatedAt: Date?
+    /// How many people are counting down, as of the last refresh.
+    var memberCount: Int?
 }
 
 /// A countdown's public page on the Count Downcula server.

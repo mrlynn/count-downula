@@ -23,6 +23,9 @@ export const limits = {
   editsPerHour: { name: "edit-hour", max: 120, windowSeconds: 3_600 },
   editsPerCountdownPerHour: { name: "edit-slug", max: 60, windowSeconds: 3_600 },
   deletesPerHour: { name: "delete-hour", max: 60, windowSeconds: 3_600 },
+  joinsPerHour: { name: "join-hour", max: 60, windowSeconds: 3_600 },
+  /** A wedding might have a few hundred guests join in an hour; a script would have far more. */
+  joinsPerCountdownPerHour: { name: "join-slug", max: 500, windowSeconds: 3_600 },
 } satisfies Record<string, Limit>;
 
 export interface Window {

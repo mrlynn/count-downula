@@ -83,6 +83,8 @@ Roles: owner (edit, delete, remove members) and member (view, leave, set persona
 
 Depends on: feature 1, Sign in with Apple for member identity, APNs key for silent pushes.
 
+Built (version one, October 8, 2026): no accounts. Joining stores a random member key in the iCloud Keychain, used only to leave; the owner sees a count, not names, and can't remove individual members (stopping sharing removes everyone). Members join from a tapped link (universal link on `go.countdowncula.com/c/*`, or `countdownula://join/<slug>` from the page's "Count down with me" button) or by pasting a link into Join Shared Countdown. Copies refresh when the app comes to the front, in background app refresh, and every 15 minutes on the Mac; silent pushes wait for the APNs key. If the owner stops sharing, the member keeps the countdown as their own. Joined countdowns don't count toward the free tier's limit. Sign in with Apple is deferred until member names or per-member removal are needed.
+
 ### 3. App Clip (phase 2, size M)
 
 What it is: tapping a countdown link on an iPhone opens a 15 MB App Clip with the live countdown, a "Keep it" button and a Live Activity offer if the date is within 8 hours.
@@ -221,5 +223,5 @@ Sensitive count-ups (sober, smoke-free) never appear in the crypt and show a con
 
 1. ~~Is `go.countdowncula.com` the right domain, or `countdowncula.com/c/...` through a rewrite?~~ Decided: `go.countdowncula.com`. The app was renamed from Count Downula on October 7, 2026, so links use the new domain.
 2. Who records the Count Downcula voice?
-3. Should shared countdown members be able to edit by default, or only the owner?
-4. Does the App Clip need to work on iPad, or iPhone only?
+3. ~~Should shared countdown members be able to edit by default, or only the owner?~~ Decided: owner only in version one.
+4. ~~Does the App Clip need to work on iPad, or iPhone only?~~ Decided: iPhone only.

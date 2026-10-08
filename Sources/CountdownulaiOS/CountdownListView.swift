@@ -19,6 +19,7 @@ struct CountdownListView: View {
     @State private var editorTarget: EditorTarget?
     @State private var pendingDelete: Countdown?
     @State private var showingPaywall = false
+    @State private var showingJoin = false
 
     private let quickTimers = [5, 10, 15, 25, 45, 60]
 
@@ -85,6 +86,7 @@ struct CountdownListView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
+                        Button("Join Shared Countdown…", systemImage: "person.2.badge.plus") { showingJoin = true }
                         Section("Quick Timer") {
                             ForEach(quickTimers, id: \.self) { minutes in
                                 Button(PhoneStore.durationLabel(minutes), systemImage: "timer") {
@@ -111,6 +113,7 @@ struct CountdownListView: View {
                 }
             }
             .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingJoin) { JoinSharedSheet() }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "countdown")?",
                                 isPresented: .init(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
                                 titleVisibility: .visible) {
@@ -155,7 +158,10 @@ struct CountdownListView: View {
 
     @ViewBuilder
     private func menuItems(for countdown: Countdown, now: Date) -> some View {
-        Button("Edit", systemImage: "pencil") { editorTarget = .edit(countdown) }
+        // Only the owner edits a shared countdown.
+        if countdown.extras.subscription == nil {
+            Button("Edit", systemImage: "pencil") { editorTarget = .edit(countdown) }
+        }
         Button(countdown.isPinned ? "Unpin" : "Pin",
                systemImage: countdown.isPinned ? "pin.slash" : "pin") { store.togglePin(countdown) }
         if LiveActivities.isEligible(countdown, at: now) && !LiveActivities.isRunning(countdown.id) {

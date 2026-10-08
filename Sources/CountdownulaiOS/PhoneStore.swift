@@ -12,7 +12,12 @@ final class PhoneStore {
     /// The Unlimited purchase and the free-tier limit it lifts.
     let entitlements = Entitlements()
 
-    @ObservationIgnored private let repository: CountdownRepository
+    /// Titles of joined countdowns whose owner stopped sharing, waiting to be mentioned once.
+    var sharingEnded: [String] = []
+
+    @ObservationIgnored let repository: CountdownRepository
+    /// When each joined countdown was last checked against the owner's copy (this device only).
+    @ObservationIgnored var lastSharedRefresh: [UUID: Date] = [:]
     @ObservationIgnored private var imageCache: [String: UIImage] = [:]
     @ObservationIgnored private var thumbnailCache: [String: UIImage] = [:]
 
@@ -85,6 +90,11 @@ final class PhoneStore {
     }
 
     func delete(_ countdown: Countdown) {
+        // Deleting someone else's shared countdown means leaving it.
+        if countdown.extras.subscription != nil {
+            leave(countdown)
+            return
+        }
         // Deleting a published countdown takes its public page down too.
         if let link = countdown.extras.link, OwnerTokens.token(for: countdown.id) != nil {
             Task { try? await LiveLinkAPI.unpublish(countdown, slug: link.slug) }

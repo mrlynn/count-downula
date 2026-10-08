@@ -50,10 +50,12 @@ export function LiveCountdown({
   countdown,
   photoURL,
   serverNow,
+  memberCount,
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
   serverNow: number;
+  memberCount: number;
 }) {
   // Start from the server's clock so the first client render matches the HTML, then tick locally.
   const [now, setNow] = useState(() => new Date(serverNow));
@@ -131,6 +133,11 @@ export function LiveCountdown({
           {countdown.details ? (
             <Typography sx={{ mt: 3, maxWidth: 640, opacity: 0.9, whiteSpace: "pre-wrap" }}>{countdown.details}</Typography>
           ) : null}
+          {memberCount > 0 ? (
+            <Typography sx={{ mt: 2, opacity: 0.8, fontWeight: 600 }}>
+              {memberCount === 1 ? "1 person is counting down" : `${memberCount.toLocaleString()} people are counting down`}
+            </Typography>
+          ) : null}
         </Box>
         </Box>
       </Box>
@@ -142,11 +149,19 @@ export function LiveCountdown({
         >
           <Box>
             <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
-            <Typography sx={{ opacity: 0.7 }}>Put this countdown on your Lock Screen, watch and menu bar.</Typography>
+            <Typography sx={{ opacity: 0.7 }}>
+              Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes.
+            </Typography>
           </Box>
-          <Button variant="contained" size="large" href={DOWNLOAD}>
-            Get the app
-          </Button>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+            {/* Same-site links don't open the app, so this uses the app's own scheme. */}
+            <Button variant="contained" size="large" href={`countdownula://join/${countdown.slug}`}>
+              Count down with me
+            </Button>
+            <Button variant="outlined" size="large" href={DOWNLOAD}>
+              Get the app
+            </Button>
+          </Stack>
         </Stack>
       </Box>
     </Box>

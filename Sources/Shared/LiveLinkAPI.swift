@@ -109,6 +109,71 @@ enum LiveLinkAPI {
         OwnerTokens.remove(for: countdown.id)
     }
 
+    // MARK: - Shared countdowns
+
+    struct NotShared: LocalizedError {
+        var errorDescription: String? { "This countdown isn't shared anymore. The link may have been turned off." }
+    }
+
+    /// The owner's current copy. Throws `NotShared` once the owner stops sharing.
+    static func fetch(slug: String) async throws -> RemoteCountdown {
+        let (data, status) = try await raw("GET", path: "api/countdowns/\(slug)", body: nil)
+        if status == 404 { throw NotShared() }
+        try check(status, data)
+        return try RemoteCountdown.decode(data)
+    }
+
+    /// The backdrop image (photo or rendered scene) for a shared countdown.
+    static func photo(slug: String) async throws -> Data? {
+        let (data, status) = try await raw("GET", path: "c/\(slug)/photo", body: nil)
+        return status == 200 && !data.isEmpty ? data : nil
+    }
+
+    private struct Joined: Decodable {
+        let memberToken: String
+        let memberCount: Int
+    }
+
+    /// Counts you in. The member key only lets your devices take you back out.
+    static func join(slug: String) async throws -> (memberToken: String, memberCount: Int) {
+        let (data, status) = try await raw("POST", path: "api/countdowns/\(slug)/members", body: nil)
+        if status == 404 { throw NotShared() }
+        try check(status, data)
+        let joined = try JSONDecoder().decode(Joined.self, from: data)
+        return (joined.memberToken, joined.memberCount)
+    }
+
+    static func leave(slug: String, memberToken: String) async throws {
+        let (data, status) = try await raw("DELETE", path: "api/countdowns/\(slug)/members", token: memberToken, body: nil)
+        if status == 404 { return }
+        try check(status, data)
+    }
+
+    // MARK: - Transport
+
+    private static func raw(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> (Data, Int) {
+        var request = URLRequest(url: baseURL.appending(path: path))
+        request.httpMethod = method
+        request.timeoutInterval = 30
+        // Members should see the owner's edit as soon as it lands, not a cached copy.
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        if body != nil { request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
+        if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        request.httpBody = body
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            return (data, (response as? HTTPURLResponse)?.statusCode ?? 0)
+        } catch {
+            throw Failure.unreachable
+        }
+    }
+
+    private static func check(_ status: Int, _ data: Data) throws {
+        guard !(200..<300).contains(status) else { return }
+        let message = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.error
+        throw Failure.server(message ?? "Count Downcula's server returned an error (\(status)).")
+    }
+
     @discardableResult
     private static func send(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> Response {
         var request = URLRequest(url: baseURL.appending(path: path))
@@ -144,16 +209,34 @@ enum LiveLinkAPI {
 
 /// Owner tokens for published countdowns, in the iCloud Keychain so your other devices can edit too.
 enum OwnerTokens {
-    private static let service = "com.countdownula.link-owner"
+    private static let keychain = SyncedTokens(service: "com.countdownula.link-owner")
 
-    private static func query(_ id: UUID) -> [String: Any] {
+    static func save(_ token: String, for id: UUID) { keychain.save(token, for: id) }
+    static func token(for id: UUID) -> String? { keychain.token(for: id) }
+    static func remove(for id: UUID) { keychain.remove(for: id) }
+}
+
+/// Member keys for shared countdowns you joined, synced the same way so any of your devices can leave.
+enum MemberTokens {
+    private static let keychain = SyncedTokens(service: "com.countdownula.link-member")
+
+    static func save(_ token: String, for id: UUID) { keychain.save(token, for: id) }
+    static func token(for id: UUID) -> String? { keychain.token(for: id) }
+    static func remove(for id: UUID) { keychain.remove(for: id) }
+}
+
+/// Small secrets in the iCloud Keychain, one per countdown.
+struct SyncedTokens {
+    let service: String
+
+    private func query(_ id: UUID) -> [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
          kSecAttrService as String: service,
          kSecAttrAccount as String: id.uuidString,
          kSecAttrSynchronizable as String: kCFBooleanTrue!]
     }
 
-    static func save(_ token: String, for id: UUID) {
+    func save(_ token: String, for id: UUID) {
         SecItemDelete(query(id) as CFDictionary)
         var item = query(id)
         item[kSecValueData as String] = Data(token.utf8)
@@ -161,7 +244,7 @@ enum OwnerTokens {
         SecItemAdd(item as CFDictionary, nil)
     }
 
-    static func token(for id: UUID) -> String? {
+    func token(for id: UUID) -> String? {
         var q = query(id)
         q[kSecReturnData as String] = true
         q[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -170,7 +253,7 @@ enum OwnerTokens {
         return String(data: data, encoding: .utf8)
     }
 
-    static func remove(for id: UUID) {
+    func remove(for id: UUID) {
         SecItemDelete(query(id) as CFDictionary)
     }
 }

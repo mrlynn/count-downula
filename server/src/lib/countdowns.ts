@@ -22,6 +22,13 @@ export interface CountdownDoc {
   stats: { views: number };
 }
 
+/** Someone counting down with a shared countdown. No account: just a random key their devices keep. */
+interface MemberDoc {
+  slug: string;
+  memberTokenHash: string;
+  joinedAt: Date;
+}
+
 interface PhotoDoc {
   slug: string;
   jpeg: Binary;
@@ -49,13 +56,15 @@ async function collections() {
   const d = await db();
   const countdowns = d.collection<CountdownDoc>("countdowns");
   const photos = d.collection<PhotoDoc>("photos");
+  const members = d.collection<MemberDoc>("members");
   indexesReady ??= Promise.all([
     countdowns.createIndex({ slug: 1 }, { unique: true }),
     countdowns.createIndex({ visibility: 1, targetDate: 1 }),
     photos.createIndex({ slug: 1 }, { unique: true }),
+    members.createIndex({ slug: 1, memberTokenHash: 1 }, { unique: true }),
   ]);
   await indexesReady;
-  return { countdowns, photos };
+  return { countdowns, photos, members };
 }
 
 export const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
@@ -169,7 +178,30 @@ export async function updateCountdown(
 export async function deleteCountdown(slug: string, token: string | null): Promise<OwnerResult> {
   const result = await authorize(slug, token);
   if (result !== "ok") return result;
-  const { countdowns, photos } = await collections();
-  await Promise.all([countdowns.deleteOne({ slug }), photos.deleteOne({ slug })]);
+  const { countdowns, photos, members } = await collections();
+  await Promise.all([countdowns.deleteOne({ slug }), photos.deleteOne({ slug }), members.deleteMany({ slug })]);
   return "ok";
+}
+
+// MARK: - Members
+
+export async function memberCount(slug: string): Promise<number> {
+  const { members } = await collections();
+  return members.countDocuments({ slug });
+}
+
+/** Adds a member and returns the key their devices use to leave. null if the countdown is gone. */
+export async function joinCountdown(slug: string): Promise<{ memberToken: string; memberCount: number } | null> {
+  const { members } = await collections();
+  if (!(await getCountdown(slug))) return null;
+  const memberToken = randomBytes(32).toString("base64url");
+  await members.insertOne({ slug, memberTokenHash: hashToken(memberToken), joinedAt: new Date() });
+  return { memberToken, memberCount: await memberCount(slug) };
+}
+
+/** Removes a member. Leaving twice, or leaving a countdown that's gone, is fine. */
+export async function leaveCountdown(slug: string, token: string | null): Promise<void> {
+  if (!token) return;
+  const { members } = await collections();
+  await members.deleteOne({ slug, memberTokenHash: hashToken(token) });
 }
