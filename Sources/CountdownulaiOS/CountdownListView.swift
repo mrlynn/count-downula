@@ -113,6 +113,10 @@ struct CountdownListView: View {
                 }
             }
             .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .onChange(of: store.draftsWaitingForUnlock, initial: true) { _, waiting in
+                // Something was shared in while at the free limit; it's waiting for Unlimited.
+                if waiting { showingPaywall = true; store.draftsWaitingForUnlock = false }
+            }
             .sheet(isPresented: $showingJoin) { JoinSharedSheet() }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "countdown")?",
                                 isPresented: .init(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),

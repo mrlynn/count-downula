@@ -143,6 +143,8 @@ Also in scope: App Intents and App Shortcuts ("How long until Sonoma?", "Start a
 
 Depends on: nothing new.
 
+Built (October 8, 2026): a Share Extension ("Count Downcula" in the share sheet) for images, PDFs, text and links. Vision reads images, PDFKit reads PDFs; Foundation Models (iOS 26+) suggests the title and place, and `NSDataDetector` supplies the date, joining a day and a time printed on separate lines, read as wall-clock time. The draft is confirmed in the sheet and handed to the app through the App Group (`DraftHandoff`); the app adds it when it next comes forward, or shows the paywall if the person is at the free limit. App Shortcuts: How Long Until, Start a Timer, Add a Countdown. Countdowns are indexed in Spotlight. The separate Action Extension from the spec isn't needed: the share sheet covers the same inputs.
+
 ### 8. Apple Wallet passes (phase 3, size M)
 
 What it is: Add to Wallet turns a countdown into an event ticket style pass with the photo and date. It surfaces on the Lock Screen as the day approaches and can be sent through Messages to people without the app.

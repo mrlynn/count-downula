@@ -6,7 +6,12 @@ import WidgetKit
 @MainActor
 @Observable
 final class PhoneStore {
+    /// The one store. Siri, Shortcuts and Spotlight reach it from outside the view hierarchy.
+    static let shared = PhoneStore()
+
     private(set) var countdowns: [Countdown] = []
+    /// Countdowns confirmed in the share sheet that are over the free limit, waiting for Unlimited.
+    var draftsWaitingForUnlock = false
     /// The milestone or finish being celebrated on screen right now.
     var celebration: Celebration?
     /// The Unlimited purchase and the free-tier limit it lifts.
@@ -174,6 +179,7 @@ final class PhoneStore {
         // A published page follows its countdown on to next year or the next sunrise.
         for countdown in rolled { pushLinkUpdate(for: countdown) }
         publishToWidgets()
+        SpotlightIndex.update(countdowns)
         scheduleNotifications()
         LiveActivities.sync(with: countdowns)
     }
