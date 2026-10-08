@@ -2,12 +2,6 @@ import CoreData
 import Foundation
 import SwiftData
 
-enum ImageUpdate {
-    case unchanged
-    case remove
-    case set(image: Data, thumbnail: Data)
-}
-
 /// Platform-neutral CRUD over the SwiftData store. The Mac and watch stores wrap this
 /// and add their own image decoding, ticking and side effects.
 @MainActor

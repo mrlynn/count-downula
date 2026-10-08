@@ -140,6 +140,7 @@ targets:
     dependencies:
       - target: CountdownulaiOSWidgets
       - target: CountdownulaWatch
+      - target: CountdownulaClip
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
@@ -178,10 +179,61 @@ targets:
       path: Resources/iOS/Countdownula.entitlements
       properties:
         # Shared countdown links open in the app (served by server/src/app/.well-known).
-        com.apple.developer.associated-domains: [applinks:go.countdowncula.com]
+        com.apple.developer.associated-domains: [applinks:go.countdowncula.com, appclips:go.countdowncula.com]
         com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
         com.apple.developer.icloud-services: [CloudKit]
         aps-environment: development
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+  # App Clip: opens shared countdown links on iPhones without the app. iPhone only.
+  CountdownulaClip:
+    type: application.on-demand-install-capable
+    platform: iOS
+    sources:
+      - Sources/CountdownulaClip
+      - Sources/CountdownulaiOS/TimeBlocks.swift
+      - Resources/iOS/Assets.xcassets
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/Milestone.swift
+      - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/Astronomy.swift
+      - path: Sources/Shared/SharedCountdowns.swift
+      - path: Sources/Shared/LiveLinkAPI.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/ImageUpdate.swift
+      - path: Sources/Shared/ClipHandoff.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.Clip
+        PRODUCT_NAME: CountdownulaClip
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: Resources/Clip/CountdownulaClip.entitlements
+    info:
+      path: Resources/Clip/Info.plist
+      properties:
+        CFBundleDisplayName: Count Downcula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        NSAppClip:
+          NSAppClipRequestEphemeralUserNotification: false
+          NSAppClipRequestLocationConfirmation: false
+        # Lets debug builds reach a live link server on the local network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    entitlements:
+      path: Resources/Clip/CountdownulaClip.entitlements
+      properties:
+        com.apple.developer.parent-application-identifiers: [$(AppIdentifierPrefix)com.countdownula.app]
+        com.apple.developer.associated-domains: [appclips:go.countdowncula.com]
         com.apple.security.application-groups: [group.com.countdownula.app]
 
   # Home Screen, Lock Screen and StandBy widgets, plus the Live Activity

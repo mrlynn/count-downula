@@ -49,7 +49,14 @@ struct CountdownulaApp: App {
             // start Live Activities for pinned countdowns that entered their final hours.
             if phase == .active {
                 store.reload()
-                Task { await store.refreshShared(force: true) }
+                Task {
+                    // Countdowns kept in the App Clip before the app was installed.
+                    for slug in ClipHandoff.pending {
+                        await joiner.join(slug, store: store, router: appDelegate.router)
+                        if joiner.errorMessage == nil { ClipHandoff.done(slug) }
+                    }
+                    await store.refreshShared(force: true)
+                }
             }
             if phase == .background { SharedRefreshTask.schedule() }
         }
