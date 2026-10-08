@@ -51,7 +51,7 @@ final class RoughLocation: NSObject, CLLocationManagerDelegate {
 
         var errorDescription: String? {
             switch self {
-            case .denied: "Count Downula needs your rough location to know when the sun rises and sets. You can allow it in Settings."
+            case .denied: "Count Downcula needs your rough location to know when the sun rises and sets. You can allow it in Settings."
             case .unavailable: "Couldn't find your location just now. Try again in a moment."
             }
         }

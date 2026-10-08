@@ -42,7 +42,7 @@ struct ShareCardView: View {
                     FangMark()
                         .foregroundStyle(style.accentColor)
                         .frame(width: 18, height: 18)
-                    Text("Countdownula")
+                    Text("Count Downcula")
                         .font(.system(size: 13, weight: .semibold))
                         .opacity(0.7)
                 }

@@ -1,10 +1,10 @@
-# Count Downula
+# Count Downcula
 
-<img src="design/app-icon.png" width="128" alt="Count Downula icon: a blood-red timer ring with fangs">
+<img src="design/app-icon.png" width="128" alt="Count Downcula icon: a blood-red timer ring with fangs">
 
 Native countdowns for vacations, launches, birthdays, or a quick timer: a macOS menu bar app, an iPhone app with widgets and Live Activities, and an Apple Watch app with complications.
 
-The app shows up as **Count Downula** everywhere you see it. The project, targets and files keep the original one-word name, `Countdownula`.
+The app shows up as **Count Downcula** everywhere you see it. The project, targets, files, bundle IDs and iCloud container keep the original one-word name, `Countdownula`, from when the app was called Count Downula (renamed in October 2026).
 
 [![Download the latest release](https://img.shields.io/github/v/release/mrlynn/count-downula?label=Download&color=c3112d&logo=apple)](https://github.com/mrlynn/count-downula/releases/latest)
 
@@ -25,8 +25,8 @@ The app shows up as **Count Downula** everywhere you see it. The project, target
 ## iPhone
 
 <p>
-  <img src="docs/screenshots/iphone-app.jpg" width="240" alt="Count Downula iPhone app with a pinned countdown as a full-bleed photo card above the upcoming list">
-  <img src="docs/screenshots/iphone-lock.jpg" width="240" alt="Lock Screen with a countdown Live Activity and Count Downula widgets">
+  <img src="docs/screenshots/iphone-app.jpg" width="240" alt="Count Downcula iPhone app with a pinned countdown as a full-bleed photo card above the upcoming list">
+  <img src="docs/screenshots/iphone-lock.jpg" width="240" alt="Lock Screen with a countdown Live Activity and Count Downcula widgets">
   <img src="docs/screenshots/iphone-home.jpg" width="240" alt="Home Screen with Up Next and photo countdown widgets, and a timer in the Dynamic Island">
 </p>
 
@@ -36,6 +36,7 @@ The iPhone (and iPad) app lists your countdowns with the next one up as a full-b
 - **Count up:** track the time since something began, with standard milestones (24 hours, 1 week, 30/60/90 days, 6 months, every year), money saved per day, and a gentle **Reset** that keeps your history and best run. Templates for Sober, Smoke-Free, Together and New Job.
 - **Repeats every year:** birthdays and anniversaries roll over to next year once the day has passed.
 - **Share as image:** a 1080 × 1350 card of any countdown for Messages or Instagram.
+- **Pricing:** free for up to 3 active countdowns (timers and count-ups count, finished ones don't). **Count Downcula Unlimited** is a one-time $2.99 in-app purchase that removes the limit on iPhone, iPad and Apple Watch. The Mac app, distributed directly, is always unlocked (`DIRECT_DISTRIBUTION`).
 
 | Where | What |
 |---|---|
@@ -51,8 +52,8 @@ The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or 
 ## Apple Watch
 
 <p>
-  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Count Downula corner and circular complications">
-  <img src="docs/screenshots/watch-app.png" width="208" alt="Count Downula watch app listing countdowns">
+  <img src="docs/screenshots/watch-face.png" width="208" alt="Infograph watch face with Count Downcula corner and circular complications">
+  <img src="docs/screenshots/watch-app.png" width="208" alt="Count Downcula watch app listing countdowns">
 </p>
 
 The watch app ships inside the iPhone app and runs on its own once installed (it doesn't need the phone nearby). It lists your countdowns, shows a live days/hours/minutes/seconds view, and lets you start a quick timer or add a date right from your wrist. Countdowns sync with the Mac and iPhone through iCloud, and the watch schedules its own alerts.
@@ -68,18 +69,14 @@ The watch app ships inside the iPhone app and runs on its own once installed (it
 
 Each complication can follow **Next Up** (your soonest pinned countdown, otherwise the soonest one) or a specific countdown.
 
-Apple doesn't allow third-party watch faces. To share a "Count Downula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
+Apple doesn't allow third-party watch faces. To share a "Count Downcula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
 
 ## Download
 
 Grab **Countdownula-x.y.z.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest), unzip it, and drag **Countdownula.app** to `/Applications`.
-It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downula.
+It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downcula.
 
-The app isn't notarized, so macOS blocks the first launch. **Right-click the app → Open → Open**, or run:
-
-```bash
-xattr -dr com.apple.quarantine /Applications/Countdownula.app
-```
+Releases from 1.1 on are signed with Developer ID and notarized by Apple, so the first launch only asks you to confirm opening an app downloaded from the internet.
 
 ## Build from source
 
@@ -104,7 +101,7 @@ To use your own team, change `DEVELOPMENT_TEAM` and the `com.countdownula.*` / `
 
 **Watch app:** run `xcodegen generate`, open `Countdownula.xcodeproj`, pick the **CountdownulaWatch** scheme and your watch, and click Run. Xcode registers the watch with your developer account the first time. In the simulator, the scheme has optional launch arguments: `-seedDemo` (sample data), `-complicationGallery` (renders every complication size), and `-localOnly` (no iCloud).
 
-**Release:** `scripts/release-mac.sh` archives, exports with Developer ID, notarizes (when `NOTARY_PROFILE` is set; see the script header) and zips the app. Before the first public release, open the [CloudKit Console](https://icloud.developer.apple.com/), select `iCloud.com.countdownula.app`, and **Deploy Schema Changes** to Production. Release builds sync through the Production environment.
+**Release:** `NOTARY_PROFILE=countdownula scripts/release-mac.sh` archives, exports with Developer ID, notarizes, staples and zips the app. The `countdownula` profile is a notarytool keychain profile; the script header shows how to create one. Before the first public release, open the [CloudKit Console](https://icloud.developer.apple.com/), select `iCloud.com.countdownula.app`, and **Deploy Schema Changes** to Production. Release builds sync through the Production environment.
 
 **TestFlight / App Store (iPhone, iPad and Watch):** create the app in App Store Connect with bundle ID `com.countdownula.app`, sign in to your Apple ID in Xcode → Settings → Accounts, then run `scripts/release-ios.sh`. It archives the iPhone app (with the watch app and both widget extensions embedded), signs it for the App Store and uploads it. The build shows up under TestFlight after processing. Each upload needs a new build number: the script uses a timestamp, or pass one (`scripts/release-ios.sh 3`). `UPLOAD=0` exports the `.ipa` without uploading, and `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_PATH` switch to App Store Connect API key auth for CI.
 

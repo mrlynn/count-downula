@@ -6,7 +6,7 @@ import type { PublicCountdown } from "@/lib/countdowns.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts } from "@/lib/time.ts";
 
-const DOWNLOAD = "https://www.countdownula.com";
+const DOWNLOAD = "https://www.countdowncula.com";
 
 function Dial({ remaining, accent }: { remaining: number; accent: string }) {
   const size = 120;
@@ -127,7 +127,7 @@ export function LiveCountdown({
           sx={{ maxWidth: 960, mx: "auto", alignItems: { xs: "stretch", sm: "center" }, justifyContent: "space-between" }}
         >
           <Box>
-            <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downula</Typography>
+            <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
             <Typography sx={{ opacity: 0.7 }}>Put this countdown on your Lock Screen, watch and menu bar.</Typography>
           </Box>
           <Button variant="contained" size="large" href={DOWNLOAD}>

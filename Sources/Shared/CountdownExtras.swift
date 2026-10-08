@@ -14,7 +14,7 @@ struct CountdownExtras: Codable, Hashable {
     /// Set once the countdown is published as a live link. Synced, so every device shows the link;
     /// only devices holding the owner token (iCloud Keychain) can edit or unpublish it.
     var link: PublishedLink?
-    /// How alerts read: plainly, or in Count Downula's voice.
+    /// How alerts read: plainly, or in Count Downcula's voice.
     var voice: NotificationVoice = .standard
     /// Set on the built-in sunrise, sunset and full moon countdowns, which roll on to the next one.
     var auto: AutoDate?
@@ -93,7 +93,7 @@ struct AutoDate: Codable, Hashable {
     var gracePeriod: TimeInterval { kind == .fullMoon ? 6 * 3_600 : 15 * 60 }
 }
 
-/// A countdown's public page on the Count Downula server.
+/// A countdown's public page on the Count Downcula server.
 struct PublishedLink: Codable, Hashable {
     var slug: String
     var url: URL

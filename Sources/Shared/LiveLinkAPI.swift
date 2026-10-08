@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-/// Talks to the Count Downula server (server/ in this repo), which hosts a countdown's public page
+/// Talks to the Count Downcula server (server/ in this repo), which hosts a countdown's public page
 /// and its live link preview. Private countdowns never leave iCloud; only published ones get here.
 enum LiveLinkAPI {
     /// `-linkServer http://localhost:4300` on the command line points debug builds at a local server.
@@ -9,7 +9,7 @@ enum LiveLinkAPI {
         if let override = UserDefaults.standard.string(forKey: "linkServer"), let url = URL(string: override) {
             return url
         }
-        return URL(string: "https://go.countdownula.com")!
+        return URL(string: "https://go.countdowncula.com")!
     }
 
     enum Backdrop: Equatable {
@@ -28,7 +28,7 @@ enum LiveLinkAPI {
             switch self {
             case let .server(message): message
             case .notOwner: "Only the device that published this link, or one signed in to the same iCloud Keychain, can change it."
-            case .unreachable: "Couldn't reach Count Downula. Check your connection and try again."
+            case .unreachable: "Couldn't reach Count Downcula. Check your connection and try again."
             }
         }
     }
@@ -137,7 +137,7 @@ enum LiveLinkAPI {
             throw Failure.notOwner
         default:
             let message = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.error
-            throw Failure.server(message ?? "Count Downula's server returned an error (\(status)).")
+            throw Failure.server(message ?? "Count Downcula's server returned an error (\(status)).")
         }
     }
 }

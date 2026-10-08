@@ -9,6 +9,8 @@ final class PhoneStore {
     private(set) var countdowns: [Countdown] = []
     /// The milestone or finish being celebrated on screen right now.
     var celebration: Celebration?
+    /// The Unlimited purchase and the free-tier limit it lifts.
+    let entitlements = Entitlements()
 
     @ObservationIgnored private let repository: CountdownRepository
     @ObservationIgnored private var imageCache: [String: UIImage] = [:]
@@ -231,6 +233,11 @@ final class PhoneStore {
         smokeFree.extras.savings = Savings(amountPerDay: 12, currencyCode: "USD")
         smokeFree.extras.streak.runs = [.init(start: now - 140 * day, end: now - 47 * day - 5 * 3_600)]
         samples.append(smokeFree)
+        // A years-long count-up: the widest time text a row has to fit.
+        var together = Countdown(title: "Together", details: "Since the first date.",
+                                 targetDate: now - 4_652 * day, kind: .countUp, createdAt: now)
+        together.style = CountdownStyle(background: .scene(.blossoms), font: .serif, accent: RGBAColor(hex: 0xD6336C))
+        samples.append(together)
         samples.forEach { repository.upsert($0) }
     }
     #endif

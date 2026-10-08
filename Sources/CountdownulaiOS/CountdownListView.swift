@@ -18,6 +18,7 @@ struct CountdownListView: View {
     @Environment(Router.self) private var router
     @State private var editorTarget: EditorTarget?
     @State private var pendingDelete: Countdown?
+    @State private var showingPaywall = false
 
     private let quickTimers = [5, 10, 15, 25, 45, 60]
 
@@ -62,33 +63,43 @@ struct CountdownListView: View {
                             ForEach(past) { row(for: $0, now: now) }
                         }
                     }
+                    if !store.entitlements.isUnlocked, !store.countdowns.isEmpty {
+                        FreeTierFooter(active: Entitlements.activeCount(in: store.countdowns, at: now)) {
+                            showingPaywall = true
+                        }
+                        .listRowBackground(Color.clear)
+                    }
                 }
                 .listStyle(.insetGrouped)
                 .overlay {
                     if store.countdowns.isEmpty {
-                        EmptyState { editorTarget = .new }
+                        EmptyState { addCountdown() }
                     }
                 }
             }
-            .navigationTitle("Count Downula")
+            .navigationTitle("Count Downcula")
             .navigationDestination(for: UUID.self) { id in
                 CountdownDetailView(id: id, onEdit: { editorTarget = .edit($0) })
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
-                        Button("New Countdown", systemImage: "calendar.badge.plus") { editorTarget = .new }
+                        Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
                         Section("Quick Timer") {
                             ForEach(quickTimers, id: \.self) { minutes in
                                 Button(PhoneStore.durationLabel(minutes), systemImage: "timer") {
-                                    store.startQuickTimer(minutes: minutes)
+                                    if store.entitlements.canAdd(to: store.countdowns) {
+                                        store.startQuickTimer(minutes: minutes)
+                                    } else {
+                                        showingPaywall = true
+                                    }
                                 }
                             }
                         }
                     } label: {
                         Image(systemName: "plus")
                     } primaryAction: {
-                        editorTarget = .new
+                        addCountdown()
                     }
                     .accessibilityLabel("New countdown")
                 }
@@ -99,6 +110,7 @@ struct CountdownListView: View {
                 case let .edit(countdown): CountdownEditorView(original: countdown)
                 }
             }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
             .confirmationDialog("Delete \(pendingDelete?.title ?? "countdown")?",
                                 isPresented: .init(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
                                 titleVisibility: .visible) {
@@ -107,6 +119,15 @@ struct CountdownListView: View {
                     pendingDelete = nil
                 }
             }
+        }
+    }
+
+    /// Opens the editor, or the paywall once a free user has reached the limit.
+    private func addCountdown() {
+        if store.entitlements.canAdd(to: store.countdowns) {
+            editorTarget = .new
+        } else {
+            showingPaywall = true
         }
     }
 
@@ -169,6 +190,7 @@ private struct HeroCard: View {
 private struct CountdownRow: View {
     let countdown: Countdown
     let now: Date
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         let isPast = countdown.isPast(at: now)
@@ -178,48 +200,88 @@ private struct CountdownRow: View {
                 .frame(width: 52, height: 52)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 4) {
-                    Text(countdown.title)
-                        .font(.headline)
-                        .lineLimit(1)
-                    if countdown.isPinned {
-                        Image(systemName: "pin.fill")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.orange)
-                            .accessibilityLabel("Pinned")
-                    }
+            // At the largest text sizes the time goes under the title instead of
+            // squeezing it into a sliver.
+            if dynamicTypeSize >= .xxxLarge {
+                VStack(alignment: .leading, spacing: 4) {
+                    details(isPast: isPast)
+                    time(isPast: isPast)
                 }
-                if let next = countdown.nextMilestone(at: now) {
-                    Text("\(next.milestone.displayEmoji) \(next.milestone.title) in \(CountdownFormat.compact(from: now, to: next.date))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                } else if countdown.countsUp {
-                    Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                if !isPast {
-                    ProgressView(value: countdown.progress(at: now))
-                        .tint(countdown.style.accentColor)
-                }
+            } else {
+                details(isPast: isPast)
+                Spacer(minLength: 8)
+                time(isPast: isPast)
             }
-
-            Spacer(minLength: 8)
-
-            CountdownTimeText(countdown: countdown, now: now)
-                .font(countdown.style.font(.title3))
-                .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
-                .lineLimit(1)
-                .fixedSize()
         }
         .padding(.vertical, 4)
         .opacity(isPast ? 0.7 : 1)
+    }
+
+    private func time(isPast: Bool) -> some View {
+        CountdownTimeText(countdown: countdown, now: now)
+            .font(countdown.style.font(.title3))
+            .foregroundStyle(isPast ? Color.secondary : countdown.style.accentColor)
+            .lineLimit(1)
+            .fixedSize()
+    }
+
+    private func details(isPast: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 4) {
+                Text(countdown.title)
+                    .font(.headline)
+                    .lineLimit(1)
+                if countdown.isPinned {
+                    Image(systemName: "pin.fill")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.orange)
+                        .accessibilityLabel("Pinned")
+                }
+            }
+            if let next = countdown.nextMilestone(at: now) {
+                Text("\(next.milestone.displayEmoji) \(next.milestone.title) in \(CountdownFormat.compact(from: now, to: next.date))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else if countdown.countsUp {
+                Text("Since \(countdown.targetDate.formatted(.dateTime.month(.abbreviated).day().year()))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else {
+                Text(countdown.targetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            if !isPast {
+                ProgressView(value: countdown.progress(at: now))
+                    .tint(countdown.style.accentColor)
+            }
+        }
+    }
+}
+
+// MARK: - Free tier
+
+/// "2 of 3 free countdowns · Unlock Unlimited" under the list, so the upgrade and Restore are always reachable.
+private struct FreeTierFooter: View {
+    let active: Int
+    let onUnlock: () -> Void
+
+    var body: some View {
+        Button(action: onUnlock) {
+            VStack(spacing: 4) {
+                Text("\(min(active, SharedConfig.freeActiveLimit)) of \(SharedConfig.freeActiveLimit) free countdowns")
+                    .foregroundStyle(.secondary)
+                Text("Unlock Unlimited")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.countdownulaBlood)
+            }
+            .font(.footnote)
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
     }
 }
 

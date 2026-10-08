@@ -7,6 +7,8 @@ import WidgetKit
 @Observable
 final class WatchStore {
     private(set) var countdowns: [Countdown] = []
+    /// The Unlimited purchase (bought on iPhone or here) and the free-tier limit it lifts.
+    let entitlements = Entitlements()
 
     @ObservationIgnored private let repository: CountdownRepository
     @ObservationIgnored private var imageCache: [String: UIImage] = [:]

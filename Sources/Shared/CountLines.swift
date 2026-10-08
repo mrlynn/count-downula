@@ -1,6 +1,6 @@
 import Foundation
 
-/// Alert text in Count Downula's voice, for countdowns that opt in. Each moment has several lines so
+/// Alert text in Count Downcula's voice, for countdowns that opt in. Each moment has several lines so
 /// the same one doesn't come back every time; the pick is stable for a given countdown and moment,
 /// so every device shows the same line and rescheduling doesn't change it.
 ///

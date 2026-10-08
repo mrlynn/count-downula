@@ -80,7 +80,7 @@ struct ShareVideoFrame: View {
                 FangMark()
                     .foregroundStyle(style.accentColor)
                     .frame(width: 120, height: 120)
-                Text("Count Downula")
+                Text("Count Downcula")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.85))
             }

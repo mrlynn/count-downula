@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Count Downula</string>
+	<string>Count Downcula</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -43,7 +43,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Count Downula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.</string>
+	<string>Count Downcula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
