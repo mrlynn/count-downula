@@ -138,4 +138,26 @@ final class VampireHoursTests: XCTestCase {
         let body = NotificationPlan.completion(for: countdown).body.lowercased()
         XCTAssertTrue(["sun", "dawn"].contains { body.contains($0) }, body)
     }
+
+    // MARK: - Final ten seconds
+
+    func testTheCountsFinalCountdownReplacesTheFinishSound() {
+        let now = date("2026-10-08T12:00:00Z")
+        var countdown = Countdown(title: "Launch", details: "", targetDate: now + 3_600)
+        countdown.extras.voice = .count
+        let items = NotificationPlan.items(for: [countdown], now: now, limit: 10, includeFinalCountdown: true)
+        XCTAssertEqual(items.count, 2)
+        XCTAssertEqual(items[0].date, countdown.targetDate - 10)
+        XCTAssertEqual(items[0].sound, .named(NotificationPlan.finalCountdownSound))
+        XCTAssertEqual(items[1].date, countdown.targetDate)
+        XCTAssertEqual(items[1].sound, .silent, "The chime at zero is in the countdown sound")
+
+        XCTAssertEqual(NotificationPlan.items(for: [countdown], now: now, limit: 10).map(\.sound), [.standard],
+                       "Devices without the sound keep the normal alert")
+        XCTAssertEqual(NotificationPlan.items(for: [countdown], now: countdown.targetDate - 5, limit: 10,
+                                              includeFinalCountdown: true).map(\.sound), [.standard],
+                       "Too late to start a ten second countdown")
+        countdown.extras.voice = .standard
+        XCTAssertEqual(NotificationPlan.items(for: [countdown], now: now, limit: 10, includeFinalCountdown: true).count, 1)
+    }
 }

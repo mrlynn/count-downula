@@ -194,7 +194,7 @@ struct CountdownEditorView: View {
                     if extras.voice == .count {
                         Text("“\(CountLines.completion(for: draft))”")
                     } else {
-                        Text("Milestone and finish alerts, written in Count Downcula's own voice.")
+                        Text("Milestone and finish alerts in Count Downcula's own voice, with a countdown sound for the final ten seconds.")
                     }
                 }
 

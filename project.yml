@@ -137,6 +137,9 @@ targets:
       - Resources/iOS/Assets.xcassets
       - path: Resources/iOS/PrivacyInfo.xcprivacy
         buildPhase: resources
+      # The Count's final ten seconds (NotificationPlan.finalCountdownSound).
+      - path: Resources/iOS/Sounds/count-final-10.caf
+        buildPhase: resources
     dependencies:
       - target: CountdownulaiOSWidgets
       - target: CountdownulaWatch
@@ -175,6 +178,8 @@ targets:
           NSAllowsLocalNetworking: true
         NSLocationWhenInUseUsageDescription: Count Downcula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.
         LSApplicationQueriesSchemes: [instagram-stories]
+        # Meta requires a Facebook app ID for Instagram Stories sharing. Empty hides the option.
+        FacebookAppID: ""
     entitlements:
       path: Resources/iOS/Countdownula.entitlements
       properties:

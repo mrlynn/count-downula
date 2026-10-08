@@ -143,6 +143,15 @@ enum LiveLinkAPI {
         return (joined.memberToken, joined.memberCount)
     }
 
+    /// Tells the server where to send a silent push when the owner edits. Debug builds get their
+    /// device tokens from Apple's sandbox, release builds from production.
+    static func registerPush(slug: String, memberToken: String, deviceToken: String, sandbox: Bool) async throws {
+        let body = try JSONSerialization.data(withJSONObject: ["pushToken": deviceToken, "sandbox": sandbox])
+        let (data, status) = try await raw("PUT", path: "api/countdowns/\(slug)/members", token: memberToken, body: body)
+        if status == 404 { throw NotShared() }
+        try check(status, data)
+    }
+
     static func leave(slug: String, memberToken: String) async throws {
         let (data, status) = try await raw("DELETE", path: "api/countdowns/\(slug)/members", token: memberToken, body: nil)
         if status == 404 { return }

@@ -27,6 +27,9 @@ interface MemberDoc {
   slug: string;
   memberTokenHash: string;
   joinedAt: Date;
+  /** The member's device, for a silent push when the owner edits. */
+  pushToken?: string;
+  pushSandbox?: boolean;
 }
 
 interface PhotoDoc {
@@ -197,6 +200,31 @@ export async function joinCountdown(slug: string): Promise<{ memberToken: string
   const memberToken = randomBytes(32).toString("base64url");
   await members.insertOne({ slug, memberTokenHash: hashToken(memberToken), joinedAt: new Date() });
   return { memberToken, memberCount: await memberCount(slug) };
+}
+
+/** Records where to push this member. False if the member key isn't a member of this countdown. */
+export async function setMemberPushToken(slug: string, memberToken: string | null, pushToken: string, sandbox: boolean) {
+  if (!memberToken) return false;
+  const { members } = await collections();
+  const result = await members.updateOne(
+    { slug, memberTokenHash: hashToken(memberToken) },
+    { $set: { pushToken, pushSandbox: sandbox } },
+  );
+  return result.matchedCount > 0;
+}
+
+/** Every device to wake when this countdown changes. */
+export async function pushTargets(slug: string): Promise<{ token: string; sandbox: boolean }[]> {
+  const { members } = await collections();
+  const docs = await members.find({ slug, pushToken: { $exists: true } }, { projection: { pushToken: 1, pushSandbox: 1 } }).toArray();
+  return docs.map((d) => ({ token: d.pushToken!, sandbox: d.pushSandbox ?? false }));
+}
+
+/** Drops device tokens APNs says are no longer valid (the app was deleted). */
+export async function forgetPushTokens(tokens: string[]) {
+  if (tokens.length === 0) return;
+  const { members } = await collections();
+  await members.updateMany({ pushToken: { $in: tokens } }, { $unset: { pushToken: "", pushSandbox: "" } });
 }
 
 /** Removes a member. Leaving twice, or leaving a countdown that's gone, is fine. */
