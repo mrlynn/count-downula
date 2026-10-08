@@ -95,7 +95,7 @@ How it works: a new `CountdownulaClip` target in `project.yml`, sharing `Countdo
 
 Depends on: feature 1, an App Clip bundle ID (`com.countdownula.app.Clip`), App Store Connect App Clip experience setup.
 
-Built (October 8, 2026), iPhone only: the `CountdownulaClip` target (about 5 MB) shows the shared countdown live with its member count, Keep It and Share. Keep It leaves the slug in the App Group and opens the App Store overlay; the full app joins it the first time it opens. The server's AASA lists the clip and live pages carry the Safari App Clip card tag. The Live Activity offer is deferred: the clip doesn't include the widget extension that draws Live Activities, so it can't start one yet.
+Built (October 8, 2026): the `CountdownulaClip` target (about 5 MB) shows the shared countdown live with its member count, Keep It and Share. Keep It leaves the slug in the App Group and opens the App Store overlay; the full app joins it the first time it opens. The server's AASA lists the clip and live pages carry the Safari App Clip card tag. The Live Activity offer is deferred: the clip doesn't include the widget extension that draws Live Activities, so it can't start one yet.
 
 ### 4. The sealed coffin (phase 3, size L)
 
@@ -226,4 +226,4 @@ Sensitive count-ups (sober, smoke-free) never appear in the crypt and show a con
 1. ~~Is `go.countdowncula.com` the right domain, or `countdowncula.com/c/...` through a rewrite?~~ Decided: `go.countdowncula.com`. The app was renamed from Count Downula on October 7, 2026, so links use the new domain.
 2. Who records the Count Downcula voice?
 3. ~~Should shared countdown members be able to edit by default, or only the owner?~~ Decided: owner only in version one.
-4. ~~Does the App Clip need to work on iPad, or iPhone only?~~ Decided: iPhone only.
+4. ~~Does the App Clip need to work on iPad, or iPhone only?~~ Decided: iPhone only, but Apple requires a clip to support the same devices as its parent app, so it runs on iPad too with a phone-width column.
