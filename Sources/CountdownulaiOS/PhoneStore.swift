@@ -194,13 +194,17 @@ final class PhoneStore {
         center.removeAllPendingNotificationRequests()
         let now = Date()
         // iOS keeps at most 64 pending requests per app.
-        for item in NotificationPlan.items(for: countdowns, now: now, limit: 60) {
+        for item in NotificationPlan.items(for: countdowns, now: now, limit: 60, includeFinalCountdown: true) {
             let interval = item.date.timeIntervalSince(now)
             guard interval > 1 else { continue }
             let content = UNMutableNotificationContent()
             content.title = item.title
             content.body = item.body
-            content.sound = .default
+            switch item.sound {
+            case .standard: content.sound = .default
+            case let .named(file): content.sound = UNNotificationSound(named: UNNotificationSoundName(file))
+            case .silent: content.sound = nil
+            }
             content.userInfo = ["countdownID": item.countdownID.uuidString]
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
             center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))

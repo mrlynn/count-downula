@@ -19,7 +19,48 @@ extension PhoneStore {
         MemberTokens.save(joined.memberToken, for: countdown.id)
         upsert(countdown, image: backdrop.flatMap { Self.prepareImage($0)?.update } ?? .unchanged)
         lastSharedRefresh[countdown.id] = Date()
+        Task { await registerPushForShared() }
         return countdown.id
+    }
+
+    // MARK: Push
+
+    /// This device's APNs token, as hex. Set by the app delegate once iOS hands it over.
+    static var deviceToken: String? {
+        get { UserDefaults.standard.string(forKey: "Push.deviceToken") }
+        set { UserDefaults.standard.set(newValue, forKey: "Push.deviceToken") }
+    }
+
+    /// Which device token each joined countdown last registered, so we only tell the server again
+    /// when something changed (a new join, a reinstall, a restored phone).
+    private var registeredPushTokens: [String: String] {
+        get { UserDefaults.standard.dictionary(forKey: "Push.registered") as? [String: String] ?? [:] }
+        set { UserDefaults.standard.set(newValue, forKey: "Push.registered") }
+    }
+
+    /// Asks the server to wake this device when an owner edits one of your joined countdowns.
+    func registerPushForShared() async {
+        guard let deviceToken = Self.deviceToken else { return }
+        #if DEBUG
+        let sandbox = true
+        #else
+        let sandbox = false
+        #endif
+        var registered = registeredPushTokens
+        for countdown in countdowns {
+            guard let subscription = countdown.extras.subscription, registered[countdown.id.uuidString] != deviceToken,
+                  let memberToken = MemberTokens.token(for: countdown.id) else { continue }
+            do {
+                try await LiveLinkAPI.registerPush(slug: subscription.slug, memberToken: memberToken,
+                                                   deviceToken: deviceToken, sandbox: sandbox)
+                registered[countdown.id.uuidString] = deviceToken
+            } catch {
+                // Try again on the next launch or join.
+            }
+        }
+        // Forget countdowns that are gone.
+        let ids = Set(countdowns.map(\.id.uuidString))
+        registeredPushTokens = registered.filter { ids.contains($0.key) }
     }
 
     /// Leaves a shared countdown: removes it here (and, through iCloud, on your other devices) and

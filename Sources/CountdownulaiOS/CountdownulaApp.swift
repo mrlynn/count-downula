@@ -56,6 +56,7 @@ struct CountdownulaApp: App {
                         if joiner.errorMessage == nil { ClipHandoff.done(slug) }
                     }
                     await store.refreshShared(force: true)
+                    await store.registerPushForShared()
                 }
             }
             if phase == .background { SharedRefreshTask.schedule() }
@@ -85,6 +86,23 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         // CloudKit pushes wake the app so widgets and alerts stay current while it's closed.
         application.registerForRemoteNotifications()
         return true
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        PhoneStore.deviceToken = deviceToken.map { String(format: "%02x", $0) }.joined()
+        Task { @MainActor in await store?.registerPushForShared() }
+    }
+
+    /// A silent push from Count Downcula's server: an owner edited a countdown you joined.
+    /// CloudKit's own pushes also land here; SwiftData handles those, so they're left alone.
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        guard userInfo["countdownula"] != nil else { return completionHandler(.noData) }
+        Task { @MainActor in
+            guard let store else { return completionHandler(.noData) }
+            await store.refreshShared(force: true)
+            completionHandler(.newData)
+        }
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification)

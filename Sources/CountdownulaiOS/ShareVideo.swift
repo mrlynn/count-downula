@@ -197,9 +197,13 @@ enum ShareVideo {
 
 /// Hands a video straight to the Instagram Stories composer through the pasteboard.
 enum InstagramStories {
-    /// Meta requires a Facebook app ID on every Stories share. Set it once the Facebook app is
-    /// registered; until then the Instagram option stays hidden.
-    static let facebookAppID: String? = nil
+    /// Meta requires a Facebook app ID on every Stories share. It's `FacebookAppID` in project.yml;
+    /// while that's empty the Instagram option stays hidden.
+    static var facebookAppID: String? {
+        guard let id = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String,
+              !id.trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+        return id
+    }
 
     static var isAvailable: Bool {
         guard facebookAppID != nil, let url = URL(string: "instagram-stories://share") else { return false }

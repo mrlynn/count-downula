@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { deleteCountdown, getCountdown, memberCount, toPublic, updateCountdown } from "@/lib/countdowns.ts";
+import { after, NextResponse } from "next/server";
+import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, updateCountdown } from "@/lib/countdowns.ts";
+import { notifyMembers } from "@/lib/notify.ts";
 import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
@@ -40,6 +41,8 @@ export async function PUT(request: Request, { params }: Context) {
   const { result, doc } = await updateCountdown(slug, bearer(request), countdown.value, photo.value);
   if (result === "not-found") return errorResponse(404, "Not found.");
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");
+  // Members' apps fetch the new copy as soon as they're woken.
+  after(() => notifyMembers(slug).catch(() => {}));
   return NextResponse.json({ slug, url: shareURL(slug), countdown: doc ? toPublic(doc) : null });
 }
 
@@ -48,8 +51,11 @@ export async function DELETE(request: Request, { params }: Context) {
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
   const verdict = await checkLimits([[limits.deletesPerHour, clientSubject(request)]]);
   if (!verdict.ok) return tooManyRequests(verdict, "deleted links");
+  // Collected first: unpublishing deletes the member list, but members should still hear about it.
+  const targets = await pushTargets(slug);
   const result = await deleteCountdown(slug, bearer(request));
   if (result === "not-found") return errorResponse(404, "Not found.");
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");
+  after(() => notifyMembers(slug, targets).catch(() => {}));
   return new NextResponse(null, { status: 204 });
 }
