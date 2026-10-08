@@ -41,6 +41,11 @@
       "permanent": false
     },
     {
+      "source": "/app",
+      "destination": "https://apps.apple.com/app/id6820183254",
+      "permanent": false
+    },
+    {
       "source": "/beta",
       "destination": "https://testflight.apple.com/join/6k4WMQ1E",
       "permanent": false
