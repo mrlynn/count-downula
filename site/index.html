@@ -286,7 +286,7 @@
   <section class="sec install" id="install" aria-labelledby="install-title">
     <div class="sec-head">
       <h2 id="install-title">Invite it in.</h2>
-      <p>Like any vampire, Count Downcula has to be invited in. It isn't notarized by Apple yet, so macOS asks you once before the first launch.</p>
+      <p>Like any vampire, Count Downcula has to be invited in. It's signed and notarized by Apple, so macOS only asks once before the first launch.</p>
     </div>
 
     <ol class="rite">
@@ -305,11 +305,7 @@
       <li>
         <div>
           <h3>Open it the first time</h3>
-          <p>Right-click the app, choose Open, then Open again. Or run this in Terminal:</p>
-          <div class="cmd">
-            <code id="xattr">xattr -dr com.apple.quarantine /Applications/Countdownula.app</code>
-            <button type="button" data-copy="#xattr">Copy</button>
-          </div>
+          <p>Double-click it. macOS checks with Apple and asks whether to open an app downloaded from the internet. Click Open, and it moves into your menu bar.</p>
         </div>
       </li>
     </ol>

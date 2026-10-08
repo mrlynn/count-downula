@@ -76,11 +76,7 @@ Apple doesn't allow third-party watch faces. To share a "Count Downcula face", s
 Grab **Countdownula-x.y.z.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest), unzip it, and drag **Countdownula.app** to `/Applications`.
 It's a universal app (Apple Silicon + Intel) and needs macOS 14 Sonoma or later. Finder shows it as Count Downcula.
 
-The app isn't notarized, so macOS blocks the first launch. **Right-click the app → Open → Open**, or run:
-
-```bash
-xattr -dr com.apple.quarantine /Applications/Countdownula.app
-```
+Releases from 1.1 on are signed with Developer ID and notarized by Apple, so the first launch only asks you to confirm opening an app downloaded from the internet.
 
 ## Build from source
 
@@ -105,7 +101,7 @@ To use your own team, change `DEVELOPMENT_TEAM` and the `com.countdownula.*` / `
 
 **Watch app:** run `xcodegen generate`, open `Countdownula.xcodeproj`, pick the **CountdownulaWatch** scheme and your watch, and click Run. Xcode registers the watch with your developer account the first time. In the simulator, the scheme has optional launch arguments: `-seedDemo` (sample data), `-complicationGallery` (renders every complication size), and `-localOnly` (no iCloud).
 
-**Release:** `scripts/release-mac.sh` archives, exports with Developer ID, notarizes (when `NOTARY_PROFILE` is set; see the script header) and zips the app. Before the first public release, open the [CloudKit Console](https://icloud.developer.apple.com/), select `iCloud.com.countdownula.app`, and **Deploy Schema Changes** to Production. Release builds sync through the Production environment.
+**Release:** `NOTARY_PROFILE=countdownula scripts/release-mac.sh` archives, exports with Developer ID, notarizes, staples and zips the app. The `countdownula` profile is a notarytool keychain profile; the script header shows how to create one. Before the first public release, open the [CloudKit Console](https://icloud.developer.apple.com/), select `iCloud.com.countdownula.app`, and **Deploy Schema Changes** to Production. Release builds sync through the Production environment.
 
 **TestFlight / App Store (iPhone, iPad and Watch):** create the app in App Store Connect with bundle ID `com.countdownula.app`, sign in to your Apple ID in Xcode → Settings → Accounts, then run `scripts/release-ios.sh`. It archives the iPhone app (with the watch app and both widget extensions embedded), signs it for the App Store and uploads it. The build shows up under TestFlight after processing. Each upload needs a new build number: the script uses a timestamp, or pass one (`scripts/release-ios.sh 3`). `UPLOAD=0` exports the `.ipa` without uploading, and `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_PATH` switch to App Store Connect API key auth for CI.
 
