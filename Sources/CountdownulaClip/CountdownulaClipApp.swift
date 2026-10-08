@@ -157,6 +157,9 @@ struct ClipView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding()
+                // A phone-shaped column on iPad, rather than a card stretched across the screen.
+                .frame(maxWidth: 560)
+                .frame(maxWidth: .infinity)
             }
         }
     }

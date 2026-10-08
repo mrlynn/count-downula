@@ -190,7 +190,8 @@ targets:
         aps-environment: development
         com.apple.security.application-groups: [group.com.countdownula.app]
 
-  # App Clip: opens shared countdown links on iPhones without the app. iPhone only.
+  # App Clip: opens shared countdown links on devices without the app. Apple requires a clip to
+  # support the same devices as its parent, so it runs on iPad too.
   CountdownulaClip:
     type: application.on-demand-install-capable
     platform: iOS
@@ -215,7 +216,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.Clip
         PRODUCT_NAME: CountdownulaClip
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_ENTITLEMENTS: Resources/Clip/CountdownulaClip.entitlements
