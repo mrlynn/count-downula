@@ -9,8 +9,12 @@ export interface RGBA {
 }
 
 export interface WebStyle {
-  /** CSS background when there is no image to show. */
+  /** CSS background when there is no image to show. In a browser this includes the scene image. */
   background: string;
+  /** The same without any url(): what server-drawn images (link previews, passes) can use. */
+  baseBackground: string;
+  /** A built-in scene to draw from public/scenes when there's no uploaded image. */
+  scene?: string;
   /** Whether the uploaded backdrop image (photo or rendered scene) should be drawn. */
   useImage: boolean;
   text: string;
@@ -72,6 +76,7 @@ export function webStyle(style: unknown, hasImage: boolean): WebStyle {
 
   let background = gradientCss(NIGHT);
   let useImage = false;
+  let scene: string | undefined;
   switch (kind) {
     case "automatic":
     case "photo":
@@ -80,7 +85,7 @@ export function webStyle(style: unknown, hasImage: boolean): WebStyle {
       // Without one (crypt entries, older links), use the same scene rendered once from the app's code.
       useImage = hasImage;
       if (!hasImage && typeof payload === "string" && SCENES.has(payload)) {
-        background = `center / cover no-repeat url(/scenes/${payload}.jpg), ${background}`;
+        scene = payload;
       }
       break;
     case "gradient":
@@ -96,7 +101,9 @@ export function webStyle(style: unknown, hasImage: boolean): WebStyle {
   const textColor = isColor(s.textColor) ? s.textColor : { red: 1, green: 1, blue: 1 };
   const luminance = 0.2126 * clamp(textColor.red) + 0.7152 * clamp(textColor.green) + 0.0722 * clamp(textColor.blue);
   return {
-    background,
+    background: scene ? `center / cover no-repeat url(/scenes/${scene}.jpg), ${background}` : background,
+    baseBackground: background,
+    ...(scene ? { scene } : {}),
     useImage,
     text: rgba(textColor),
     accent: rgba(isColor(s.accent) ? s.accent : BLOOD),

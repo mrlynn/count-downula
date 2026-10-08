@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
+import { backdropSrc } from "./backdrop.ts";
 import { webStyle } from "./style.ts";
 
 const assets = Promise.all([
@@ -23,7 +24,7 @@ export async function passImages(style: Record<string, unknown>, photo: Buffer |
   const [icon] = await assets;
   const iconSrc = `data:image/png;base64,${icon.toString("base64")}`;
   const look = webStyle(style, !!photo);
-  const photoSrc = photo ? `data:image/jpeg;base64,${photo.toString("base64")}` : null;
+  const photoSrc = await backdropSrc(look, photo);
 
   const iconImage = (size: number) =>
     // eslint-disable-next-line @next/next/no-img-element
@@ -41,8 +42,8 @@ export async function passImages(style: Record<string, unknown>, photo: Buffer |
   // Event tickets with a square barcode get a 375 × 98 pt strip.
   const strip = (scale: number) =>
     png(
-      <div style={{ display: "flex", width: 375 * scale, height: 98 * scale, position: "relative", background: look.background }}>
-        {look.useImage && photoSrc ? (
+      <div style={{ display: "flex", width: 375 * scale, height: 98 * scale, position: "relative", background: look.baseBackground }}>
+        {photoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={photoSrc} width={375 * scale} height={98 * scale} style={{ position: "absolute", inset: 0, objectFit: "cover" }} />
         ) : null}
