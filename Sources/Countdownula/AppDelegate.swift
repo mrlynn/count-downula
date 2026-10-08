@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var pinnedItems: [UUID: NSStatusItem] = [:]
     private var thumbnailCache: [String: NSImage] = [:]
     private var editorWindow: NSWindow?
+    private var paywallWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         installMainMenu()
@@ -32,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let actions = PopoverActions(
             add: { [weak self] in self?.openEditor(for: nil) },
             edit: { [weak self] countdown in self?.openEditor(for: countdown) },
+            unlock: { [weak self] in self?.openPaywall() },
             quit: { NSApp.terminate(nil) }
         )
         let host = NSHostingController(rootView: PopoverView(store: store, navigation: navigation, actions: actions))
@@ -138,9 +140,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func openEditor(for countdown: Countdown?) {
         popover.performClose(nil)
+        if countdown == nil, !store.entitlements.canAdd(to: store.countdowns) {
+            openPaywall()
+            return
+        }
         editorWindow?.close()
 
-        let view = EditorView(store: store, original: countdown) { [weak self] saved in
+        let view = EditorView(store: store, original: countdown, onLimit: { [weak self] in self?.openPaywall() }) { [weak self] saved in
             self?.editorWindow?.close()
             if let saved { self?.navigation.selectedID = saved.id }
         }
@@ -156,8 +162,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
     }
 
+    // MARK: - Unlimited
+
+    private func openPaywall() {
+        popover.performClose(nil)
+        if let paywallWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            paywallWindow.makeKeyAndOrderFront(nil)
+            return
+        }
+        let view = PaywallView(entitlements: store.entitlements) { [weak self] in self?.paywallWindow?.close() }
+        let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+        window.title = "Count Downcula Unlimited"
+        window.styleMask = [.titled, .closable]
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        window.center()
+        paywallWindow = window
+
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
     func windowWillClose(_ notification: Notification) {
         if (notification.object as? NSWindow) === editorWindow { editorWindow = nil }
+        if (notification.object as? NSWindow) === paywallWindow { paywallWindow = nil }
     }
 
     // MARK: - Main menu

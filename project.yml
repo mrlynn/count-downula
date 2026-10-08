@@ -37,8 +37,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
-        # Shipped as a direct download (GitHub), so it's always unlocked and never touches StoreKit.
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DIRECT_DISTRIBUTION"
+        # The Mac App Store build: sandboxed, with the free tier and the Unlimited purchase.
+        # scripts/release-mac.sh builds the GitHub download instead, overriding these two settings with
+        # DIRECT_DISTRIBUTION (always unlocked, no StoreKit) and Resources/CountdownulaDirect.entitlements.
         INFOPLIST_FILE: Resources/Info.plist
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_ENTITLEMENTS: Resources/Countdownula.entitlements
@@ -46,6 +47,11 @@ targets:
     entitlements:
       path: Resources/Countdownula.entitlements
       properties:
+        com.apple.security.app-sandbox: true
+        # Live links, shared countdowns and the Crypt.
+        com.apple.security.network.client: true
+        # Photos chosen in the editor's open panel or dropped on it.
+        com.apple.security.files.user-selected.read-only: true
         com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
         com.apple.developer.icloud-services: [CloudKit]
         com.apple.developer.aps-environment: development
