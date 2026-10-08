@@ -109,7 +109,8 @@ private struct CountdownListView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text("\(Entitlements.activeCount(in: store.countdowns, at: store.now)) of \(SharedConfig.freeActiveLimit) free")
+                    let active = Entitlements.activeCount(in: store.countdowns, at: store.now)
+                    Text(active >= SharedConfig.freeActiveLimit ? "Free limit reached" : "\(active) of \(SharedConfig.freeActiveLimit) free")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Button("Unlock Unlimited", action: actions.unlock)

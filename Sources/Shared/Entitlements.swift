@@ -27,6 +27,14 @@ final class Entitlements {
         #if DIRECT_DISTRIBUTION
         isUnlocked = true
         #else
+        #if DEBUG
+        // Screenshots of the free tier on a machine that already bought Unlimited.
+        if ProcessInfo.processInfo.arguments.contains("-freeTier") {
+            isUnlocked = false
+            Task { await loadProduct() }
+            return
+        }
+        #endif
         isUnlocked = UserDefaults.standard.bool(forKey: Self.cacheKey)
         // Purchases from other devices, Ask to Buy approvals and refunds all arrive here.
         updatesTask = Task { [weak self] in

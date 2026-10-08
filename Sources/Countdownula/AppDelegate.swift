@@ -47,11 +47,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         Notifier.requestAuthorization()
 
         #if DEBUG
-        // Screenshots: launch with -openPopover to show the list without clicking the menu bar.
-        if ProcessInfo.processInfo.arguments.contains("-openPopover"), let button = mainItem.button {
+        // Screenshots: -openPopover shows the list without clicking the menu bar, -select "<title>" opens a
+        // countdown in it, -openEditor "<title>" edits one and -openPaywall shows the upsell.
+        let arguments = ProcessInfo.processInfo.arguments
+        func value(after flag: String) -> String? {
+            arguments.firstIndex(of: flag).flatMap { $0 + 1 < arguments.count ? arguments[$0 + 1] : nil }
+        }
+        let named = { [store] (title: String?) in title.flatMap { t in store.countdowns.first { $0.title == t } } }
+        if arguments.contains("-openPopover"), let button = mainItem.button {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                self?.togglePopover(from: button, selecting: nil)
+                self?.togglePopover(from: button, selecting: named(value(after: "-select"))?.id)
             }
+        }
+        if let countdown = named(value(after: "-openEditor")) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.openEditor(for: countdown) }
+        }
+        if arguments.contains("-openPaywall") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.openPaywall() }
         }
         #endif
     }
