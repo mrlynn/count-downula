@@ -3,6 +3,7 @@ import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, upda
 import { notifyMembers } from "@/lib/notify.ts";
 import { purgeCoffin } from "@/lib/coffin.ts";
 import { forgetLiveDevices } from "@/lib/live.ts";
+import { forgetPass, pushPassUpdates } from "@/lib/walletPass.ts";
 import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
@@ -45,6 +46,8 @@ export async function PUT(request: Request, { params }: Context) {
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");
   // Members' apps fetch the new copy as soon as they're woken.
   after(() => notifyMembers(slug).catch(() => {}));
+  // Wallet passes of this countdown fetch the new version.
+  after(() => pushPassUpdates(slug).catch(() => {}));
   return NextResponse.json({ slug, url: shareURL(slug), countdown: doc ? toPublic(doc) : null });
 }
 
@@ -62,5 +65,6 @@ export async function DELETE(request: Request, { params }: Context) {
   // Sealed notes and photos go with it.
   after(() => purgeCoffin(slug).catch(() => {}));
   after(() => forgetLiveDevices(slug).catch(() => {}));
+  after(() => forgetPass(slug).catch(() => {}));
   return new NextResponse(null, { status: 204 });
 }

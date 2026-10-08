@@ -52,6 +52,7 @@ export function LiveCountdown({
   serverNow,
   memberCount,
   sealed = 0,
+  walletURL = null,
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
@@ -59,6 +60,8 @@ export function LiveCountdown({
   memberCount: number;
   /** Notes and photos waiting in the coffin, before zero. */
   sealed?: number;
+  /** Where to get the Apple Wallet pass, once passes are set up. */
+  walletURL?: string | null;
 }) {
   // Start from the server's clock so the first client render matches the HTML, then tick locally.
   const [now, setNow] = useState(() => new Date(serverNow));
@@ -166,6 +169,11 @@ export function LiveCountdown({
             <Button variant="contained" size="large" href={`countdownula://join/${countdown.slug}`}>
               Count down with me
             </Button>
+            {walletURL ? (
+              <Button variant="outlined" size="large" href={walletURL}>
+                Add to Apple Wallet
+              </Button>
+            ) : null}
             <Button variant="outlined" size="large" href={DOWNLOAD}>
               Get the app
             </Button>
