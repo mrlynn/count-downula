@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
+import { waitText, type Verdict } from "./rateLimit.ts";
 
 export const publicOrigin = () => (process.env.PUBLIC_ORIGIN ?? "https://go.countdownula.com").replace(/\/$/, "");
 
 export const shareURL = (slug: string) => `${publicOrigin()}/c/${slug}`;
 
 export const errorResponse = (status: number, error: string) => NextResponse.json({ error }, { status });
+
+/** 429 with a Retry-After header and a message the app can show as is. */
+export function tooManyRequests(verdict: Extract<Verdict, { ok: false }>, doing: string): NextResponse {
+  return NextResponse.json(
+    { error: `Too many ${doing} for now. Try again in ${waitText(verdict.retryAfter)}.` },
+    { status: 429, headers: { "Retry-After": String(verdict.retryAfter) } },
+  );
+}
 
 export function bearer(request: Request): string | null {
   const header = request.headers.get("authorization") ?? "";

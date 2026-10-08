@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { deleteCountdown, getCountdown, toPublic, updateCountdown } from "@/lib/countdowns.ts";
-import { bearer, errorResponse, readJSON, shareURL } from "@/lib/http.ts";
+import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
+import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
 
 type Context = { params: Promise<{ slug: string }> };
@@ -20,6 +21,11 @@ export async function GET(_request: Request, { params }: Context) {
 export async function PUT(request: Request, { params }: Context) {
   const { slug } = await params;
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
+  const verdict = await checkLimits([
+    [limits.editsPerHour, clientSubject(request)],
+    [limits.editsPerCountdownPerHour, slug],
+  ]);
+  if (!verdict.ok) return tooManyRequests(verdict, "updates to this link");
   let body: Record<string, unknown>;
   try {
     body = (await readJSON(request)) as Record<string, unknown>;
@@ -40,6 +46,8 @@ export async function PUT(request: Request, { params }: Context) {
 export async function DELETE(request: Request, { params }: Context) {
   const { slug } = await params;
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
+  const verdict = await checkLimits([[limits.deletesPerHour, clientSubject(request)]]);
+  if (!verdict.ok) return tooManyRequests(verdict, "deleted links");
   const result = await deleteCountdown(slug, bearer(request));
   if (result === "not-found") return errorResponse(404, "Not found.");
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");

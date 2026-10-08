@@ -91,3 +91,31 @@ test("slugs avoid look-alike characters", () => {
   assert.ok(isSlug(slug));
   assert.ok(!isSlug("../etc"));
 });
+
+test("rate limit windows line up on fixed boundaries and say when they reset", async () => {
+  const { windowFor, limits } = await import("../src/lib/rateLimit.ts");
+  const at = new Date("2026-10-08T12:34:56Z");
+  const hour = windowFor(limits.publishPerHour, "abc", at);
+  assert.equal(hour.resetsAt.toISOString(), "2026-10-08T13:00:00.000Z");
+  assert.equal(windowFor(limits.publishPerHour, "abc", new Date("2026-10-08T12:00:00Z")).key, hour.key);
+  assert.notEqual(windowFor(limits.publishPerHour, "abc", new Date("2026-10-08T13:00:00Z")).key, hour.key);
+  assert.notEqual(windowFor(limits.publishPerHour, "xyz", at).key, hour.key, "Each client counts separately");
+  assert.equal(windowFor(limits.publishPerDay, "abc", at).resetsAt.toISOString(), "2026-10-09T00:00:00.000Z");
+});
+
+test("client subjects are hashed, stable and take the first forwarded address", async () => {
+  const { clientSubject } = await import("../src/lib/rateLimit.ts");
+  const request = (headers: Record<string, string>) => new Request("http://x/api", { headers });
+  const a = clientSubject(request({ "x-forwarded-for": "203.0.113.7, 10.0.0.1" }));
+  assert.equal(a, clientSubject(request({ "x-real-ip": "203.0.113.7" })));
+  assert.notEqual(a, clientSubject(request({ "x-forwarded-for": "203.0.113.8" })));
+  assert.ok(!a.includes("203"), "The address itself isn't stored");
+});
+
+test("wait text reads naturally", async () => {
+  const { waitText } = await import("../src/lib/rateLimit.ts");
+  assert.equal(waitText(30), "a minute");
+  assert.equal(waitText(600), "10 minutes");
+  assert.equal(waitText(3_600), "an hour");
+  assert.equal(waitText(20_000), "6 hours");
+});
