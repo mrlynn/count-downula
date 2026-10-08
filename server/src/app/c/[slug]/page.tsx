@@ -18,19 +18,19 @@ async function load(slug: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const doc = await load(slug);
-  if (!doc) return { title: "Count Downula" };
+  if (!doc) return { title: "Count Downcula" };
   const now = new Date();
   const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone);
   const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind)}`;
   const description = `${value} ${caption}`;
   return {
-    title: `${doc.title} · Count Downula`,
+    title: `${doc.title} · Count Downcula`,
     description,
     openGraph: {
       title: doc.title,
       description,
       url: `${publicOrigin()}/c/${slug}`,
-      siteName: "Count Downula",
+      siteName: "Count Downcula",
       images: [{ url: image, width: 1200, height: 630, alt: `${doc.title}: ${description}` }],
       type: "website",
     },

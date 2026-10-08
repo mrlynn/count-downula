@@ -7,7 +7,7 @@
 	<key>NSPrivacyTrackingDomains</key>
 	<array/>
 	<key>NSPrivacyCollectedDataTypes</key>
-	<!-- Only countdowns shared as live links leave the device for Count Downula's server. -->
+	<!-- Only countdowns shared as live links leave the device for Count Downcula's server. -->
 	<array>
 		<dict>
 			<key>NSPrivacyCollectedDataType</key>

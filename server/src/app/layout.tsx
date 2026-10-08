@@ -9,7 +9,7 @@ import { Providers } from "./providers.tsx";
 
 export const metadata: Metadata = {
   metadataBase: new URL(publicOrigin()),
-  title: "Count Downula",
+  title: "Count Downcula",
   description: "Countdowns for the moments you can't wait for.",
 };
 

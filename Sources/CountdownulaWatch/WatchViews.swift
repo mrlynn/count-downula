@@ -44,7 +44,7 @@ struct WatchCountdownList: View {
                     }
                 }
             }
-            .navigationTitle("Count Downula")
+            .navigationTitle("Count Downcula")
             .navigationDestination(for: UUID.self) { id in
                 WatchCountdownDetail(id: id)
             }
@@ -73,7 +73,7 @@ private struct EmptyWatchState: View {
                 .frame(width: 44, height: 44)
             Text("No countdowns yet")
                 .font(.headline)
-            Text("Add one here or in Count Downula on your Mac.")
+            Text("Add one here or in Count Downcula on your Mac.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -237,38 +237,49 @@ struct AddCountdownView: View {
     @State private var minutes = 25
     @State private var date = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
     @State private var isPinned = false
+    /// Checked once on appear, so saving the last free countdown doesn't flip this sheet to the paywall mid-dismiss.
+    @State private var startedAtLimit = false
 
     private let durations = [1, 3, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 480, 720]
 
     var body: some View {
         NavigationStack {
-            Form {
-                TextField("Title", text: $title)
-
-                Picker("Type", selection: $kind) {
-                    Text("Timer").tag(Countdown.Kind.timer)
-                    Text("Date").tag(Countdown.Kind.event)
-                }
-
-                if kind == .timer {
-                    Picker("Duration", selection: $minutes) {
-                        ForEach(durations, id: \.self) { Text(Self.durationLabel($0)).tag($0) }
-                    }
-                } else {
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
-                    DatePicker("Time", selection: $date, displayedComponents: .hourAndMinute)
-                }
-
-                Toggle("Pin", isOn: $isPinned)
-
-                Button("Save", action: save)
-                    .disabled(kind == .event && date <= .now)
+            if startedAtLimit && !store.entitlements.isUnlocked {
+                WatchUnlockView(entitlements: store.entitlements)
+            } else {
+                form
             }
-            .navigationTitle("New")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+        }
+        .onAppear { startedAtLimit = !store.entitlements.canAdd(to: store.countdowns) }
+    }
+
+    private var form: some View {
+        Form {
+            TextField("Title", text: $title)
+
+            Picker("Type", selection: $kind) {
+                Text("Timer").tag(Countdown.Kind.timer)
+                Text("Date").tag(Countdown.Kind.event)
+            }
+
+            if kind == .timer {
+                Picker("Duration", selection: $minutes) {
+                    ForEach(durations, id: \.self) { Text(Self.durationLabel($0)).tag($0) }
                 }
+            } else {
+                DatePicker("Date", selection: $date, displayedComponents: .date)
+                DatePicker("Time", selection: $date, displayedComponents: .hourAndMinute)
+            }
+
+            Toggle("Pin", isOn: $isPinned)
+
+            Button("Save", action: save)
+                .disabled(kind == .event && date <= .now)
+        }
+        .navigationTitle("New")
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
             }
         }
     }
@@ -293,5 +304,52 @@ struct AddCountdownView: View {
         if minutes < 60 { return "\(minutes) min" }
         let hours = Double(minutes) / 60
         return hours == hours.rounded() ? "\(Int(hours)) hr" : String(format: "%.1f hr", hours)
+    }
+}
+
+// MARK: - Unlimited
+
+/// Shown instead of the add form once a free user has reached the active-countdown limit.
+private struct WatchUnlockView: View {
+    let entitlements: Entitlements
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 10) {
+                Image(systemName: "lock.fill")
+                    .font(.title2)
+                    .foregroundStyle(Color.countdownulaBlood)
+                Text("Count Downcula Unlimited")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                Text("Free includes \(SharedConfig.freeActiveLimit) countdowns at a time. Unlock unlimited countdowns on all your devices.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Button {
+                    Task { await entitlements.purchase() }
+                } label: {
+                    if entitlements.purchaseState == .purchasing {
+                        ProgressView()
+                    } else {
+                        Text(entitlements.product.map { "Unlock for \($0.displayPrice)" } ?? "Loading…")
+                    }
+                }
+                .tint(Color.countdownulaBlood)
+                .disabled(entitlements.product == nil || entitlements.purchaseState == .purchasing)
+
+                if case let .failed(message) = entitlements.purchaseState {
+                    Text(message).font(.footnote).foregroundStyle(.secondary)
+                }
+
+                Button("Restore Purchases") { Task { await entitlements.restore() } }
+                    .font(.footnote)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .navigationTitle("Unlimited")
+        .task { await entitlements.loadProduct() }
     }
 }

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.countdownula.com/sitemap.xml
+Sitemap: https://www.countdowncula.com/sitemap.xml

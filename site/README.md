@@ -1,4 +1,4 @@
-# countdownula.com
+# countdowncula.com
 
 Static marketing site. No build step, no dependencies, no cookies, no third-party requests.
 
@@ -8,7 +8,7 @@ Static marketing site. No build step, no dependencies, no cookies, no third-part
 | `support.html`, `privacy.html`, `terms.html`, `cookies.html` | Generated from `_src/*.html` |
 | `assets/site.css`, `assets/site.js` | Shared styles and behaviour |
 | `assets/fonts/` | Self-hosted Young Serif and Instrument Sans (SIL OFL) |
-| `vercel.json` | Clean URLs, security headers, `/download` redirect |
+| `vercel.json` | Clean URLs, security headers, `/download` and `/beta` (TestFlight) redirects |
 
 After editing a page body in `_src/`, or the header/footer in `index.html`, rebuild the secondary pages:
 
@@ -29,7 +29,9 @@ The Vercel project `countdownula` is connected to this GitHub repo with Root Dir
 - Every push to `main` deploys to production.
 - Other branches and pull requests get preview deployments.
 
-Domains: `www.countdownula.com` (primary) and `countdownula.com` (redirects to `www` through the domain settings in Vercel).
+Domains: `www.countdowncula.com` (primary) and `countdowncula.com` (redirects to `www` through the domain settings in Vercel).
+
+The app was called Count Downula until October 2026. The old domains, `www.countdownula.com` and `countdownula.com`, stay attached to the project and permanently redirect (308) to `www.countdowncula.com` through the same domain settings, so old links and the privacy URL in App Store Connect keep working.
 
 For a manual deploy from the CLI, run it from the repo root, not from `site/`, because the project's Root Directory is already `site`:
 

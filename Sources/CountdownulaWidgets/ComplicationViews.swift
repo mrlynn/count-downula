@@ -145,7 +145,7 @@ struct RectangularComplication: View {
                     .widgetAccentable()
                     .frame(width: 26, height: 26)
                 VStack(alignment: .leading) {
-                    Text("Count Downula").font(.headline)
+                    Text("Count Downcula").font(.headline)
                     Text("No upcoming countdowns").font(.caption2).foregroundStyle(.secondary)
                 }
             }

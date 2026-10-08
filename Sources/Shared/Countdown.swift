@@ -120,10 +120,11 @@ struct TimeParts {
 }
 
 enum CountdownFormat {
-    /// `compact` for a countdown, or the time since a count-up began: "47d 3h", "3h 05m", "04:59".
+    /// `compact` for a countdown, or the time since a count-up began: "2y 3mo", "47d 3h", "3h 05m", "04:59".
     static func compact(_ countdown: Countdown, at now: Date) -> String {
         guard countdown.countsUp else { return compact(from: now, to: countdown.targetDate) }
         let p = countdown.timeParts(at: now)
+        if p.days >= 365 { return years(between: countdown.targetDate, and: now) }
         if p.days > 0 { return "\(p.days)d \(p.hours)h" }
         if p.hours > 0 { return String(format: "%dh %02dm", p.hours, p.minutes) }
         return String(format: "%02d:%02d", p.minutes, p.seconds)
@@ -142,13 +143,22 @@ enum CountdownFormat {
         return unit(c.hour ?? 0, "hour")
     }
 
-    /// Short form for the menu bar: "12d 4h", "3h 05m", "04:59".
+    /// Short form for the menu bar: "1y 2mo", "12d 4h", "3h 05m", "04:59".
     static func compact(from now: Date, to target: Date) -> String {
         let p = TimeParts(from: now, to: target)
         if p.isPast { return "Done" }
+        if p.days >= 365 { return years(between: now, and: target) }
         if p.days > 0 { return "\(p.days)d \(p.hours)h" }
         if p.hours > 0 { return String(format: "%dh %02dm", p.hours, p.minutes) }
         return String(format: "%02d:%02d", p.minutes, p.seconds)
+    }
+
+    /// Spans of a year or more, by the calendar: "12y 8mo", "1y". Day counts that long
+    /// ("4,652d 23h") are too wide for rows and widgets and hard to read anyway.
+    static func years(between start: Date, and end: Date, calendar: Calendar = .current) -> String {
+        let c = calendar.dateComponents([.year, .month], from: min(start, end), to: max(start, end))
+        let years = c.year ?? 0, months = c.month ?? 0
+        return months > 0 ? "\(years)y \(months)mo" : "\(years)y"
     }
 
     /// Readable form for list rows: "12 days, 4 hrs" / "3 hrs, 5 min" / "2 days ago".

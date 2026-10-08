@@ -33,7 +33,7 @@ final class LinkTests: XCTestCase {
 
     func testLinkSurvivesTheExtrasRoundTrip() throws {
         var extras = CountdownExtras()
-        extras.link = PublishedLink(slug: "k7Pq2mXa", url: URL(string: "https://go.countdownula.com/c/k7Pq2mXa")!,
+        extras.link = PublishedLink(slug: "k7Pq2mXa", url: URL(string: "https://go.countdowncula.com/c/k7Pq2mXa")!,
                                     publishedAt: Date(timeIntervalSince1970: 1_791_000_000))
         let decoded = try JSONDecoder().decode(CountdownExtras.self, from: JSONEncoder().encode(extras))
         XCTAssertEqual(decoded.link, extras.link)

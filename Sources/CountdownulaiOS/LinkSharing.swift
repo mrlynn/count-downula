@@ -127,7 +127,7 @@ struct LiveLinkSection: View {
         .confirmationDialog("Stop sharing this link?", isPresented: $confirmingUnpublish, titleVisibility: .visible) {
             Button("Stop Sharing", role: .destructive) { Task { await unpublish() } }
         } message: {
-            Text("The link stops working for everyone and the copy on Count Downula's server is deleted.")
+            Text("The link stops working for everyone and the copy on Count Downcula's server is deleted.")
         }
         .alert("Live link", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}

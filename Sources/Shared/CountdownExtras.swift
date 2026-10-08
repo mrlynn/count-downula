@@ -29,7 +29,7 @@ struct CountdownExtras: Codable, Hashable {
     }
 }
 
-/// A countdown's public page on the Count Downula server.
+/// A countdown's public page on the Count Downcula server.
 struct PublishedLink: Codable, Hashable {
     var slug: String
     var url: URL

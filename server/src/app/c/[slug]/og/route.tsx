@@ -90,7 +90,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
             <div style={{ display: "flex", alignItems: "center", marginTop: 48, fontSize: 26, fontWeight: 700, opacity: 0.85 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`data:image/png;base64,${icon.toString("base64")}`} width={44} height={44} style={{ borderRadius: 10, marginRight: 14 }} />
-              Count Downula
+              Count Downcula
             </div>
           </div>
           <svg width={ring} height={ring} viewBox={`0 0 ${ring} ${ring}`}>

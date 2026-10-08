@@ -1,11 +1,11 @@
-# Count Downula viral features spec
+# Count Downcula viral features spec
 
 Status: draft, October 8, 2026
 Owner: Michael Lynn
 
 ## Why this exists
 
-Count Downula does a lot for one person. Milestones, count-ups, Live Activities, complications, styles and a share card all work well on your own devices. None of it reaches anyone else except as a static JPEG. Your sync runs through a private iCloud database, so a countdown can never appear on a friend's phone.
+Count Downcula does a lot for one person. Milestones, count-ups, Live Activities, complications, styles and a share card all work well on your own devices. None of it reaches anyone else except as a static JPEG. Your sync runs through a private iCloud database, so a countdown can never appear on a friend's phone.
 
 Each feature in this spec closes that gap. The goal is a loop where every countdown you care about pulls other people in, and every one of them can start their own.
 
@@ -15,7 +15,7 @@ The north star metric is shared countdowns per active user per month. Supporting
 
 SwiftData's CloudKit integration only supports the private database. It can't create a CKShare or read a shared zone. Building sharing on raw CloudKit would mean a second persistence layer beside SwiftData, and it still wouldn't give you public web links, live preview images, App Clip data for people without iCloud access to the share, or push-to-start Live Activities.
 
-So the plan adds one service, the Count Downula server:
+So the plan adds one service, the Count Downcula server:
 
 | Piece | Choice | Why |
 |---|---|---|
@@ -23,7 +23,7 @@ So the plan adds one service, the Count Downula server:
 | UI | Material UI | Matches the house stack |
 | Data | MongoDB Atlas | Flexible documents fit the countdown JSON the app already writes (style, milestones, extras) |
 | Hosting | Vercel project `countdownula-server` | The marketing site already deploys there |
-| Domain | `go.countdownula.com` | Keeps the static site and its strict CSP untouched, and gives the App Clip a clean associated domain |
+| Domain | `go.countdowncula.com` | Keeps the static site and its strict CSP untouched, and gives the App Clip a clean associated domain |
 
 Private countdowns keep syncing through iCloud exactly as they do today. The server only ever sees a countdown you choose to publish or share.
 
@@ -61,7 +61,7 @@ Each feature lists what it is, why it spreads, how it works, what it depends on,
 
 ### 1. Live link previews (phase 1, size M)
 
-What it is: every countdown can get a public URL, like `go.countdownula.com/c/k7Pq2mXa`. The page shows the countdown ticking live, styled like the app. The link preview image renders on request, so pasting the link in iMessage, Slack or X shows today's number.
+What it is: every countdown can get a public URL, like `go.countdowncula.com/c/k7Pq2mXa`. The page shows the countdown ticking live, styled like the app. The link preview image renders on request, so pasting the link in iMessage, Slack or X shows today's number.
 
 Why it spreads: a link preview that changes day to day gets noticed, and it rewards reposting. Every view of the page carries a download button.
 
@@ -69,7 +69,7 @@ How it works: the app posts the countdown and photo to `POST /api/countdowns`. T
 
 App changes: a Share Link button in the countdown detail screen, a published badge, and Unpublish. Edits to a published countdown push to the server.
 
-Depends on: the server, MongoDB Atlas cluster, DNS for `go.countdownula.com`.
+Depends on: the server, MongoDB Atlas cluster, DNS for `go.countdowncula.com`.
 
 ### 2. Shared countdowns, "The Bite" (phase 2, size L)
 
@@ -89,7 +89,7 @@ What it is: tapping a countdown link on an iPhone opens a 15 MB App Clip with th
 
 Why it spreads: it removes the install wall from the share loop. The person sees the payoff before deciding to install.
 
-How it works: a new `CountdownulaClip` target in `project.yml`, sharing `Countdown`, `StyleViews`, `Scenes` and `FangMark`. The App Clip experience URL prefix is `https://go.countdownula.com/c/`. The server serves `/.well-known/apple-app-site-association` with `appclips` and `applinks` entries. Keep it hands off to the full app through the App Group so the countdown is waiting after install.
+How it works: a new `CountdownulaClip` target in `project.yml`, sharing `Countdown`, `StyleViews`, `Scenes` and `FangMark`. The App Clip experience URL prefix is `https://go.countdowncula.com/c/`. The server serves `/.well-known/apple-app-site-association` with `appclips` and `applinks` entries. Keep it hands off to the full app through the App Group so the countdown is waiting after install.
 
 Depends on: feature 1, an App Clip bundle ID (`com.countdownula.app.Clip`), App Store Connect App Clip experience setup.
 
@@ -115,7 +115,7 @@ Depends on: feature 2, APNs auth key, Vercel Cron.
 
 ### 6. Animated share cards (phase 1, size M)
 
-What it is: Share as Video exports a 6 second loop at 1080 by 1920 where the fang ring drains and the seconds tick, ending on the title and the Count Downula mark.
+What it is: Share as Video exports a 6 second loop at 1080 by 1920 where the fang ring drains and the seconds tick, ending on the title and the Count Downcula mark.
 
 Why it spreads: video gets more reach than still images on Stories, Reels and TikTok, and it's a native fit for Stories' vertical format.
 
@@ -125,7 +125,7 @@ Depends on: nothing new.
 
 ### 7. Countdowns from a screenshot (phase 4, size M)
 
-What it is: share a flight confirmation, ticket, invite or screenshot to Count Downula and it fills in the title, date, place and a fitting scene.
+What it is: share a flight confirmation, ticket, invite or screenshot to Count Downcula and it fills in the title, date, place and a fitting scene.
 
 Why it spreads: it lowers the cost of creating a countdown, and more countdowns means more shares.
 
@@ -147,7 +147,7 @@ Depends on: feature 1, Pass Type ID certificate.
 
 ### 9. The Count speaks (phase 1, size S to M)
 
-What it is: an opt-in personality pack per countdown. Milestone notifications and the finish alert get lines in Count Downula's voice ("Three nights remain. The anticipation is... delicious."), and the final 10 seconds can play a spoken countdown.
+What it is: an opt-in personality pack per countdown. Milestone notifications and the finish alert get lines in Count Downcula's voice ("Three nights remain. The anticipation is... delicious."), and the final 10 seconds can play a spoken countdown.
 
 Why it spreads: a notification people screenshot is free marketing, and it gives the brand a voice that plain timer apps don't have.
 
@@ -173,7 +173,7 @@ What it is: a browsable feed of countdowns people care about, such as game relea
 
 Why it spreads: each entry has a public page that can rank in search, and fans share the pages on their own.
 
-How it works: countdowns with `visibility: public` and a `curated` flag. A staff curated list at launch, then user submissions with review. Pages at `go.countdownula.com/crypt` and `/crypt/[category]`. Subscriber counts show on each entry.
+How it works: countdowns with `visibility: public` and a `curated` flag. A staff curated list at launch, then user submissions with review. Pages at `go.countdowncula.com/crypt` and `/crypt/[category]`. Subscriber counts show on each entry.
 
 Depends on: features 1 and 2.
 
@@ -191,12 +191,12 @@ Depends on: feature 2.
 
 | Phase | Ships | Needs from you |
 |---|---|---|
-| 1. Foundation and quick wins | Server, live link previews (1), animated cards (6), voice text lines (9), sunrise and moon (10) | MongoDB Atlas connection string, Vercel project, DNS record for `go.countdownula.com` |
+| 1. Foundation and quick wins | Server, live link previews (1), animated cards (6), voice text lines (9), sunrise and moon (10) | MongoDB Atlas connection string, Vercel project, DNS record for `go.countdowncula.com` |
 | 2. Sharing | Shared countdowns (2), App Clip (3), Sign in with Apple | App Clip bundle ID and experience, APNs key |
 | 3. Moments | Sealed coffin (4), synchronized zero (5), Wallet passes (8) | Object storage, Pass Type ID certificate, content policy |
 | 4. Growth | Screenshot import and App Intents (7), public crypt (11), date pools (12) | Curated launch list |
 
-The Halloween test: phase 1 ships a public Halloween countdown at `go.countdownula.com/c/halloween` with a live preview, plus the Halloween voice pack. It's a small, timely way to measure whether live links get shared before the bigger phase 2 investment.
+The Halloween test: phase 1 ships a public Halloween countdown at `go.countdowncula.com/c/halloween` with a live preview, plus the Halloween voice pack. It's a small, timely way to measure whether live links get shared before the bigger phase 2 investment.
 
 ## Privacy and safety
 
@@ -206,7 +206,7 @@ Sensitive count-ups (sober, smoke-free) never appear in the crypt and show a con
 
 ## Open questions
 
-1. Is `go.countdownula.com` the right domain, or do you want links at `countdownula.com/c/...` through a rewrite? The subdomain is simpler and keeps the site's CSP intact.
-2. Who records the Count Downula voice?
+1. ~~Is `go.countdowncula.com` the right domain, or `countdowncula.com/c/...` through a rewrite?~~ Decided: `go.countdowncula.com`. The app was renamed from Count Downula on October 7, 2026, so links use the new domain.
+2. Who records the Count Downcula voice?
 3. Should shared countdown members be able to edit by default, or only the owner?
 4. Does the App Clip need to work on iPad, or iPhone only?

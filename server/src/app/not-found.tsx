@@ -8,8 +8,8 @@ export default function NotFound() {
           This countdown has vanished
         </Typography>
         <Typography sx={{ opacity: 0.75, mb: 3 }}>The link may be wrong, or its owner unpublished it.</Typography>
-        <Button variant="contained" href="https://www.countdownula.com">
-          Get Count Downula
+        <Button variant="contained" href="https://www.countdowncula.com">
+          Get Count Downcula
         </Button>
       </Box>
     </Box>

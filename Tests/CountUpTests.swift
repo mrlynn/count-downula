@@ -19,6 +19,22 @@ final class CountUpTests: XCTestCase {
         XCTAssertEqual(CountdownFormat.compact(c, at: now), "47d 0h")
     }
 
+    func testLongSpansShowYearsAndMonths() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        let start = calendar.date(from: DateComponents(year: 2014, month: 1, day: 10, hour: 11))!
+        let end = calendar.date(from: DateComponents(year: 2026, month: 10, day: 7, hour: 13))!
+        XCTAssertEqual(CountdownFormat.years(between: start, and: end, calendar: calendar), "12y 8mo")
+        XCTAssertEqual(CountdownFormat.years(between: end, and: start, calendar: calendar), "12y 8mo")
+        let anniversary = calendar.date(from: DateComponents(year: 2015, month: 1, day: 10, hour: 12))!
+        XCTAssertEqual(CountdownFormat.years(between: start, and: anniversary, calendar: calendar), "1y")
+
+        // Under a year stays in days; a year or more switches over, counting up or down.
+        XCTAssertEqual(CountdownFormat.compact(countUp(daysAgo: 364), at: now), "364d 0h")
+        XCTAssertTrue(CountdownFormat.compact(countUp(daysAgo: 4_652), at: now).hasPrefix("12y"))
+        XCTAssertTrue(CountdownFormat.compact(from: now, to: now + 400 * day).hasPrefix("1y"))
+    }
+
     func testMilestonesCountFromTheStartAndDriveProgress() {
         var c = countUp(daysAgo: 45)
         c.milestones = MilestonePreset.countUpDefaults()

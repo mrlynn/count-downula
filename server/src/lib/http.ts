@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { waitText, type Verdict } from "./rateLimit.ts";
 
-export const publicOrigin = () => (process.env.PUBLIC_ORIGIN ?? "https://go.countdownula.com").replace(/\/$/, "");
+export const publicOrigin = () => (process.env.PUBLIC_ORIGIN ?? "https://go.countdowncula.com").replace(/\/$/, "");
 
 export const shareURL = (slug: string) => `${publicOrigin()}/c/${slug}`;
 

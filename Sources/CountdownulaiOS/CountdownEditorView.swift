@@ -22,6 +22,7 @@ struct CountdownEditorView: View {
     @State private var previewImage: UIImage?
     @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isLoadingPhoto = false
+    @State private var showingPaywall = false
 
     init(original: Countdown?) {
         self.original = original
@@ -157,6 +158,15 @@ struct CountdownEditorView: View {
                     }
                 }
 
+                if !withinFreeLimit {
+                    Section {
+                        Button("Unlock Unlimited…") { showingPaywall = true }
+                            .foregroundStyle(Color.countdownulaBlood)
+                    } footer: {
+                        Text("Free includes \(SharedConfig.freeActiveLimit) active countdowns at a time. Unlock Unlimited, or finish or delete one first.")
+                    }
+                }
+
                 milestonesSection
 
                 Section {
@@ -186,12 +196,13 @@ struct CountdownEditorView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(original == nil ? "Add" : "Save", action: save)
-                        .disabled(!canSave)
+                        .disabled(!canSave || !withinFreeLimit)
                 }
             }
             .task {
                 if let original { previewImage = store.image(for: original) }
             }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
         }
     }
 
@@ -311,6 +322,11 @@ struct CountdownEditorView: View {
         .labelsHidden()
         .frame(maxWidth: .infinity)
         .clipped()
+    }
+
+    /// Saving keeps a free user within the limit; turning a finished countdown back into an active one counts.
+    private var withinFreeLimit: Bool {
+        store.entitlements.allowsSaving(draft, replacing: original, in: store.countdowns)
     }
 
     // MARK: - Actions
