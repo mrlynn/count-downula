@@ -151,7 +151,9 @@ final class CountdownStore {
             (Countdown(title: "Sam's 30th Birthday", details: "Dinner at 7 — pick up the cake!",
                        targetDate: now + 9 * day + 10_800, createdAt: now - 20 * day), photo("Light Stream Pink")),
             (Countdown(title: "Sonoma Wine Weekend", details: "Three days of vineyards, long lunches and zero laptops.",
-                       targetDate: now + 16 * day + 25_200, isPinned: true, createdAt: now - 30 * day), photo("Sonoma")),
+                       targetDate: now + 16 * day + 25_200, isPinned: true, createdAt: now - 30 * day),
+             // The Light variant: dynamic wallpapers have a thumbnail split into light and dark halves.
+             photo("Sonoma Light")),
             (Countdown(title: "Halloween", details: "Costume: obviously Dracula.",
                        targetDate: halloween, createdAt: now - 10 * day), photo("Hello Metallic Purple")),
             (Countdown(title: "v2.0 Launch", details: "Ship it.",
