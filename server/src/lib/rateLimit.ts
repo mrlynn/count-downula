@@ -48,7 +48,7 @@ export function windowFor(limit: Limit, subject: string, now: Date): Window {
 export function clientSubject(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   const ip = forwarded || request.headers.get("x-real-ip")?.trim() || "unknown";
-  const salt = process.env.RATE_LIMIT_SALT ?? "countdownula";
+  const salt = process.env.RATE_LIMIT_SALT ?? "countdowncula";
   return createHash("sha256").update(`${salt}:${ip}`).digest("base64url").slice(0, 22);
 }
 

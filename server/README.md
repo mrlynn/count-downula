@@ -48,8 +48,8 @@ TEST_RUNNER_LINK_SERVER=http://localhost:4300 xcodebuild test -project Countdown
 ## Deploy
 
 1. Create a MongoDB Atlas cluster and a database user. Allow Vercel's egress (or `0.0.0.0/0` with a strong password).
-2. Create a Vercel project `countdownula-server` from this repo with Root Directory `server`.
-3. Set `MONGODB_URI`, `MONGODB_DB=countdownula`, `PUBLIC_ORIGIN=https://go.countdowncula.com` and `RATE_LIMIT_SALT` (any long random string; it keeps the hashed client addresses from being guessable).
+2. Create a Vercel project `countdowncula-server` from this repo with Root Directory `server`.
+3. Set `MONGODB_URI`, `MONGODB_DB=countdowncula`, `PUBLIC_ORIGIN=https://go.countdowncula.com` and `RATE_LIMIT_SALT` (any long random string; it keeps the hashed client addresses from being guessable).
 4. Add the domain `go.countdowncula.com` to the project and a `CNAME go → cname.vercel-dns.com` record.
 
 Before the app ships with Share Live Link, update the privacy policy in `site/_src/privacy.html`: it currently says countdowns stay in iCloud.

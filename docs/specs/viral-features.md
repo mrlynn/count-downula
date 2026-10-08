@@ -22,7 +22,7 @@ So the plan adds one service, the Count Downcula server:
 | Framework | Next.js (App Router) in `server/` | API routes, server-rendered share pages and `next/og` image rendering in one deploy |
 | UI | Material UI | Matches the house stack |
 | Data | MongoDB Atlas | Flexible documents fit the countdown JSON the app already writes (style, milestones, extras) |
-| Hosting | Vercel project `countdownula-server` | The marketing site already deploys there |
+| Hosting | Vercel project `countdowncula-server` | The marketing site already deploys there |
 | Domain | `go.countdowncula.com` | Keeps the static site and its strict CSP untouched, and gives the App Clip a clean associated domain |
 
 Private countdowns keep syncing through iCloud exactly as they do today. The server only ever sees a countdown you choose to publish or share.
