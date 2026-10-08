@@ -8,7 +8,7 @@ Static marketing site. No build step, no dependencies, no cookies, no third-part
 | `support.html`, `privacy.html`, `terms.html`, `cookies.html` | Generated from `_src/*.html` |
 | `assets/site.css`, `assets/site.js` | Shared styles and behaviour |
 | `assets/fonts/` | Self-hosted Young Serif and Instrument Sans (SIL OFL) |
-| `vercel.json` | Clean URLs, security headers, `/download` and `/beta` (TestFlight) redirects |
+| `vercel.json` | Clean URLs, security headers, `/download` (the current Mac zip) and `/beta` (TestFlight) redirects |
 
 After editing a page body in `_src/`, or the header/footer in `index.html`, rebuild the secondary pages:
 
@@ -47,3 +47,7 @@ If you change the inline script in `index.html`, update its `sha256` hash in the
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --window-size=1200,630 --screenshot="$PWD/site/assets/og.png" "file://$PWD/site/_src/og.html"
 ```
+
+## New Mac release
+
+The Download buttons, the install step and `/download` link straight to the current zip, so a new GitHub release needs them updated: replace the version (for example `1.1.1`) in `index.html` and `vercel.json`.

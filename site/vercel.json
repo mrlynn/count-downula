@@ -37,7 +37,7 @@
   "redirects": [
     {
       "source": "/download",
-      "destination": "https://github.com/mrlynn/count-downula/releases/latest",
+      "destination": "https://github.com/mrlynn/count-downula/releases/download/v1.1.1/Countdownula-1.1.1.zip",
       "permanent": false
     },
     {
