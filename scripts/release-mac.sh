@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Archives the Mac app, exports it signed with Developer ID (iCloud uses the Production
+# Archives the Mac app for the GitHub download, exports it signed with Developer ID (iCloud uses the Production
 # CloudKit environment), notarizes it when NOTARY_PROFILE is set, and zips it for a GitHub release.
 #
 # One-time notarization setup (stores credentials in your keychain):
@@ -16,8 +16,13 @@ EXPORT=build/export
 
 xcodegen generate --quiet
 rm -rf "$ARCHIVE" "$EXPORT"
+# The GitHub download: always unlocked (no StoreKit) and not sandboxed. The project's own settings
+# build the Mac App Store version; see scripts/release-mac-appstore.sh.
 xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration Release \
-  -archivePath "$ARCHIVE" -allowProvisioningUpdates -quiet archive
+  -archivePath "$ARCHIVE" \
+  SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DISTRIBUTION' \
+  CODE_SIGN_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements \
+  -allowProvisioningUpdates -quiet archive
 
 cat > build/ExportOptions.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>

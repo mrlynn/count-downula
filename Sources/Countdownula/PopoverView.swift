@@ -3,6 +3,7 @@ import SwiftUI
 struct PopoverActions {
     var add: () -> Void
     var edit: (Countdown) -> Void
+    var unlock: () -> Void
     var quit: () -> Void
 }
 
@@ -103,9 +104,19 @@ private struct CountdownListView: View {
             Divider()
 
             HStack {
-                Text("\(store.countdowns.filter(\.isPinned).count) pinned")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if store.entitlements.isUnlocked {
+                    Text("\(store.countdowns.filter(\.isPinned).count) pinned")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("\(Entitlements.activeCount(in: store.countdowns, at: store.now)) of \(SharedConfig.freeActiveLimit) free")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Button("Unlock Unlimited", action: actions.unlock)
+                        .buttonStyle(.borderless)
+                        .font(.caption)
+                        .foregroundStyle(Color.countdownulaBlood)
+                }
                 Spacer()
                 Button("Quit", action: actions.quit)
                     .buttonStyle(.borderless)

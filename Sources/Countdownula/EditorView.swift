@@ -6,6 +6,8 @@ struct EditorView: View {
     let original: Countdown?
     /// Called with the saved countdown, or nil on cancel.
     let onFinish: (Countdown?) -> Void
+    /// Opens the Unlimited upsell when saving would go past the free limit.
+    var onLimit: () -> Void = {}
 
     @State private var title: String
     @State private var details: String
@@ -19,9 +21,11 @@ struct EditorView: View {
     @State private var isPinned: Bool
     @State private var isDropTargeted = false
 
-    init(store: CountdownStore, original: Countdown?, onFinish: @escaping (Countdown?) -> Void) {
+    init(store: CountdownStore, original: Countdown?, onLimit: @escaping () -> Void = {},
+         onFinish: @escaping (Countdown?) -> Void) {
         self.store = store
         self.original = original
+        self.onLimit = onLimit
         self.onFinish = onFinish
         _title = State(initialValue: original?.title ?? "")
         _details = State(initialValue: original?.details ?? "")
@@ -186,6 +190,12 @@ struct EditorView: View {
         } else {
             countdown.createdAt = Date()
             countdown.targetDate = Date().addingTimeInterval(TimeInterval(durationSeconds))
+        }
+
+        // Moving a finished countdown back into the future counts toward the free limit like a new one.
+        guard store.entitlements.allowsSaving(countdown, replacing: original, in: store.countdowns) else {
+            onLimit()
+            return
         }
 
         // A newly chosen photo should show even if the iPhone gave this countdown a scene or gradient.

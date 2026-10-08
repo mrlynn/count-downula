@@ -8,6 +8,9 @@ final class CountdownStore {
     private(set) var countdowns: [Countdown] = []
     private(set) var now = Date()
 
+    /// The free tier and the Unlimited purchase. Always unlocked in the GitHub build.
+    @ObservationIgnored let entitlements = Entitlements()
+
     /// Called every tick and after every change so the menu bar items can refresh.
     @ObservationIgnored var onUpdate: (() -> Void)?
 
