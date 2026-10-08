@@ -54,8 +54,10 @@ const FONTS: Record<string, string> = {
 };
 
 /** Scenes with a pre-rendered image in public/scenes (scripts/render-scenes.swift). */
-const SCENES = new Set(["midnight", "starfield", "aurora", "sunset", "mountains", "ocean", "snowfall", "blossoms",
-  "city", "confetti", "balloons", "harvestMoon"]);
+export const SCENE_IDS = ["midnight", "starfield", "aurora", "sunset", "mountains", "ocean", "snowfall", "blossoms",
+  "city", "confetti", "balloons", "harvestMoon", "wedding", "airplane", "beach", "birthday", "graduation", "baby",
+  "hearts", "fireworks", "stadium", "campfire"];
+const SCENES = new Set(SCENE_IDS);
 
 const WEIGHTS: Record<string, number> = { regular: 400, medium: 500, semibold: 600, bold: 700, heavy: 800, black: 900 };
 

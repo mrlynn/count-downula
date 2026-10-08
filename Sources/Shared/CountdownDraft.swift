@@ -108,15 +108,22 @@ enum DraftExtractor {
         let lower = text.lowercased()
         let rules: [([String], SceneID)] = [
             (["halloween", "haunted"], .harvestMoon),
-            (["wedding", "engagement", "anniversary", "bridal"], .blossoms),
-            (["birthday", "bday"], .balloons),
-            (["party", "celebration", "graduation"], .confetti),
-            (["flight", "airline", "boarding", "beach", "cruise", "resort"], .sunset),
+            (["wedding", "engagement", "bridal"], .wedding),
+            (["anniversary", "valentine", "date night"], .hearts),
+            (["baby", "due date", "gender reveal"], .baby),
+            (["birthday", "bday"], .birthday),
+            (["graduation", "commencement"], .graduation),
+            (["new year", "fireworks", "fourth of july", "july 4"], .fireworks),
+            (["party", "celebration"], .confetti),
+            (["flight", "airline", "boarding", "airport"], .airplane),
+            (["beach", "cruise", "resort", "island"], .beach),
+            (["game", "match", "kickoff", "stadium", "tip-off", "playoff"], .stadium),
+            (["camping", "campfire", "cabin"], .campfire),
             (["ski", "snow", "christmas", "holiday"], .snowfall),
-            (["hike", "camping", "national park", "trail"], .mountains),
+            (["hike", "national park", "trail"], .mountains),
             (["concert", "tour", "festival", "show", "theater", "theatre", "conference", "city"], .city),
             (["eclipse", "meteor", "star", "launch"], .starfield),
-            (["lake", "island", "sail", "ocean", "surf"], .ocean),
+            (["lake", "sail", "ocean", "surf"], .ocean),
         ]
         for (words, scene) in rules where words.contains(where: { lower.contains($0) }) {
             return scene
