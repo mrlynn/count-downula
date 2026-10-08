@@ -338,6 +338,8 @@ struct CountdownEditorView: View {
         let image: ImageUpdate = style.background.usesPhoto ? imageUpdate
             : (original?.hasImage == true || previewImage != nil ? .remove : .unchanged)
         store.upsert(countdown, image: image)
+        // A published countdown's page follows the edit, photo and all.
+        store.pushLinkUpdate(for: store.countdown(id: countdown.id) ?? countdown)
         // New timers go live on the Lock Screen right away (pinned countdowns are handled by the store).
         if original == nil, kind == .timer { LiveActivities.start(countdown) }
         dismiss()
