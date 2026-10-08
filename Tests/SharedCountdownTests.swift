@@ -126,4 +126,29 @@ final class SharedCountdownTests: XCTestCase {
         ClipHandoff.done("cb4TV7jV")
         XCTAssertTrue(ClipHandoff.pending.isEmpty)
     }
+
+    // MARK: - Sealed coffin
+
+    func testDecodesTheCoffinAsTheServerSendsIt() throws {
+        let json = Data("""
+        {"opensAt":"2026-11-14T21:00:00.000Z","open":false,"sealedCount":12,"role":"member",
+         "contributions":[{"id":"6ac787134a26e3f94eb81a22","name":"Priya","text":"Happy birthday!",
+                           "hasPhoto":true,"createdAt":"2026-10-08T12:06:00.512Z","mine":true}]}
+        """.utf8)
+        let state = try LiveLinkAPI.decoder.decode(Coffin.State.self, from: json)
+        XCTAssertEqual(state.sealedCount, 12)
+        XCTAssertFalse(state.open)
+        XCTAssertFalse(state.isOwner)
+        XCTAssertEqual(state.opensAt, date("2026-11-14T21:00:00Z"))
+        XCTAssertEqual(state.contributions.first?.name, "Priya")
+        XCTAssertTrue(state.contributions.first?.mine == true)
+    }
+
+    func testCountUpsAndPrivateCountdownsHaveNoCoffin() {
+        var countUp = Countdown(title: "Sober", details: "", targetDate: date("2026-01-01T00:00:00Z"), kind: .countUp)
+        countUp.extras.subscription = SharedSubscription(slug: "EPdLHJj9", url: URL(string: "https://go.countdowncula.com/c/EPdLHJj9")!,
+                                                          joinedAt: Date())
+        XCTAssertNil(Coffin.access(for: countUp))
+        XCTAssertNil(Coffin.access(for: Countdown(title: "Mine", details: "", targetDate: Date())), "Not shared")
+    }
 }

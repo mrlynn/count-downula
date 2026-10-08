@@ -167,6 +167,21 @@ extension RemoteCountdown {
     /// Decodes `GET /api/countdowns/<slug>`. The server writes dates with milliseconds, and the app's
     /// own milestone dates went up as plain ISO 8601, so both are accepted.
     static func decode(_ data: Data) throws -> RemoteCountdown {
+        let envelope = try LiveLinkAPI.decoder.decode(Envelope.self, from: data)
+        let body = envelope.countdown
+        return RemoteCountdown(
+            title: body.title, details: body.details, targetDate: body.targetDate, createdAt: body.createdAt,
+            updatedAt: body.updatedAt, kind: Countdown.Kind(rawValue: body.kind) ?? .event,
+            style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
+            hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url
+        )
+    }
+}
+
+extension LiveLinkAPI {
+    /// Reads the server's JSON: dates with milliseconds, and the app's own milestone dates, which
+    /// went up as plain ISO 8601.
+    static var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
@@ -177,13 +192,6 @@ extension RemoteCountdown {
             if let date = precise.date(from: text) ?? ISO8601DateFormatter().date(from: text) { return date }
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Not an ISO 8601 date: \(text)")
         }
-        let envelope = try decoder.decode(Envelope.self, from: data)
-        let body = envelope.countdown
-        return RemoteCountdown(
-            title: body.title, details: body.details, targetDate: body.targetDate, createdAt: body.createdAt,
-            updatedAt: body.updatedAt, kind: Countdown.Kind(rawValue: body.kind) ?? .event,
-            style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
-            hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url
-        )
+        return decoder
     }
 }

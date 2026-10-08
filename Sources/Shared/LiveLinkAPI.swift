@@ -160,7 +160,7 @@ enum LiveLinkAPI {
 
     // MARK: - Transport
 
-    private static func raw(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> (Data, Int) {
+    static func raw(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> (Data, Int) {
         var request = URLRequest(url: baseURL.appending(path: path))
         request.httpMethod = method
         request.timeoutInterval = 30
@@ -177,7 +177,7 @@ enum LiveLinkAPI {
         }
     }
 
-    private static func check(_ status: Int, _ data: Data) throws {
+    static func check(_ status: Int, _ data: Data) throws {
         guard !(200..<300).contains(status) else { return }
         let message = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.error
         throw Failure.server(message ?? "Count Downcula's server returned an error (\(status)).")

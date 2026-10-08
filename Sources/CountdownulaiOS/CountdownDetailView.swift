@@ -58,6 +58,9 @@ struct CountdownDetailView: View {
                             MilestoneTimeline(countdown: countdown, now: now)
                         }
 
+                        // Shared countdowns only: notes and photos sealed until zero.
+                        CoffinSection(countdown: countdown, now: now)
+
                         actions(for: countdown, now: now)
                     }
                     .padding()
