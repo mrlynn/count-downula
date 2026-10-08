@@ -9,7 +9,8 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-VERSION=$(awk '/MARKETING_VERSION:/ {print $2; exit}' project.yml)
+# VERSION=1.1.1 overrides the project's version, for a GitHub-only release between App Store versions.
+VERSION=${VERSION:-$(awk '/MARKETING_VERSION:/ {print $2; exit}' project.yml)}
 TEAM=$(awk '/DEVELOPMENT_TEAM:/ {print $2; exit}' project.yml)
 ARCHIVE=build/Countdownula.xcarchive
 EXPORT=build/export
@@ -22,6 +23,7 @@ xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration R
   -archivePath "$ARCHIVE" \
   SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DISTRIBUTION' \
   CODE_SIGN_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements \
+  MARKETING_VERSION="$VERSION" \
   -allowProvisioningUpdates -quiet archive
 
 cat > build/ExportOptions.plist <<EOF
