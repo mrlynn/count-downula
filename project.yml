@@ -223,11 +223,18 @@ targets:
     info:
       path: Resources/Clip/Info.plist
       properties:
+        CFBundlePackageType: APPL
         CFBundleDisplayName: Count Downcula
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # iPad multitasking needs every orientation.
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         ITSAppUsesNonExemptEncryption: false
         NSAppClip:
           NSAppClipRequestEphemeralUserNotification: false
