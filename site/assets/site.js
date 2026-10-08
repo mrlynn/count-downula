@@ -34,13 +34,9 @@
     return t;
   };
 
-  // ---- header: the brand ring drains as you scroll the page ----
+  // ---- header: solid background once you scroll ----
   const top = $("#top");
-  const brandRing = $(".brand .ring");
   const onScroll = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
-    brandRing?.style.setProperty("--drain", (p * 0.92).toFixed(3));
     top.classList.toggle("is-scrolled", scrollY > 30);
   };
   addEventListener("scroll", onScroll, { passive: true });

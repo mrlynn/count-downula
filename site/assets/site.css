@@ -84,8 +84,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   font-family: var(--display); font-size: 1.25rem; letter-spacing: -0.01em;
   text-decoration: none;
 }
-.brand svg { width: 30px; height: 30px; overflow: visible; }
-.brand .ring { stroke-dasharray: 1; stroke-dashoffset: var(--drain, 0); transition: stroke-dashoffset 0.15s linear; }
+.brand img { width: 34px; height: 34px; }
 .top nav { display: flex; gap: clamp(14px, 3vw, 28px); align-items: center; font-size: 0.95rem; }
 .top nav a { text-decoration: none; color: var(--bone-dim); }
 .top nav a:hover { color: var(--bone); }
@@ -247,7 +246,7 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   animation: count-in 1s cubic-bezier(.2, .9, .3, 1.1) 2.3s forwards;
 }
 @keyframes count-in { to { transform: none; opacity: 1; } }
-/* when the clock overlaps the copy, he moves to the clock's right side, mirrored so he still points at it */
+/* when the clock overlaps the copy, he moves to the clock's right side, mirrored so he still looks at it */
 @media (max-width: 1240px) {
   .clock-wrap .count { left: auto; right: -8%; top: 52%; width: 42%; scale: -1 1; }
 }
@@ -759,5 +758,5 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .foot .foot-word { color: var(--bone); }
 @media (max-width: 420px) {
   .brand { font-size: 1.1rem; gap: 8px; }
-  .brand svg { width: 26px; height: 26px; }
+  .brand img { width: 30px; height: 30px; }
 }
