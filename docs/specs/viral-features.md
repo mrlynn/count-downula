@@ -107,6 +107,8 @@ How it works: `contributions` collection `{ slug, authorId, kind, text, mediaKey
 
 Depends on: feature 2, object storage, a content policy and report flow before launch.
 
+Built (version one, October 8, 2026): notes (up to 500 characters) and one photo per contribution, signed with a name the person types. Owners and members can add before zero; the server refuses content before zero except to its author. Photos live in a private Vercel Blob store (`countdowncula-coffin`). The owner can remove anything and authors their own; anyone in the countdown can report, which emails a signed review link (Resend, from `onboarding@resend.dev` to `REPORT_TO`) to a confirm-to-remove page. Unpublishing deletes the coffin. Video and owner notifications as contributions arrive are deferred.
+
 ### 5. Synchronized zero (phase 3, size M)
 
 What it is: when a shared countdown hits zero, every member's Dynamic Island and Lock Screen hits zero together and fires confetti, even for members who never opened the app that day.

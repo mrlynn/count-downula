@@ -51,11 +51,14 @@ export function LiveCountdown({
   photoURL,
   serverNow,
   memberCount,
+  sealed = 0,
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
   serverNow: number;
   memberCount: number;
+  /** Notes and photos waiting in the coffin, before zero. */
+  sealed?: number;
 }) {
   // Start from the server's clock so the first client render matches the HTML, then tick locally.
   const [now, setNow] = useState(() => new Date(serverNow));
@@ -136,6 +139,11 @@ export function LiveCountdown({
           {memberCount > 0 ? (
             <Typography sx={{ mt: 2, opacity: 0.8, fontWeight: 600 }}>
               {memberCount === 1 ? "1 person is counting down" : `${memberCount.toLocaleString()} people are counting down`}
+            </Typography>
+          ) : null}
+          {sealed > 0 ? (
+            <Typography sx={{ mt: 1, opacity: 0.8, fontWeight: 600 }}>
+              {`🦇 ${sealed.toLocaleString()} sealed in the coffin until zero`}
             </Typography>
           ) : null}
         </Box>

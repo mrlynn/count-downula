@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, updateCountdown } from "@/lib/countdowns.ts";
 import { notifyMembers } from "@/lib/notify.ts";
+import { purgeCoffin } from "@/lib/coffin.ts";
 import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
@@ -57,5 +58,7 @@ export async function DELETE(request: Request, { params }: Context) {
   if (result === "not-found") return errorResponse(404, "Not found.");
   if (result === "forbidden") return errorResponse(403, "That owner token doesn't match this countdown.");
   after(() => notifyMembers(slug, targets).catch(() => {}));
+  // Sealed notes and photos go with it.
+  after(() => purgeCoffin(slug).catch(() => {}));
   return new NextResponse(null, { status: 204 });
 }
