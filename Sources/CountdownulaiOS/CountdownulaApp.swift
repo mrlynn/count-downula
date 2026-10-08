@@ -1,10 +1,11 @@
+import CoreSpotlight
 import SwiftUI
 import UserNotifications
 
 @main
 struct CountdownulaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @State private var store = PhoneStore()
+    @State private var store = PhoneStore.shared
     @State private var joiner = JoinCoordinator()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -42,6 +43,12 @@ struct CountdownulaApp: App {
                 } message: {
                     Text("The owner stopped sharing \(store.sharingEnded.formatted(.list(type: .and))). It's still here as your own countdown.")
                 }
+                // A countdown tapped in Spotlight search.
+                .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                    if let raw = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String, let id = UUID(uuidString: raw) {
+                        appDelegate.router.show(id)
+                    }
+                }
                 .onAppear {
                     appDelegate.store = store
                     SynchronizedZero.start(store: store)
@@ -52,6 +59,8 @@ struct CountdownulaApp: App {
             // start Live Activities for pinned countdowns that entered their final hours.
             if phase == .active {
                 store.reload()
+                // Countdowns confirmed in the share sheet while the app was closed.
+                if let added = store.importSharedDrafts() { appDelegate.router.show(added) }
                 Task {
                     // Countdowns kept in the App Clip before the app was installed.
                     for slug in ClipHandoff.pending {

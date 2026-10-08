@@ -144,6 +144,7 @@ targets:
       - target: CountdownulaiOSWidgets
       - target: CountdownulaWatch
       - target: CountdownulaClip
+      - target: CountdownulaShare
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
@@ -247,6 +248,48 @@ targets:
       properties:
         com.apple.developer.parent-application-identifiers: [$(AppIdentifierPrefix)com.countdownula.app]
         com.apple.developer.associated-domains: [appclips:go.countdowncula.com]
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+  # "Count Downcula" in the share sheet: a ticket, invite or screenshot becomes a countdown.
+  CountdownulaShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Sources/CountdownulaShare
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/Milestone.swift
+      - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/Astronomy.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/CountdownDraft.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.share
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_ENTITLEMENTS: Resources/Share/CountdownulaShare.entitlements
+        SKIP_INSTALL: YES
+    info:
+      path: Resources/Share/Info.plist
+      properties:
+        CFBundleDisplayName: Count Downcula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsImageWithMaxCount: 1
+              NSExtensionActivationSupportsText: true
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+              NSExtensionActivationSupportsFileWithMaxCount: 1
+    entitlements:
+      path: Resources/Share/CountdownulaShare.entitlements
+      properties:
         com.apple.security.application-groups: [group.com.countdownula.app]
 
   # Home Screen, Lock Screen and StandBy widgets, plus the Live Activity
