@@ -25,22 +25,34 @@ enum NotificationPlan {
     }
 
     static func completion(for countdown: Countdown) -> Item {
-        Item(
+        let speaks = countdown.extras.voice == .count
+        return Item(
             identifier: countdown.id.uuidString,
             countdownID: countdown.id,
             date: countdown.targetDate,
-            title: countdown.kind == .timer ? "⏰ \(countdown.title)" : "🎉 \(countdown.title)",
-            body: countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
+            title: "\(speaks ? CountLines.emoji : completionEmoji(for: countdown)) \(countdown.title)",
+            body: speaks ? CountLines.completion(for: countdown)
+                : countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
         )
     }
 
     static func milestone(_ scheduled: ScheduledMilestone, of countdown: Countdown) -> Item {
-        Item(
+        let speaks = countdown.extras.voice == .count
+        return Item(
             identifier: "\(countdown.id.uuidString)#\(scheduled.milestone.id.uuidString)",
             countdownID: countdown.id,
             date: scheduled.date,
             title: "\(scheduled.milestone.displayEmoji) \(countdown.title)",
-            body: scheduled.milestone.title
+            body: speaks ? CountLines.milestone(scheduled, of: countdown) : scheduled.milestone.title
         )
+    }
+
+    private static func completionEmoji(for countdown: Countdown) -> String {
+        switch countdown.extras.auto?.kind {
+        case .sunrise: "🌅"
+        case .sunset: "🌇"
+        case .fullMoon: "🌕"
+        case nil: countdown.kind == .timer ? "⏰" : "🎉"
+        }
     }
 }

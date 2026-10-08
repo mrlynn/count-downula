@@ -107,6 +107,7 @@ targets:
       - path: Sources/Shared/StyleViews.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/Astronomy.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.watchkitapp.widgets
@@ -167,6 +168,11 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: com.countdownula.app
             CFBundleURLSchemes: [countdownula]
+        # Lets debug builds reach a live link server on the local network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSLocationWhenInUseUsageDescription: Count Downcula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.
+        LSApplicationQueriesSchemes: [instagram-stories]
     entitlements:
       path: Resources/iOS/Countdownula.entitlements
       properties:
@@ -192,6 +198,7 @@ targets:
       - path: Sources/Shared/StyleViews.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/Astronomy.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.widgets

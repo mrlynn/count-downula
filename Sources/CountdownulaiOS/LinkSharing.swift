@@ -165,8 +165,8 @@ extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
 }
 
-/// The system share sheet, for sharing right after the link is created.
-private struct ActivitySheet: UIViewControllerRepresentable {
+/// The system share sheet, for sharing something that was just made: a new link or a video.
+struct ActivitySheet: UIViewControllerRepresentable {
     let items: [Any]
 
     func makeUIViewController(context: Context) -> UIActivityViewController {

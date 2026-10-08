@@ -1,7 +1,7 @@
 import Foundation
 
 /// Optional extras, synced together as one JSON blob: streak history and savings for count-ups,
-/// yearly repeat for dates like birthdays.
+/// yearly repeat for dates like birthdays, sunrise and full moon dates, and the notification voice.
 struct CountdownExtras: Codable, Hashable {
     /// Earlier runs of a count-up, kept when it's reset.
     var streak = StreakHistory()
@@ -14,10 +14,14 @@ struct CountdownExtras: Codable, Hashable {
     /// Set once the countdown is published as a live link. Synced, so every device shows the link;
     /// only devices holding the owner token (iCloud Keychain) can edit or unpublish it.
     var link: PublishedLink?
+    /// How alerts read: plainly, or in Count Downcula's voice.
+    var voice: NotificationVoice = .standard
+    /// Set on the built-in sunrise, sunset and full moon countdowns, which roll on to the next one.
+    var auto: AutoDate?
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link }
+    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, voice, auto }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -26,7 +30,67 @@ struct CountdownExtras: Codable, Hashable {
         repeatsYearly = (try? c.decodeIfPresent(Bool.self, forKey: .repeatsYearly)) ?? false
         yearlyAnchor = try? c.decodeIfPresent(Date.self, forKey: .yearlyAnchor)
         link = try? c.decodeIfPresent(PublishedLink.self, forKey: .link)
+        voice = (try? c.decodeIfPresent(NotificationVoice.self, forKey: .voice)) ?? .standard
+        auto = try? c.decodeIfPresent(AutoDate.self, forKey: .auto)
     }
+}
+
+enum NotificationVoice: String, Codable, Hashable {
+    case standard
+    /// Milestone and finish alerts written in the Count's voice. See `CountLines`.
+    case count
+}
+
+/// A date the countdown works out for itself and moves on to once it passes.
+struct AutoDate: Codable, Hashable {
+    enum Kind: String, Codable, CaseIterable {
+        case sunrise, sunset, fullMoon
+
+        var name: String {
+            switch self {
+            case .sunrise: "Sunrise"
+            case .sunset: "Sunset"
+            case .fullMoon: "Full Moon"
+            }
+        }
+
+        var symbolName: String {
+            switch self {
+            case .sunrise: "sunrise"
+            case .sunset: "sunset"
+            case .fullMoon: "moon.circle"
+            }
+        }
+    }
+
+    var kind: Kind
+    /// Where the sun is watched from, rounded to a tenth of a degree (about 11 km): close enough for
+    /// the sun to the minute, and no more precise than a town. Not needed for the moon.
+    var latitude: Double?
+    var longitude: Double?
+
+    init(kind: Kind, latitude: Double? = nil, longitude: Double? = nil) {
+        self.kind = kind
+        self.latitude = latitude.map { ($0 * 10).rounded() / 10 }
+        self.longitude = longitude.map { ($0 * 10).rounded() / 10 }
+    }
+
+    var needsLocation: Bool { kind != .fullMoon }
+
+    /// The first occurrence after `date`, or nil for a sun countdown with no location.
+    func next(after date: Date) -> Date? {
+        switch kind {
+        case .fullMoon:
+            return Astronomy.nextFullMoon(after: date)
+        case .sunrise, .sunset:
+            guard let latitude, let longitude else { return nil }
+            return Astronomy.nextSunEvent(kind == .sunrise ? .rise : .set, after: date,
+                                          latitude: latitude, longitude: longitude)
+        }
+    }
+
+    /// How long one stays "done" before moving on, so its alert and confetti get their moment.
+    var gracePeriod: TimeInterval { kind == .fullMoon ? 6 * 3_600 : 15 * 60 }
 }
 
 /// A countdown's public page on the Count Downcula server.
@@ -105,6 +169,32 @@ extension Countdown {
         guard let next = nextYearlyOccurrence(after: now, calendar: calendar) else { return false }
         if extras.yearlyAnchor == nil { extras.yearlyAnchor = targetDate }
         createdAt = targetDate
+        targetDate = next
+        hasNotified = false
+        for index in milestones.indices { milestones[index].celebratedAt = nil }
+        return true
+    }
+}
+
+// MARK: - Sunrise, sunset and full moon
+
+extension Countdown {
+    /// The next sunrise, sunset or full moon once this one has passed (plus its grace period).
+    func nextAutoOccurrence(after now: Date) -> Date? {
+        guard let auto = extras.auto, kind == .event, targetDate + auto.gracePeriod <= now else { return nil }
+        return auto.next(after: now)
+    }
+
+    /// The date a repeating countdown is about to move on to, if it's due to.
+    func nextOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+        nextYearlyOccurrence(after: now, calendar: calendar) ?? nextAutoOccurrence(after: now)
+    }
+
+    /// Moves a passed yearly or sunrise-style countdown on to its next date. Returns true if it moved.
+    mutating func rollForward(at now: Date, calendar: Calendar = .current) -> Bool {
+        if rollToNextYear(at: now, calendar: calendar) { return true }
+        guard let next = nextAutoOccurrence(after: now) else { return false }
+        createdAt = max(targetDate, now - 86_400)
         targetDate = next
         hasNotified = false
         for index in milestones.indices { milestones[index].celebratedAt = nil }

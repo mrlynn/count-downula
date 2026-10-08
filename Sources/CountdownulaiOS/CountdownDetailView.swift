@@ -32,7 +32,8 @@ struct CountdownDetailView: View {
                                 + Text(parts.isPast ? "  ·  \(CountdownFormat.relative(from: now, to: countdown.targetDate))" : "")
                             } icon: {
                                 Image(systemName: parts.isPast ? "checkmark.circle.fill"
-                                    : countdown.extras.repeatsYearly ? "repeat" : "calendar")
+                                    : countdown.extras.auto?.kind.symbolName
+                                    ?? (countdown.extras.repeatsYearly ? "repeat" : "calendar"))
                             }
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -156,12 +157,7 @@ struct CountdownDetailView: View {
 
             LiveLinkSection(countdown: countdown)
 
-            ShareLink(item: ShareCard(countdown: countdown, photo: store.image(for: countdown), now: now),
-                      preview: SharePreview(countdown.title)) {
-                Label("Share as Image", systemImage: "square.and.arrow.up")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
+            ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
 
             Button(role: .destructive) {
                 confirmingDelete = true

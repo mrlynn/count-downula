@@ -101,7 +101,7 @@ final class CountdownStore {
     // MARK: - Sync
 
     private func reload() {
-        repository.rollOverYearlyCountdowns()
+        repository.rollOverRepeatingCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
         onUpdate?()
@@ -141,7 +141,7 @@ final class CountdownStore {
     private func tick() {
         now = Date()
         postDueMilestones()
-        if countdowns.contains(where: { $0.nextYearlyOccurrence(after: now) != nil }) {
+        if countdowns.contains(where: { $0.nextOccurrence(after: now) != nil }) {
             reload()
         }
         let due = countdowns.filter { $0.isPast(at: now) && !$0.hasNotified }

@@ -198,6 +198,19 @@ Depends on: feature 2.
 
 The Halloween test: phase 1 ships a public Halloween countdown at `go.countdowncula.com/c/halloween` with a live preview, plus the Halloween voice pack. It's a small, timely way to measure whether live links get shared before the bigger phase 2 investment.
 
+### Phase 1 progress
+
+| Feature | State | Still to do |
+|---|---|---|
+| Server and live links (1) | Built | Atlas, Vercel and DNS setup, privacy policy update. Rate limiting is in (see `server/README.md`) |
+| Animated share cards (6) | Built. Share Card menu on the detail screen offers the still image or a 6 second 1080 × 1920 video | Instagram Stories handoff is written but hidden until `InstagramStories.facebookAppID` is set (Meta requires an app ID) |
+| The Count speaks (9) | Text lines built, with a Halloween week set (Oct 25 to 31). Toggle in the editor, on by default for vampire hours countdowns | Spoken final 10 seconds, waiting on the voice recordings |
+| Sunrise and moon (10) | Built. "Vampire hours" in the new countdown menu: next sunrise, sunset and full moon. Rolls forward on every device | Nothing |
+
+Sunrise and sunset use the NOAA sunrise equation, full moons use Meeus chapter 49. Both match published times to within a few minutes. Location is asked for once at reduced accuracy and stored rounded to 0.1°, so the watch and Mac can roll the date forward too.
+
+Builds older than this one ignore `extras.voice` and `extras.auto`. If an older build edits one of these countdowns, it saves the extras without them, and the countdown turns back into a plain one-off date.
+
 ## Privacy and safety
 
 Publishing is always an explicit action, and the share sheet says the countdown becomes visible to anyone with the link. Unpublish deletes the server copy and photo right away. Slugs are random, so links can't be enumerated. The server stores no names, emails or device identifiers in phase 1. The privacy policy on the site needs an update before phase 1 ships, since the app currently promises that data stays in iCloud.
