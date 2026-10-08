@@ -99,3 +99,9 @@ export function makeSlug(random: (n: number) => Uint8Array): string {
 export function isSlug(s: string): boolean {
   return /^[a-zA-Z0-9-]{4,40}$/.test(s);
 }
+
+/** A publish or update's date pool switch: true, false, or left out (older apps). */
+export function poolFlag(countdown: unknown): boolean | undefined {
+  const v = (countdown as Record<string, unknown> | null)?.pool;
+  return typeof v === "boolean" ? v : undefined;
+}

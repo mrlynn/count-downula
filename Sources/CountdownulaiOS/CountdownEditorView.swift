@@ -134,8 +134,11 @@ struct CountdownEditorView: View {
                                 Text(targetDate, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute())
                             }
                         } else {
-                            DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                            Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                            DatePicker(extras.pool.map { $0.isSettled ? "Happened" : "Best estimate" } ?? "Counts down to",
+                                       selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                            if extras.pool == nil {
+                                Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                            }
                         }
                     case .countUp:
                         DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
@@ -156,6 +159,19 @@ struct CountdownEditorView: View {
                         Text("After the day passes it rolls over to next year. Good for birthdays and anniversaries.")
                     default:
                         EmptyView()
+                    }
+                }
+
+                if kind == .event, extras.auto == nil, extras.pool?.isSettled != true {
+                    Section {
+                        Toggle("Date Pool", isOn: Binding(
+                            get: { extras.pool != nil },
+                            set: { on in
+                                extras.pool = on ? (extras.pool ?? DatePool()) : nil
+                                if on { extras.repeatsYearly = false }
+                            }))
+                    } footer: {
+                        Text("Not sure when it'll happen? Friends guess the date from the live link, and the closest guess wins once you set the real one. Bragging rights only.")
                     }
                 }
 

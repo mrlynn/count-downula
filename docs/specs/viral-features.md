@@ -201,6 +201,8 @@ How it works: a shared countdown with `kind: pool`, a guesses array, and a close
 
 Depends on: feature 2.
 
+Built (version one, October 8, 2026): an ordinary event countdown with pool extras, not a new kind, so widgets, Live Activities and older builds treat it like any countdown (its date is the owner's best estimate). The owner turns on Date Pool in the editor; it goes live with the link. Anyone with the link can guess, one guess each with a typed name: in the app with their owner or member key, on the web with a key the server hands the browser on its first guess (kept in local storage). Guesses live in a `guesses` collection and are public to the link. The owner can close or reopen guessing, remove guesses, and Set the Real Date, which settles the pool, moves the countdown to that date for everyone (members refresh as usual) and ranks the guesses by how close they came, ties sharing a place. The app always sends `pool: true/false` on edits; older builds leave it out and the server leaves the pool alone. Stopping sharing deletes the guesses. A push to everyone when the pool settles is deferred until the APNs key is in.
+
 ## Phases
 
 | Phase | Ships | Needs from you |
