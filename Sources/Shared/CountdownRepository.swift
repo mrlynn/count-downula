@@ -93,17 +93,17 @@ final class CountdownRepository {
         save()
     }
 
-    /// Moves yearly countdowns whose day has passed on to next year. Every device does this; the
-    /// result is the same wherever it runs, so it doesn't matter which one gets there first.
-    /// Returns true when anything changed.
+    /// Moves yearly countdowns whose day has passed on to next year, and sunrise, sunset and full moon
+    /// countdowns on to the next one. Every device does this; the result is the same wherever it runs,
+    /// so it doesn't matter which one gets there first. Returns the countdowns that moved.
     @discardableResult
-    func rollOverYearlyCountdowns(at now: Date = Date()) -> Bool {
-        var changed = false
-        for var countdown in fetchAll() where countdown.rollToNextYear(at: now) {
+    func rollOverRepeatingCountdowns(at now: Date = Date()) -> [Countdown] {
+        var rolled: [Countdown] = []
+        for var countdown in fetchAll() where countdown.rollForward(at: now) {
             upsert(countdown)
-            changed = true
+            rolled.append(countdown)
         }
-        return changed
+        return rolled
     }
 
     func delete(id: UUID) {

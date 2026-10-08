@@ -80,7 +80,7 @@ final class WatchStore {
     // MARK: - Sync side effects
 
     func reload() {
-        repository.rollOverYearlyCountdowns()
+        repository.rollOverRepeatingCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
         publishToComplications()

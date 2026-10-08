@@ -156,9 +156,11 @@ final class PhoneStore {
     // MARK: - Sync side effects
 
     func reload() {
-        repository.rollOverYearlyCountdowns()
+        let rolled = repository.rollOverRepeatingCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
+        // A published page follows its countdown on to next year or the next sunrise.
+        for countdown in rolled { pushLinkUpdate(for: countdown) }
         publishToWidgets()
         scheduleNotifications()
         LiveActivities.sync(with: countdowns)

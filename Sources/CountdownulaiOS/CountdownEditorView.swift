@@ -22,6 +22,8 @@ struct CountdownEditorView: View {
     @State private var previewImage: UIImage?
     @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isLoadingPhoto = false
+    @State private var isLocating = false
+    @State private var templateError: String?
 
     init(original: Countdown?) {
         self.original = original
@@ -67,7 +69,10 @@ struct CountdownEditorView: View {
         var extras = extras
         extras.savings = kind == .countUp && tracksSavings && savingsPerDay > 0
             ? Savings(amountPerDay: savingsPerDay, currencyCode: currencyCode) : nil
-        if kind != .event { extras.repeatsYearly = false }
+        if kind != .event {
+            extras.repeatsYearly = false
+            extras.auto = nil
+        }
         // A new or moved date becomes the anchor the next years are counted from.
         if !extras.repeatsYearly || targetDate != original?.targetDate { extras.yearlyAnchor = nil }
         return extras
@@ -80,7 +85,8 @@ struct CountdownEditorView: View {
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
 
     private var canSave: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind != .timer || durationSeconds > 0) && !isLoadingPhoto
+        !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind != .timer || durationSeconds > 0)
+            && !isLoadingPhoto && !isLocating
     }
 
     var body: some View {
@@ -122,8 +128,14 @@ struct CountdownEditorView: View {
 
                     switch kind {
                     case .event:
-                        DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                        Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                        if let auto = extras.auto {
+                            LabeledContent("Next \(auto.kind.name.lowercased())") {
+                                Text(targetDate, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute())
+                            }
+                        } else {
+                            DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                            Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                        }
                     case .countUp:
                         DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
                     case .timer:
@@ -135,6 +147,10 @@ struct CountdownEditorView: View {
                         Text("Saving restarts the timer from now.")
                     case .countUp:
                         Text("Counts the time since something began: a sober date, a quit date, an anniversary.")
+                    case .event where extras.auto?.needsLocation == true:
+                        Text("Moves on to the next \(extras.auto!.kind.name.lowercased()) by itself, worked out for your rough location when you added it.")
+                    case .event where extras.auto != nil:
+                        Text("Moves on to the next full moon by itself.")
                     case .event where extras.repeatsYearly:
                         Text("After the day passes it rolls over to next year. Good for birthdays and anniversaries.")
                     default:
@@ -158,6 +174,19 @@ struct CountdownEditorView: View {
                 }
 
                 milestonesSection
+
+                Section {
+                    Toggle("Alerts in the Count's voice", isOn: Binding(
+                        get: { extras.voice == .count },
+                        set: { extras.voice = $0 ? .count : .standard }
+                    ))
+                } footer: {
+                    if extras.voice == .count {
+                        Text("“\(CountLines.completion(for: draft))”")
+                    } else {
+                        Text("Milestone and finish alerts, written in Count Downula's own voice.")
+                    }
+                }
 
                 Section {
                     Toggle("Pin", isOn: $isPinned)
@@ -192,6 +221,19 @@ struct CountdownEditorView: View {
             .task {
                 if let original { previewImage = store.image(for: original) }
             }
+            .overlay {
+                if isLocating {
+                    ProgressView("Finding the sun…")
+                        .padding(20)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+            }
+            .alert("Couldn't add that", isPresented: Binding(get: { templateError != nil },
+                                                              set: { if !$0 { templateError = nil } })) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(templateError ?? "")
+            }
         }
     }
 
@@ -202,6 +244,13 @@ struct CountdownEditorView: View {
             Section("Count up from") {
                 ForEach(CountUpTemplate.allCases) { template in
                     Button(template.name, systemImage: template.symbol) { apply(template) }
+                }
+            }
+            Section("Vampire hours") {
+                ForEach(AutoDate.Kind.allCases, id: \.self) { kind in
+                    Button("Next \(kind.name)", systemImage: kind.symbolName) {
+                        Task { await apply(kind) }
+                    }
                 }
             }
         } label: {
@@ -224,6 +273,24 @@ struct CountdownEditorView: View {
         style = template.style
         milestones = MilestonePreset.countUpDefaults()
         tracksSavings = template.suggestsSavings
+    }
+
+    private func apply(_ autoKind: AutoDate.Kind) async {
+        isLocating = true
+        defer { isLocating = false }
+        do {
+            let filled = try await AutoDateTemplate.fill(autoKind)
+            kind = .event
+            title = filled.title
+            details = filled.details
+            targetDate = filled.targetDate
+            style = filled.style
+            extras.repeatsYearly = false
+            extras.auto = filled.auto
+            extras.voice = .count
+        } catch {
+            templateError = error.localizedDescription
+        }
     }
 
     // MARK: - Milestones
