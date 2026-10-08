@@ -1,0 +1,140 @@
+"use client";
+
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import type { PublicCountdown } from "@/lib/countdowns.ts";
+import { webStyle } from "@/lib/style.ts";
+import { dialRemaining, timeParts } from "@/lib/time.ts";
+
+const DOWNLOAD = "https://www.countdowncula.com";
+
+function Dial({ remaining, accent }: { remaining: number; accent: string }) {
+  const size = 120;
+  const stroke = 11;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={stroke} />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke={accent}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={`${c * Math.max(remaining, 0.001)} ${c}`}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        style={{ transition: "stroke-dasharray 1s linear" }}
+      />
+    </svg>
+  );
+}
+
+function Unit({ value, label, fontFamily, fontWeight }: { value: number; label: string; fontFamily: string; fontWeight: number }) {
+  return (
+    <Box sx={{ minWidth: { xs: 64, sm: 96 }, textAlign: "center" }}>
+      <Typography
+        component="div"
+        sx={{ fontFamily, fontWeight, fontSize: { xs: 44, sm: 72 }, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
+      >
+        {String(value).padStart(label === "days" ? 1 : 2, "0")}
+      </Typography>
+      <Typography sx={{ fontSize: { xs: 13, sm: 15 }, opacity: 0.75, mt: 0.75, letterSpacing: 0.5 }}>{label}</Typography>
+    </Box>
+  );
+}
+
+export function LiveCountdown({
+  countdown,
+  photoURL,
+  serverNow,
+}: {
+  countdown: PublicCountdown;
+  photoURL: string | null;
+  serverNow: number;
+}) {
+  // Start from the server's clock so the first client render matches the HTML, then tick locally.
+  const [now, setNow] = useState(() => new Date(serverNow));
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    setNow(new Date());
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const target = new Date(countdown.targetDate);
+  const created = new Date(countdown.createdAt);
+  const countsUp = countdown.kind === "countUp";
+  const p = timeParts(now, target, countsUp);
+  const style = webStyle(countdown.style, !!photoURL);
+  const dateLine = mounted
+    ? target.toLocaleString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })
+    : "";
+
+  return (
+    <Box component="main" sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+      <Box
+        sx={{
+          position: "relative",
+          flex: 1,
+          minHeight: { xs: "78dvh", sm: "72dvh" },
+          display: "flex",
+          alignItems: "flex-end",
+          background: style.useImage ? `center / cover no-repeat url(${photoURL}), ${style.background}` : style.background,
+          color: style.text,
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background: style.lightText
+              ? "linear-gradient(180deg, rgba(10,3,6,0.15) 0%, rgba(10,3,6,0.35) 45%, rgba(10,3,6,0.88) 100%)"
+              : "linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.75) 100%)",
+          }}
+        />
+        <Box sx={{ position: "absolute", top: { xs: 20, sm: 32 }, right: { xs: 16, sm: 32 } }}>
+          <Dial remaining={dialRemaining(now, created, target, countdown.kind)} accent={style.accent} />
+        </Box>
+        <Box sx={{ position: "relative", width: "100%", maxWidth: 960, mx: "auto", px: { xs: 2, sm: 4 }, pb: { xs: 4, sm: 6 } }}>
+          <Typography
+            variant="h1"
+            sx={{ fontFamily: style.fontFamily, fontWeight: style.fontWeight, fontSize: { xs: 34, sm: 52 }, lineHeight: 1.1, mb: 1 }}
+          >
+            {countdown.title}
+          </Typography>
+          <Typography sx={{ opacity: 0.85, minHeight: "1.5em", mb: 3 }} suppressHydrationWarning>
+            {p.isPast ? `It's here! ${dateLine}` : countsUp ? `Since ${dateLine}` : dateLine}
+          </Typography>
+          <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
+            <Unit value={p.days} label="days" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+            <Unit value={p.hours} label="hours" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+            <Unit value={p.minutes} label="min" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+            <Unit value={p.seconds} label="sec" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+          </Stack>
+          {countdown.details ? (
+            <Typography sx={{ mt: 3, maxWidth: 640, opacity: 0.9, whiteSpace: "pre-wrap" }}>{countdown.details}</Typography>
+          ) : null}
+        </Box>
+      </Box>
+      <Box sx={{ bgcolor: "background.default", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          sx={{ maxWidth: 960, mx: "auto", alignItems: { xs: "stretch", sm: "center" }, justifyContent: "space-between" }}
+        >
+          <Box>
+            <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
+            <Typography sx={{ opacity: 0.7 }}>Put this countdown on your Lock Screen, watch and menu bar.</Typography>
+          </Box>
+          <Button variant="contained" size="large" href={DOWNLOAD}>
+            Get the app
+          </Button>
+        </Stack>
+      </Box>
+    </Box>
+  );
+}

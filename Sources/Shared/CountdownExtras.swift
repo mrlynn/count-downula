@@ -11,10 +11,13 @@ struct CountdownExtras: Codable, Hashable {
     var repeatsYearly = false
     /// The original date of a yearly countdown, so Feb 29 comes back in leap years.
     var yearlyAnchor: Date?
+    /// Set once the countdown is published as a live link. Synced, so every device shows the link;
+    /// only devices holding the owner token (iCloud Keychain) can edit or unpublish it.
+    var link: PublishedLink?
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor }
+    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -22,7 +25,15 @@ struct CountdownExtras: Codable, Hashable {
         savings = try? c.decodeIfPresent(Savings.self, forKey: .savings)
         repeatsYearly = (try? c.decodeIfPresent(Bool.self, forKey: .repeatsYearly)) ?? false
         yearlyAnchor = try? c.decodeIfPresent(Date.self, forKey: .yearlyAnchor)
+        link = try? c.decodeIfPresent(PublishedLink.self, forKey: .link)
     }
+}
+
+/// A countdown's public page on the Count Downcula server.
+struct PublishedLink: Codable, Hashable {
+    var slug: String
+    var url: URL
+    var publishedAt: Date
 }
 
 struct StreakHistory: Codable, Hashable {

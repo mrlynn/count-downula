@@ -85,6 +85,10 @@ final class PhoneStore {
     }
 
     func delete(_ countdown: Countdown) {
+        // Deleting a published countdown takes its public page down too.
+        if let link = countdown.extras.link, OwnerTokens.token(for: countdown.id) != nil {
+            Task { try? await LiveLinkAPI.unpublish(countdown, slug: link.slug) }
+        }
         repository.delete(id: countdown.id)
         reload()
     }

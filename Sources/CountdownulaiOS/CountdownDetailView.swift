@@ -154,6 +154,8 @@ struct CountdownDetailView: View {
                 .buttonStyle(.bordered)
             }
 
+            LiveLinkSection(countdown: countdown)
+
             ShareLink(item: ShareCard(countdown: countdown, photo: store.image(for: countdown), now: now),
                       preview: SharePreview(countdown.title)) {
                 Label("Share as Image", systemImage: "square.and.arrow.up")
