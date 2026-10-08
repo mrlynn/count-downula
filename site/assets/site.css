@@ -688,6 +688,14 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
   .slots { grid-template-columns: 1fr; }
 }
 
+/* ---------- together ---------- */
+
+.together {
+  background:
+    radial-gradient(55vw 35vw at 20% 30%, rgba(195, 17, 45, 0.18), transparent 70%),
+    var(--night);
+}
+
 /* ---------- iphone ---------- */
 
 .pocket {
