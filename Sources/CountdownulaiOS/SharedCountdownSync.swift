@@ -19,7 +19,10 @@ extension PhoneStore {
         MemberTokens.save(joined.memberToken, for: countdown.id)
         upsert(countdown, image: backdrop.flatMap { Self.prepareImage($0)?.update } ?? .unchanged)
         lastSharedRefresh[countdown.id] = Date()
-        Task { await registerPushForShared() }
+        Task {
+            await registerPushForShared()
+            await SynchronizedZero.registerAll(store: self)
+        }
         return countdown.id
     }
 

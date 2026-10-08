@@ -119,6 +119,8 @@ How it works: push-to-start Live Activities (iOS 17.2 and later). The app regist
 
 Depends on: feature 2, APNs auth key, Vercel Cron.
 
+Built (October 8, 2026): each phone in a shared countdown (owner or member) registers its push-to-start token and its own local countdown ID with the server, plus the update token of any Live Activity running for it. A Vercel Cron job (`/api/cron/live`, every minute, `CRON_SECRET`) sends each phone one push-to-start per target date inside the eight hour window, and the celebration (`event: end`, `celebrating: true`, an alert) at zero. Failed sends retry the next minute; nothing is sent or marked until the APNs key is set. The activity shows "It's here! 🎉" in that state; Live Activities can't run particle confetti, so the confetti stays in the app.
+
 ### 6. Animated share cards (phase 1, size M)
 
 What it is: Share as Video exports a 6 second loop at 1080 by 1920 where the fang ring drains and the seconds tick, ending on the title and the Count Downcula mark.

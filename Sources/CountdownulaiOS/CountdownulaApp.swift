@@ -42,7 +42,10 @@ struct CountdownulaApp: App {
                 } message: {
                     Text("The owner stopped sharing \(store.sharingEnded.formatted(.list(type: .and))). It's still here as your own countdown.")
                 }
-                .onAppear { appDelegate.store = store }
+                .onAppear {
+                    appDelegate.store = store
+                    SynchronizedZero.start(store: store)
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             // Pick up anything CloudKit imported while we were in the background, and
@@ -57,6 +60,7 @@ struct CountdownulaApp: App {
                     }
                     await store.refreshShared(force: true)
                     await store.registerPushForShared()
+                    await SynchronizedZero.registerAll(store: store)
                 }
             }
             if phase == .background { SharedRefreshTask.schedule() }
