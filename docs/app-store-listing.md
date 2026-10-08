@@ -14,6 +14,8 @@ Countdowns, count-ups & timers
 
 Can be changed any time without a new build, so use it for what's timely.
 
+> Count down together: share a live link, let friends guess the date, or join a countdown from the Crypt. Photo widgets, Live Activities and an Apple Watch app.
+
 > Count down to the trip, the wedding, the birthday. Count up from the day you quit. Photo widgets, Live Activities and an Apple Watch app that keep it in view.
 
 October variant (Halloween):
@@ -37,7 +39,7 @@ Count Downcula counts down to the things worth waiting for: the trip, the launch
 
 COUNTDOWNS THAT LOOK THE PART
 • Add a title, a note and a date, or start a quick timer in one tap
-• Put your own photo behind it, or pick one of 12 built-in scenes, a gradient or a color
+• Put your own photo behind it, or pick one of 22 built-in scenes (wedding, birthday, baby, game day and more), a gradient or a color
 • Choose the font and colors for each countdown
 • Watch the days, hours, minutes and seconds tick away in a full-screen view
 
@@ -47,6 +49,14 @@ Track the time since something began: getting sober, quitting smoking, meeting s
 • Milestones at 24 hours, 1 week, 30, 60 and 90 days, 6 months and every year
 • See the money you've saved, per day you've kept going
 • Reset gently: your history and your best run are kept
+
+COUNT DOWN TOGETHER
+Share a live link and everyone counts down to the same moment, from the app or any browser.
+• Friends join with one tap and get it on their own widgets and Lock Screen
+• Edits reach everyone, and the whole group hits zero together
+• Seal notes and photos in the coffin: nobody sees them until zero
+• Date pools: not sure when it'll happen? Friends guess, and the closest guess wins bragging rights
+• Browse the Crypt for countdowns worth sharing: holidays, eclipses, meteor showers and big games, each ticking to your own local time
 
 MILESTONES ALONG THE WAY
 Mark the moments in between, like "Halfway there" or "1 week to go." Each one gets its own notification and a burst of confetti when it arrives.
@@ -69,7 +79,7 @@ AND THE REST
 • Works on iPhone, iPad and Apple Watch
 
 PRIVATE BY DESIGN
-Count Downcula collects no data. There are no accounts, ads or trackers. Your countdowns and photos sync between your devices through your own private iCloud storage, which only your Apple Account can read.
+There are no accounts, ads or trackers. Your countdowns and photos sync between your devices through your own private iCloud storage, which only your Apple Account can read. Nothing leaves it unless you share a live link, and you can stop sharing at any time.
 
 Free for up to 3 countdowns at a time. Count Downcula Unlimited removes the limit with a one-time purchase: no subscription, no ads.
 ```

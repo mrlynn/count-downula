@@ -234,7 +234,7 @@ final class PhoneStore {
             Countdown(title: "Conference Talk", details: "Nailed it.",
                       targetDate: now - 3 * day, createdAt: now - 60 * day, hasNotified: true),
         ]
-        samples[2].style = CountdownStyle(background: .scene(.balloons), font: .serif, weight: .heavy,
+        samples[2].style = CountdownStyle(background: .scene(.birthday), font: .serif, weight: .heavy,
                                           textColor: RGBAColor(hex: 0x1C1C1E), accent: RGBAColor(hex: 0xFF5D73))
         samples[3].style = CountdownStyle(background: .gradient(GradientSpec.presets[4].spec), font: .expanded,
                                           accent: RGBAColor(hex: 0xFFD166))
@@ -258,6 +258,13 @@ final class PhoneStore {
                                  targetDate: now - 4_652 * day, kind: .countUp, createdAt: now)
         together.style = CountdownStyle(background: .scene(.blossoms), font: .serif, accent: RGBAColor(hex: 0xD6336C))
         samples.append(together)
+        // A date pool: friends guess when the baby arrives.
+        var baby = Countdown(title: "Baby Chen Arrives", details: "Due date is the 30th. Place your guesses!",
+                             targetDate: now + 52 * day + 4 * 3_600, createdAt: now - 180 * day)
+        baby.style = CountdownStyle(background: .scene(.baby), font: .rounded, textColor: RGBAColor(hex: 0x3A3A5C),
+                                    accent: RGBAColor(hex: 0xE57CA2))
+        baby.extras.pool = DatePool()
+        samples.append(baby)
         samples.forEach { repository.upsert($0) }
     }
     #endif

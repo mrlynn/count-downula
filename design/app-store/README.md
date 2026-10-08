@@ -4,9 +4,9 @@ Upload these on the app's version page in App Store Connect, under **Previews an
 
 | Folder | Device slot | Size | Screens |
 |---|---|---|---|
-| `iphone-6.3/` | iPhone with Dynamic Island (medium display) | 1206 × 2622 | List, countdown detail, count-up, appearance editor |
-| `iphone/` | iPhone 6.9" (if App Store Connect asks for it) | 1320 × 2868 | The same four, at full size |
-| `ipad/` | iPad 13" Display | 2064 × 2752 | List, countdown detail |
+| `iphone-6.3/` | iPhone with Dynamic Island (medium display) | 1206 × 2622 | List, countdown detail, date pool, the Crypt, appearance editor (occasion scenes), count-up |
+| `iphone/` | iPhone 6.9" (if App Store Connect asks for it) | 1320 × 2868 | The same six, at full size |
+| `ipad/` | iPad 13" Display | 2064 × 2752 | List, countdown detail, the Crypt |
 | `watch/` | Apple Watch | 416 × 496 | Watch face with complications, list, detail |
 | `iap-review-paywall.png` | In-app purchase → Review Information → Screenshot | 1206 × 2622 | The Count Downcula Unlimited paywall (for Apple's reviewer only) |
 
@@ -19,6 +19,8 @@ The iPhone and iPad shots come from the iOS Simulator with the debug demo data:
 1. Build the `CountdownulaiOS` scheme (Debug) for an iPhone 17 Pro Max or iPad Pro 13-inch simulator.
 2. `xcrun simctl status_bar booted override --time 9:41 --dataNetwork wifi --wifiBars 3 --cellularBars 4 --batteryState charged --batteryLevel 100`
 3. Launch with `-seedDemo -localOnly`, then `xcrun simctl io booted screenshot <file>.png`.
+
+The date pool and the Crypt need a server. Run one locally (`server/`, `npx next dev --port 4319` against a local MongoDB), seed the Crypt with `scripts/seed-crypt.mjs`, and add `-linkServer http://localhost:4319` to the launch arguments. The demo's "Baby Chen Arrives" has a date pool: share its live link from the detail screen, add a few guesses with `POST /api/countdowns/<slug>/pool/guesses`, then guess from the app so one row reads "(you)".
 
 To open a specific countdown, use its link: `xcrun simctl openurl booted countdownula://countdown/<uuid>`. The UUIDs are in `ZCOUNTDOWNRECORD` in the app's `Library/Application Support/Countdownula.store`.
 
