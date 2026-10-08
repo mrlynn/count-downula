@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { db } from "./mongo.ts";
 import { hashToken, type CountdownDoc, toPublic, type PublicCountdown } from "./countdowns.ts";
+import { SCENE_IDS } from "./style.ts";
 
 export const CATEGORIES = [
   { slug: "holidays", name: "Holidays" },
@@ -61,8 +62,6 @@ export interface CryptInput {
   at?: string;
 }
 
-const SCENES = ["midnight", "starfield", "aurora", "sunset", "mountains", "ocean", "snowfall", "blossoms",
-  "city", "confetti", "balloons", "harvestMoon"];
 
 /** Checks one admin entry. Pure, for tests. */
 export function validateCryptEntry(raw: unknown): { ok: true; value: CryptInput } | { ok: false; error: string } {
@@ -72,7 +71,7 @@ export function validateCryptEntry(raw: unknown): { ok: true; value: CryptInput 
   if (!/^[a-z0-9-]{4,40}$/.test(slug)) return { ok: false, error: `bad slug: ${slug}` };
   if (!str("title") || str("title").length > 120) return { ok: false, error: `${slug}: title` };
   if (!CATEGORIES.some((c) => c.slug === e.category)) return { ok: false, error: `${slug}: category` };
-  if (!SCENES.includes(str("scene"))) return { ok: false, error: `${slug}: scene` };
+  if (!SCENE_IDS.includes(str("scene"))) return { ok: false, error: `${slug}: scene` };
   const local = str("local");
   const at = str("at");
   if (!!local === !!at) return { ok: false, error: `${slug}: give exactly one of local or at` };

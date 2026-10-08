@@ -22,7 +22,7 @@ final class DraftExtractorTests: XCTestCase {
         XCTAssertEqual(components(draft.date)?.day, 20)
         XCTAssertEqual(components(draft.date)?.hour, 19)
         XCTAssertEqual(components(draft.date)?.minute, 45)
-        XCTAssertEqual(draft.scene, .sunset)
+        XCTAssertEqual(draft.scene, .airplane)
     }
 
     func testWeddingInviteWithVenueAndNoTime() {
@@ -38,7 +38,7 @@ final class DraftExtractorTests: XCTestCase {
         XCTAssertEqual(components(draft.date)?.year, 2027)
         XCTAssertEqual(components(draft.date)?.hour, 9, "A day with no time lands in the morning")
         XCTAssertEqual(draft.place, "Meadowood, Napa Valley")
-        XCTAssertEqual(draft.scene, .blossoms)
+        XCTAssertEqual(draft.scene, .wedding)
     }
 
     func testPicksTheSoonestFutureDateNotThePastOrderDate() {
