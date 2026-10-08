@@ -153,7 +153,7 @@ struct CountdownDetailView: View {
                 .disabled(!LiveActivities.isEnabled)
             }
 
-            if countdown.countsUp {
+            if countdown.countsUp, countdown.extras.subscription == nil {
                 Button {
                     confirmingReset = true
                 } label: {

@@ -6,11 +6,15 @@ import UniformTypeIdentifiers
 
 extension PhoneStore {
     /// Adds countdowns confirmed in the share sheet. Ones over the free limit stay waiting, and
-    /// `draftsWaitingForUnlock` asks the list to show the paywall. Returns the first one added.
+    /// `draftsWaitingForUnlock` asks the list to show the paywall, once per new arrival.
+    /// Returns the first one added.
     @discardableResult
     func importSharedDrafts() -> UUID? {
         var waiting = DraftHandoff.pending
-        guard !waiting.isEmpty else { return nil }
+        guard !waiting.isEmpty else {
+            _ = DraftHandoff.shouldAskToUnlock(waiting: 0)
+            return nil
+        }
         var first: UUID?
         while let draft = waiting.first, entitlements.canAdd(to: countdowns) {
             let countdown = draft.countdown()
@@ -19,7 +23,7 @@ extension PhoneStore {
             waiting.removeFirst()
         }
         DraftHandoff.setPending(waiting)
-        draftsWaitingForUnlock = !waiting.isEmpty
+        draftsWaitingForUnlock = DraftHandoff.shouldAskToUnlock(waiting: waiting.count)
         return first
     }
 }

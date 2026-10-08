@@ -165,9 +165,9 @@ extension Countdown {
     }
 
     /// Starts a count-up over from `date`, keeping the run that just ended in the history.
-    /// Milestones become celebratable again.
+    /// Milestones become celebratable again. A joined count-up is the owner's to reset.
     mutating func resetStreak(at date: Date) {
-        guard countsUp, date > targetDate else { return }
+        guard countsUp, extras.subscription == nil, date > targetDate else { return }
         extras.streak.runs.append(.init(start: targetDate, end: date))
         targetDate = date
         for index in milestones.indices { milestones[index].celebratedAt = nil }

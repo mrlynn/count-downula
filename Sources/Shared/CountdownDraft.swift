@@ -153,4 +153,14 @@ enum DraftHandoff {
     static func setPending(_ drafts: [CountdownDraft]) {
         defaults?.set(drafts.isEmpty ? nil : try? JSONEncoder().encode(drafts), forKey: key)
     }
+
+    private static let askedKey = "DraftHandoff.askedToUnlock"
+
+    /// Whether `waiting` drafts held back by the free limit are worth asking about: only when more
+    /// arrived since the last ask, so the paywall doesn't come back every time the app comes forward.
+    static func shouldAskToUnlock(waiting: Int) -> Bool {
+        let asked = defaults?.integer(forKey: askedKey) ?? 0
+        defaults?.set(waiting, forKey: askedKey)
+        return waiting > asked
+    }
 }

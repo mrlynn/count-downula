@@ -71,6 +71,17 @@ final class DraftExtractorTests: XCTestCase {
         XCTAssertTrue(DraftHandoff.pending.isEmpty)
     }
 
+    func testAsksToUnlockOncePerNewDraft() {
+        _ = DraftHandoff.shouldAskToUnlock(waiting: 0)
+        XCTAssertTrue(DraftHandoff.shouldAskToUnlock(waiting: 1), "A draft held back by the limit asks once")
+        XCTAssertFalse(DraftHandoff.shouldAskToUnlock(waiting: 1), "Not again each time the app comes forward")
+        XCTAssertTrue(DraftHandoff.shouldAskToUnlock(waiting: 2), "Another share asks again")
+        XCTAssertFalse(DraftHandoff.shouldAskToUnlock(waiting: 1), "One got added after unlocking")
+        XCTAssertFalse(DraftHandoff.shouldAskToUnlock(waiting: 0))
+        XCTAssertTrue(DraftHandoff.shouldAskToUnlock(waiting: 1))
+        _ = DraftHandoff.shouldAskToUnlock(waiting: 0)
+    }
+
     func testScreenshotWithDateAndTimesOnSeparateLines() {
         // How text recognition returns a ticket screenshot: the day and the times on separate lines.
         let text = """

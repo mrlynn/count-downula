@@ -71,6 +71,16 @@ final class CountUpTests: XCTestCase {
         XCTAssertNil(c.milestones[0].celebratedAt)
     }
 
+    func testJoinedCountUpCantBeReset() {
+        var c = countUp(daysAgo: 30)
+        c.extras.subscription = SharedSubscription(slug: "abcd1234", url: URL(string: "https://go.countdowncula.com/c/abcd1234")!,
+                                                   joinedAt: now, remoteUpdatedAt: nil, memberCount: 2)
+        let start = c.targetDate
+        c.resetStreak(at: now)
+        XCTAssertEqual(c.targetDate, start, "Only the owner resets a shared count-up")
+        XCTAssertTrue(c.extras.streak.runs.isEmpty)
+    }
+
     func testSavings() {
         let savings = Savings(amountPerDay: 12, currencyCode: "USD")
         XCTAssertEqual(savings.saved(since: now - 10 * day, at: now), 120, accuracy: 0.001)
