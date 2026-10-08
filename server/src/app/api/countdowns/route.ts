@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
 import { createCountdown, toPublic } from "@/lib/countdowns.ts";
-import { errorResponse, readJSON, shareURL } from "@/lib/http.ts";
+import { errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
+import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { validateCountdown, validatePhoto } from "@/lib/validate.ts";
 
 /** Publish a countdown. Returns its link and the owner token the app keeps in the Keychain. */
 export async function POST(request: Request) {
+  const client = clientSubject(request);
+  const verdict = await checkLimits([
+    [limits.publishPerHour, client],
+    [limits.publishPerDay, client],
+    [limits.publishAllPerHour, "all"],
+  ]);
+  if (!verdict.ok) return tooManyRequests(verdict, "new links");
+
   let body: Record<string, unknown>;
   try {
     body = (await readJSON(request)) as Record<string, unknown>;

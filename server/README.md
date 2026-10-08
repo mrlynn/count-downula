@@ -49,11 +49,23 @@ TEST_RUNNER_LINK_SERVER=http://localhost:4300 xcodebuild test -project Countdown
 
 1. Create a MongoDB Atlas cluster and a database user. Allow Vercel's egress (or `0.0.0.0/0` with a strong password).
 2. Create a Vercel project `countdownula-server` from this repo with Root Directory `server`.
-3. Set `MONGODB_URI`, `MONGODB_DB=countdownula` and `PUBLIC_ORIGIN=https://go.countdownula.com`.
+3. Set `MONGODB_URI`, `MONGODB_DB=countdownula`, `PUBLIC_ORIGIN=https://go.countdownula.com` and `RATE_LIMIT_SALT` (any long random string; it keeps the hashed client addresses from being guessable).
 4. Add the domain `go.countdownula.com` to the project and a `CNAME go → cname.vercel-dns.com` record.
 
 Before the app ships with Share Live Link, update the privacy policy in `site/_src/privacy.html`: it currently says countdowns stay in iCloud.
 
+## Rate limits
+
+Writes are counted in MongoDB (`rateLimits`, fixed windows, removed by a TTL index), so the limits hold across serverless instances. Clients are identified by a salted hash of their IP address, which is dropped when its window ends.
+
+| Action | Limit |
+|---|---|
+| Publish | 10 an hour and 30 a day per client, 2,000 an hour for everyone together |
+| Edit | 120 an hour per client, 60 an hour per countdown |
+| Unpublish | 60 an hour per client |
+
+Over a limit, the API answers `429` with `Retry-After` and a message the app shows as is. Reading pages and preview images isn't limited; the CDN caches those. The limits live in `src/lib/rateLimit.ts`. Vercel Firewall rules can sit in front of this for floods, but they aren't needed to launch.
+
 ## Not yet in place
 
-Rate limiting on `POST /api/countdowns` (add Vercel Firewall rules or an Upstash limiter before launch), abuse reporting, and the App Clip's `apple-app-site-association` file (phase 2).
+Abuse reporting, and the App Clip's `apple-app-site-association` file (phase 2).
