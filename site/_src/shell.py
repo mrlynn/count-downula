@@ -27,8 +27,8 @@ for name, (title, desc) in PAGES.items():
 <meta name="description" content="{desc}">
 <meta name="theme-color" content="#1a0612">
 <link rel="canonical" href="https://www.countdowncula.com/{name}">
-<link rel="icon" href="/assets/app-icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
