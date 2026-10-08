@@ -44,9 +44,10 @@ final class Entitlements {
 
     // MARK: - Free tier
 
-    /// Countdowns that count toward the free limit: everything that isn't finished.
+    /// Countdowns that count toward the free limit: everything that isn't finished. Shared countdowns
+    /// you joined don't count, so a free user can always say yes to an invite.
     nonisolated static func activeCount(in countdowns: [Countdown], at now: Date = Date()) -> Int {
-        countdowns.filter { !$0.isPast(at: now) }.count
+        countdowns.filter { !$0.isPast(at: now) && $0.extras.subscription == nil }.count
     }
 
     nonisolated static func canAdd(to countdowns: [Countdown], unlocked: Bool, at now: Date = Date()) -> Bool {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
-import { getCountdown, recordView, toPublic } from "@/lib/countdowns.ts";
+import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
 import { publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -46,5 +46,12 @@ export default async function CountdownPage({ params }: Props) {
   after(() => recordView(slug).catch(() => {}));
 
   const photoURL = doc.hasPhoto ? `/c/${slug}/photo?v=${doc.updatedAt.getTime()}` : null;
-  return <LiveCountdown countdown={toPublic(doc)} photoURL={photoURL} serverNow={Date.now()} />;
+  return (
+    <LiveCountdown
+      countdown={toPublic(doc)}
+      photoURL={photoURL}
+      serverNow={Date.now()}
+      memberCount={await memberCount(slug)}
+    />
+  );
 }

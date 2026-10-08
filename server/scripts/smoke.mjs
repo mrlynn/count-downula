@@ -62,6 +62,27 @@ assert.equal(updated.hasPhoto, false);
 
 assert.equal((await fetch(`${base}/api/countdowns`, json({ countdown: { title: "" } }))).status, 422);
 
+// Members: join twice, see the count on the API and the page, leave once.
+const join = () => fetch(`${base}/api/countdowns/${created.slug}/members`, { method: "POST" });
+res = await join();
+assert.equal(res.status, 201, await res.clone().text());
+const member = await res.json();
+assert.ok(member.memberToken);
+assert.equal((await (await join()).json()).memberCount, 2);
+assert.equal((await (await fetch(`${base}/api/countdowns/${created.slug}?fresh=${Date.now()}`)).json()).memberCount, 2);
+assert.match(await (await fetch(`${base}/c/${created.slug}`)).text(), /2 people are counting down/);
+res = await fetch(`${base}/api/countdowns/${created.slug}/members`, { method: "DELETE", headers: { authorization: `Bearer ${member.memberToken}` } });
+assert.equal(res.status, 204);
+assert.equal((await (await fetch(`${base}/api/countdowns/${created.slug}?fresh=${Date.now()}`)).json()).memberCount, 1);
+assert.equal((await fetch(`${base}/api/countdowns/zzzzzzzz/members`, { method: "POST" })).status, 404);
+console.log("members ok");
+
+res = await fetch(`${base}/.well-known/apple-app-site-association`);
+assert.equal(res.status, 200);
+assert.match(res.headers.get("content-type"), /json/);
+assert.deepEqual((await res.json()).applinks.details[0].appIDs, ["YZ36Z8GSEN.com.countdownula.app"]);
+console.log("aasa ok");
+
 res = await fetch(`${base}/api/countdowns/${created.slug}`, { method: "DELETE", headers: { authorization: `Bearer ${created.ownerToken}` } });
 assert.equal(res.status, 204);
 assert.equal((await fetch(`${base}/c/${created.slug}`)).status, 404);

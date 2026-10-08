@@ -29,7 +29,7 @@ struct PaywallView: View {
 
                     VStack(alignment: .leading, spacing: 18) {
                         Feature(symbol: "infinity", title: "Unlimited countdowns",
-                                detail: "Free includes \(SharedConfig.freeActiveLimit) at a time, counting timers and count-ups. Finished ones don't count.")
+                                detail: "Free includes \(SharedConfig.freeActiveLimit) at a time, counting timers and count-ups. Finished ones and shared countdowns you join don't count.")
                         Feature(symbol: "applewatch", title: "On all your devices",
                                 detail: "One purchase covers your iPhone, iPad and Apple Watch.")
                         Feature(symbol: "heart", title: "Pay once, keep it",

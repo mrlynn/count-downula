@@ -91,8 +91,10 @@ struct CountdownDetailView: View {
             .navigationTitle(countdown.kind == .timer ? "Timer" : countdown.countsUp ? "Count Up" : "Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Edit") { onEdit(countdown) }
+                if countdown.extras.subscription == nil {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Edit") { onEdit(countdown) }
+                    }
                 }
             }
             .confirmationDialog("Start fresh?", isPresented: $confirmingReset, titleVisibility: .visible) {
@@ -155,17 +157,22 @@ struct CountdownDetailView: View {
                 .buttonStyle(.bordered)
             }
 
-            LiveLinkSection(countdown: countdown)
+            if let subscription = countdown.extras.subscription {
+                SharedMemberSection(countdown: countdown, subscription: subscription)
+                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
+            } else {
+                LiveLinkSection(countdown: countdown)
 
-            ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
+                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
 
-            Button(role: .destructive) {
-                confirmingDelete = true
-            } label: {
-                Label("Delete", systemImage: "trash")
-                    .frame(maxWidth: .infinity)
+                Button(role: .destructive) {
+                    confirmingDelete = true
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
 
             Text(footnote(for: countdown, now: now))
                 .font(.footnote)

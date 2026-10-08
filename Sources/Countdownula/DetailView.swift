@@ -89,15 +89,18 @@ struct DetailView: View {
                 Spacer()
                 if confirmingDelete {
                     Button("Cancel") { confirmingDelete = false }
-                    Button("Delete", role: .destructive) {
+                    Button(countdown.extras.subscription == nil ? "Delete" : "Leave", role: .destructive) {
                         onBack()
                         store.delete(countdown)
                     }
                     .tint(.red)
                 } else {
                     Button { confirmingDelete = true } label: { Image(systemName: "trash") }
-                        .help("Delete")
-                    Button("Edit", action: onEdit)
+                        .help(countdown.extras.subscription == nil ? "Delete" : "Leave this shared countdown")
+                    // Only the owner edits a shared countdown.
+                    if countdown.extras.subscription == nil {
+                        Button("Edit", action: onEdit)
+                    }
                 }
             }
             .padding(12)

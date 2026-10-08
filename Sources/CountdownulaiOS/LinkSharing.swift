@@ -88,10 +88,19 @@ struct LiveLinkSection: View {
     @State private var working = false
     @State private var errorMessage: String?
     @State private var sharedURL: URL?
+    /// How many people joined, fetched when the screen opens.
+    @State private var memberCount = 0
 
     var body: some View {
         Group {
             if let link = countdown.extras.link {
+                if memberCount > 0 {
+                    Label(memberCount == 1 ? "1 person is counting down with you" : "\(memberCount) people are counting down with you",
+                          systemImage: "person.2.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 ShareLink(item: link.url, subject: Text(countdown.title), message: Text(countdown.title)) {
                     Label("Share Live Link", systemImage: "link")
                         .frame(maxWidth: .infinity)
@@ -133,6 +142,10 @@ struct LiveLinkSection: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "")
+        }
+        .task(id: countdown.extras.link?.slug) {
+            guard let slug = countdown.extras.link?.slug else { memberCount = 0; return }
+            memberCount = (try? await LiveLinkAPI.fetch(slug: slug))?.memberCount ?? memberCount
         }
         .sheet(item: $sharedURL) { url in
             ActivitySheet(items: [url])

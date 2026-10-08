@@ -162,7 +162,8 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        UIBackgroundModes: [remote-notification]
+        UIBackgroundModes: [remote-notification, fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.countdownula.app.refresh-shared]
         NSSupportsLiveActivities: true
         ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
@@ -176,6 +177,8 @@ targets:
     entitlements:
       path: Resources/iOS/Countdownula.entitlements
       properties:
+        # Shared countdown links open in the app (served by server/src/app/.well-known).
+        com.apple.developer.associated-domains: [applinks:go.countdowncula.com]
         com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
         com.apple.developer.icloud-services: [CloudKit]
         aps-environment: development

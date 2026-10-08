@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteCountdown, getCountdown, toPublic, updateCountdown } from "@/lib/countdowns.ts";
+import { deleteCountdown, getCountdown, memberCount, toPublic, updateCountdown } from "@/lib/countdowns.ts";
 import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, validateCountdown, validatePhoto } from "@/lib/validate.ts";
@@ -12,7 +12,7 @@ export async function GET(_request: Request, { params }: Context) {
   const doc = await getCountdown(slug);
   if (!doc) return errorResponse(404, "Not found.");
   return NextResponse.json(
-    { url: shareURL(slug), countdown: toPublic(doc) },
+    { url: shareURL(slug), countdown: toPublic(doc), memberCount: await memberCount(slug) },
     { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
   );
 }
