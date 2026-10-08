@@ -202,7 +202,7 @@ The Halloween test: phase 1 ships a public Halloween countdown at `go.countdownu
 
 | Feature | State | Still to do |
 |---|---|---|
-| Server and live links (1) | Built | Atlas, Vercel and DNS setup, rate limiting, privacy policy update |
+| Server and live links (1) | Built | Atlas, Vercel and DNS setup, privacy policy update. Rate limiting is in (see `server/README.md`) |
 | Animated share cards (6) | Built. Share Card menu on the detail screen offers the still image or a 6 second 1080 × 1920 video | Instagram Stories handoff is written but hidden until `InstagramStories.facebookAppID` is set (Meta requires an app ID) |
 | The Count speaks (9) | Text lines built, with a Halloween week set (Oct 25 to 31). Toggle in the editor, on by default for vampire hours countdowns | Spoken final 10 seconds, waiting on the voice recordings |
 | Sunrise and moon (10) | Built. "Vampire hours" in the new countdown menu: next sunrise, sunset and full moon. Rolls forward on every device | Nothing |
