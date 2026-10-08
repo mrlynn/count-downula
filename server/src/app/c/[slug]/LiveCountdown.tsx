@@ -99,7 +99,20 @@ export function LiveCountdown({
         <Box sx={{ position: "absolute", top: { xs: 20, sm: 32 }, right: { xs: 16, sm: 32 } }}>
           <Dial remaining={dialRemaining(now, created, target, countdown.kind)} accent={style.accent} />
         </Box>
-        <Box sx={{ position: "relative", width: "100%", maxWidth: 960, mx: "auto", px: { xs: 2, sm: 4 }, pb: { xs: 4, sm: 6 } }}>
+        {/* A second scrim sized to the text, so busy backdrops (stripes, a bright sun) stay behind it
+            however tall the hero or the text block is. */}
+        <Box
+          sx={{
+            position: "relative",
+            width: "100%",
+            pt: { xs: 12, sm: 16 },
+            background: style.lightText
+              ? "linear-gradient(180deg, rgba(10,3,6,0) 0%, rgba(10,3,6,0.72) 34%, rgba(10,3,6,0.86) 100%)"
+              : "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.72) 34%, rgba(255,255,255,0.86) 100%)",
+            textShadow: style.lightText ? "0 1px 14px rgba(0,0,0,0.45)" : "0 1px 14px rgba(255,255,255,0.5)",
+          }}
+        >
+        <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 2, sm: 4 }, pb: { xs: 4, sm: 6 } }}>
           <Typography
             variant="h1"
             sx={{ fontFamily: style.fontFamily, fontWeight: style.fontWeight, fontSize: { xs: 34, sm: 52 }, lineHeight: 1.1, mb: 1 }}
@@ -118,6 +131,7 @@ export function LiveCountdown({
           {countdown.details ? (
             <Typography sx={{ mt: 3, maxWidth: 640, opacity: 0.9, whiteSpace: "pre-wrap" }}>{countdown.details}</Typography>
           ) : null}
+        </Box>
         </Box>
       </Box>
       <Box sx={{ bgcolor: "background.default", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
