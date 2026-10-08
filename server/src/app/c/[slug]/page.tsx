@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
+import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
 import { publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
@@ -56,6 +57,7 @@ export default async function CountdownPage({ params }: Props) {
       serverNow={Date.now()}
       memberCount={await memberCount(slug)}
       sealed={isOpen(doc) ? 0 : await sealedCount(slug)}
+      walletURL={walletConfigured() && doc.kind !== "countUp" ? `/c/${slug}/pass` : null}
     />
   );
 }

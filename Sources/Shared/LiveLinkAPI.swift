@@ -164,6 +164,15 @@ enum LiveLinkAPI {
         try check(status, data)
     }
 
+    /// The countdown's Apple Wallet pass (.pkpass).
+    static func walletPass(slug: String) async throws -> Data {
+        let (data, status) = try await raw("GET", path: "c/\(slug)/pass", body: nil)
+        if status == 503 { throw Failure.server("Apple Wallet passes aren't available yet.") }
+        if status == 404 { throw NotShared() }
+        try check(status, data)
+        return data
+    }
+
     static func leave(slug: String, memberToken: String) async throws {
         let (data, status) = try await raw("DELETE", path: "api/countdowns/\(slug)/members", token: memberToken, body: nil)
         if status == 404 { return }

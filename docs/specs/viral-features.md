@@ -153,6 +153,8 @@ How it works: the server signs `.pkpass` bundles with a Pass Type ID certificate
 
 Depends on: feature 1, Pass Type ID certificate.
 
+Built (October 8, 2026): an event ticket per shared countdown at `/c/<slug>/pass` (Add to Apple Wallet on the live page and the app's detail screen), with the backdrop as the strip, the date in the owner's time zone, a relative "in 5 days" field Wallet keeps current, `relevantDate`/`relevantDates` for the Lock Screen, an expiry a day after zero, and a QR code back to the live page. The full PassKit web service is in place (`/api/wallet/v1/...`, registrations in `walletRegistrations`) and owner edits push an update to every device holding the pass. Signing waits on `PASS_CERT_PEM`, `PASS_KEY_PEM` and `PASS_WWDR_PEM`; until then the routes answer 503 and the buttons stay hidden on the web.
+
 ### 9. The Count speaks (phase 1, size S to M)
 
 What it is: an opt-in personality pack per countdown. Milestone notifications and the finish alert get lines in Count Downcula's voice ("Three nights remain. The anticipation is... delicious."), and the final 10 seconds can play a spoken countdown.

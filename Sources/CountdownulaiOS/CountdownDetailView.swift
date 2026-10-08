@@ -160,6 +160,10 @@ struct CountdownDetailView: View {
                 .buttonStyle(.bordered)
             }
 
+            if let slug = (countdown.extras.link?.slug ?? countdown.extras.subscription?.slug), !countdown.countsUp {
+                WalletPassButton(slug: slug)
+            }
+
             if let subscription = countdown.extras.subscription {
                 SharedMemberSection(countdown: countdown, subscription: subscription)
                 ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
