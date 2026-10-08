@@ -82,7 +82,7 @@ private struct LockScreenActivityView: View {
                     Text(state.title)
                         .font(.headline)
                         .lineLimit(2)
-                    Text(isDone ? "Complete" : subtitle)
+                    Text(isDone ? (state.celebrating ? "It's here! Everyone's celebrating." : "Complete") : subtitle)
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.65))
                 }
@@ -114,7 +114,7 @@ private struct ActivityTimeText: View {
 
     var body: some View {
         if isDone {
-            Text("Done")
+            Text(state.celebrating ? "🎉" : "Done")
         } else {
             Text(timerInterval: state.interval, countsDown: true)
                 .monospacedDigit()
@@ -133,7 +133,11 @@ private struct ActivityDial: View {
 
     var body: some View {
         ZStack {
-            if isDone {
+            if isDone, state.celebrating {
+                Text("🎉")
+                    .font(.system(size: 30))
+                    .minimumScaleFactor(0.4)
+            } else if isDone {
                 Image(systemName: "checkmark.circle.fill")
                     .resizable()
                     .scaledToFit()

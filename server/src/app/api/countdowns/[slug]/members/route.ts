@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { joinCountdown, leaveCountdown, setMemberPushToken } from "@/lib/countdowns.ts";
+import { hashToken, joinCountdown, leaveCountdown, setMemberPushToken } from "@/lib/countdowns.ts";
+import { forgetLiveDevices } from "@/lib/live.ts";
 import { bearer, errorResponse, readJSON, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -31,7 +32,7 @@ export async function PUT(request: Request, { params }: Context) {
     return errorResponse(400, "Send a JSON body.");
   }
   const pushToken = typeof body?.pushToken === "string" ? body.pushToken : "";
-  if (!/^[0-9a-f]{64,200}$/i.test(pushToken)) return errorResponse(422, "pushToken must be a hex device token.");
+  if (!/^[0-9a-f]{64,512}$/i.test(pushToken)) return errorResponse(422, "pushToken must be a hex device token.");
   const ok = await setMemberPushToken(slug, bearer(request), pushToken.toLowerCase(), body.sandbox === true);
   if (!ok) return errorResponse(403, "That member key isn't counting down with this countdown.");
   return new NextResponse(null, { status: 204 });
@@ -41,6 +42,8 @@ export async function PUT(request: Request, { params }: Context) {
 export async function DELETE(request: Request, { params }: Context) {
   const { slug } = await params;
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
-  await leaveCountdown(slug, bearer(request));
+  const token = bearer(request);
+  await leaveCountdown(slug, token);
+  if (token) await forgetLiveDevices(slug, hashToken(token));
   return new NextResponse(null, { status: 204 });
 }

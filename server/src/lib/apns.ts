@@ -45,7 +45,7 @@ export function providerToken(env: ApnsEnv = process.env, now = Date.now()): str
   return cached.jwt;
 }
 
-const http2Transport: Transport = (host, path, headers, body) =>
+export const http2Transport: Transport = (host, path, headers, body) =>
   new Promise((resolve) => {
     const session = connect(`https://${host}`);
     session.on("error", () => resolve({ status: 0, reason: "ConnectionError" }));
@@ -68,6 +68,40 @@ const http2Transport: Transport = (host, path, headers, body) =>
     });
     request.end(body);
   });
+
+export interface LivePush {
+  token: string;
+  sandbox: boolean;
+  /** The APNs payload: an ActivityKit start, update or end event. */
+  payload: object;
+}
+
+/**
+ * Starts, updates or ends Live Activities through APNs (push type liveactivity). Returns each
+ * token's outcome, like `sendBackgroundPush`.
+ */
+export async function sendLiveActivityPushes(
+  pushes: LivePush[],
+  { env = process.env, transport = http2Transport }: { env?: ApnsEnv; transport?: Transport } = {},
+): Promise<Map<string, PushOutcome>> {
+  const outcomes = new Map<string, PushOutcome>();
+  if (!apnsConfigured(env) || pushes.length === 0) return outcomes;
+  const headers = {
+    authorization: `bearer ${providerToken(env)}`,
+    "apns-topic": `${TOPIC}.push-type.liveactivity`,
+    "apns-push-type": "liveactivity",
+    "apns-priority": "10",
+  };
+  await Promise.all(
+    pushes.map(async ({ token, sandbox, payload }) => {
+      const host = sandbox ? "api.sandbox.push.apple.com" : "api.push.apple.com";
+      const { status, reason } = await transport(host, `/3/device/${token}`, headers, JSON.stringify(payload));
+      const gone = status === 410 || (status === 400 && (reason === "BadDeviceToken" || reason === "DeviceTokenNotForTopic"));
+      outcomes.set(token, status === 200 ? "sent" : gone ? "gone" : "failed");
+    }),
+  );
+  return outcomes;
+}
 
 /**
  * Wakes members' apps in the background so they fetch the owner's latest copy. Returns each

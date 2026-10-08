@@ -27,8 +27,11 @@ enum LiveActivities {
         guard isEnabled, isEligible(countdown), !isRunning(countdown.id) else { return }
         let attributes = CountdownActivityAttributes(countdownID: countdown.id, kind: countdown.kind,
                                                      accent: countdown.style.accent)
+        // Shared countdowns take push updates, so the server can celebrate at zero on every phone.
+        let shared = countdown.extras.link != nil || countdown.extras.subscription != nil
         do {
-            _ = try CountdownActivity.request(attributes: attributes, content: content(for: countdown), pushType: nil)
+            _ = try CountdownActivity.request(attributes: attributes, content: content(for: countdown),
+                                              pushType: shared ? .token : nil)
         } catch {
             print("Countdownula: couldn't start Live Activity: \(error)")
         }
@@ -47,13 +50,26 @@ enum LiveActivities {
         let now = Date()
         let byID = Dictionary(countdowns.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
+        // The server can start one by push while the app started one too; keep one per countdown,
+        // preferring the one that takes pushes.
+        let active = CountdownActivity.activities.filter { $0.activityState == .active }
+        for group in Dictionary(grouping: active, by: { $0.attributes.countdownID }).values where group.count > 1 {
+            let keep = group.first { $0.pushToken != nil } ?? group[0]
+            for extra in group where extra.id != keep.id {
+                Task { await extra.end(nil, dismissalPolicy: .immediate) }
+            }
+        }
+
         for activity in CountdownActivity.activities where activity.activityState == .active {
             guard let countdown = byID[activity.attributes.countdownID] else {
                 Task { await activity.end(nil, dismissalPolicy: .immediate) }
                 continue
             }
             let content = content(for: countdown)
-            if countdown.isPast(at: now) {
+            if countdown.isPast(at: now), activity.pushToken != nil {
+                // The server sends this one's celebration at zero; leave the ending to it.
+                continue
+            } else if countdown.isPast(at: now) {
                 // Leave the finished state on the Lock Screen for a little while.
                 Task { await activity.end(content, dismissalPolicy: .after(countdown.targetDate + 15 * 60)) }
             } else if activity.content.state != content.state {

@@ -152,6 +152,18 @@ enum LiveLinkAPI {
         try check(status, data)
     }
 
+    /// Registers this phone for a shared countdown's synchronized zero: its push-to-start token and,
+    /// once one is running, its Live Activity's update token. `token` is the owner's or member's key.
+    static func registerLive(slug: String, token: String, deviceID: String, countdownID: UUID, startToken: String?,
+                             activityToken: String?, sandbox: Bool) async throws {
+        var body: [String: Any] = ["deviceID": deviceID, "countdownID": countdownID.uuidString, "sandbox": sandbox]
+        if let startToken { body["startToken"] = startToken }
+        if let activityToken { body["activityToken"] = activityToken }
+        let (data, status) = try await raw("PUT", path: "api/countdowns/\(slug)/live", token: token,
+                                           body: try JSONSerialization.data(withJSONObject: body))
+        try check(status, data)
+    }
+
     static func leave(slug: String, memberToken: String) async throws {
         let (data, status) = try await raw("DELETE", path: "api/countdowns/\(slug)/members", token: memberToken, body: nil)
         if status == 404 { return }
