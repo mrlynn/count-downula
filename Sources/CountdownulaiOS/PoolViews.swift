@@ -68,17 +68,18 @@ struct PoolSection: View {
                         Text(DatePool.offBy(off))
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                    } else if state?.isOwner == true || guess.mine {
-                        Button(role: .destructive) {
-                            Task { await remove(guess, access) }
-                        } label: {
-                            Image(systemName: "xmark.circle")
-                        }
-                        .buttonStyle(.borderless)
-                        .accessibilityLabel(guess.mine ? "Take back your guess" : "Remove \(guess.name)'s guess")
                     }
                 }
                 .padding(.vertical, 2)
+                .contentShape(Rectangle())
+                // Removing is a long press, so the list stays a clean leaderboard.
+                .contextMenu {
+                    if answer == nil, state?.isOwner == true || guess.mine {
+                        Button(guess.mine ? "Take Back My Guess" : "Remove Guess", systemImage: "trash", role: .destructive) {
+                            Task { await remove(guess, access) }
+                        }
+                    }
+                }
             }
 
             if !closed {

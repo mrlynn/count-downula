@@ -3,9 +3,10 @@ import SwiftUI
 /// Built-in backgrounds, drawn in code so they cost nothing to ship, stay sharp at any size and
 /// look the same in the app, widgets and on the watch. Random details use fixed seeds.
 enum SceneID: String, Codable, CaseIterable, Identifiable {
+    // Occasions first, so the picker leads with them. Added October 2026: builds before then keep
+    // these styles but show the default backdrop.
+    case wedding, birthday, baby, graduation, hearts, fireworks, airplane, beach, stadium, campfire
     case midnight, starfield, aurora, sunset, mountains, ocean, snowfall, blossoms, city, confetti, balloons, harvestMoon
-    // Occasions, added October 2026. Builds before then keep these styles but show the default backdrop.
-    case wedding, airplane, beach, birthday, graduation, baby, hearts, fireworks, stadium, campfire
 
     var id: String { rawValue }
 
@@ -257,7 +258,7 @@ struct SceneArt: View {
                            with: .color(Color(hex: rng.next() > 0.5 ? 0xFFFFFF : 0xF4A7B9).opacity(0.6)))
             }
             let u = unit(rect)
-            let center = CGPoint(x: rect.midX, y: rect.height * 0.42)
+            let center = CGPoint(x: rect.midX, y: rect.height * 0.36)
             var glow = context
             glow.addFilter(.blur(radius: u * 0.06))
             glow.fill(circle(center, u * 0.26), with: .color(.white.opacity(0.7)))
@@ -342,7 +343,7 @@ struct SceneArt: View {
                 piece.fill(Path(roundedRect: CGRect(x: -w, y: -w * 0.3, width: w * 2, height: w * 0.6), cornerRadius: w * 0.3),
                            with: .color(Color(hex: palette[Int(rng.next() * 5) % 5]).opacity(0.85)))
             }
-            cake(&context, center: CGPoint(x: rect.midX, y: rect.height * 0.62), unit: unit(rect))
+            cake(&context, center: CGPoint(x: rect.midX, y: rect.height * 0.3), unit: unit(rect) * 0.8)
 
         case .graduation:
             sky(&context, rect, [0x0E1A3D, 0x1F3A75, 0x3E64A8], angle: 90)
@@ -391,7 +392,7 @@ struct SceneArt: View {
                                                         .opacity(0.35 + rng.next() * 0.5)))
             }
             var big = context
-            big.translateBy(x: rect.midX, y: rect.height * 0.42)
+            big.translateBy(x: rect.midX, y: rect.height * 0.34)
             var glow = big
             glow.addFilter(.blur(radius: unit(rect) * 0.05))
             glow.fill(heart(size: unit(rect) * 0.5), with: .color(.white.opacity(0.35)))
