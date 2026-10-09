@@ -4819,12 +4819,6 @@
     },
     "Add to My Countdowns": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "マイカウントダウンに追加"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -4837,16 +4831,22 @@
             "value": "Añadir a mis cuentas atrás"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Adicionar às minhas contagens"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Ajouter à mes comptes à rebours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "マイカウントダウンに追加"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adicionar às minhas contagens"
           }
         }
       }
@@ -5234,6 +5234,40 @@
         }
       }
     },
+    "Analytics ID Reset": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "分析IDをリセットしました"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Analyse-ID zurückgesetzt"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ID de análisis restablecido"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ID de análise redefinido"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Identifiant d’analyse réinitialisé"
+          }
+        }
+      }
+    },
     "Angle": {
       "localizations": {
         "de": {
@@ -5298,6 +5332,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Contagens anônimas, como quantas contagens são criadas. Sem títulos, datas ou nomes."
+          }
+        }
+      }
+    },
+    "Anonymous counts, like how many countdowns get made. No titles, dates or names. Details in the privacy policy at countdowncula.com/privacy.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "作成されたカウントダウンの数などの匿名の集計です。タイトル、日付、名前は含まれません。詳しくはcountdowncula.com/privacyのプライバシーポリシーをご覧ください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anonyme Zählungen, etwa wie viele Countdowns erstellt werden. Keine Titel, Daten oder Namen. Details in der Datenschutzerklärung unter countdowncula.com/privacy."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recuentos anónimos, como cuántas cuentas atrás se crean. Sin títulos, fechas ni nombres. Más detalles en la política de privacidad en countdowncula.com/privacy."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contagens anônimas, como quantas contagens são criadas. Sem títulos, datas ou nomes. Detalhes na política de privacidade em countdowncula.com/privacy."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Des comptages anonymes, comme le nombre de comptes à rebours créés. Ni titres, ni dates, ni noms. Détails dans la politique de confidentialité sur countdowncula.com/privacy."
           }
         }
       }
@@ -6018,12 +6086,6 @@
     },
     "Check the network and try again.": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ネットワークを確認して、もう一度お試しください。"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -6036,16 +6098,22 @@
             "value": "Revisa la conexión e inténtalo de nuevo."
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Verifique a conexão e tente de novo."
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Vérifiez la connexion et réessayez."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ネットワークを確認して、もう一度お試しください。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verifique a conexão e tente de novo."
           }
         }
       }
@@ -6290,12 +6358,6 @@
     },
     "Coming Up": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "もうすぐ"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -6308,16 +6370,22 @@
             "value": "Próximamente"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Em breve"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "À venir"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "もうすぐ"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Em breve"
           }
         }
       }
@@ -7075,12 +7143,6 @@
     },
     "Countdowns": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "カウントダウン"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -7093,28 +7155,28 @@
             "value": "Cuentas atrás"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Contagens"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Comptes à rebours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "カウントダウン"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contagens"
           }
         }
       }
     },
     "Countdowns you make on your iPhone, iPad or Mac show up here through iCloud. Or scan the code to make one on the web.": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "iPhone、iPad、Macで作ったカウントダウンはiCloud経由でここに表示されます。コードをスキャンしてWebで作ることもできます。"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -7127,16 +7189,22 @@
             "value": "Las cuentas atrás que creas en tu iPhone, iPad o Mac aparecen aquí a través de iCloud. O escanea el código para crear una en la web."
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "As contagens que você cria no iPhone, iPad ou Mac aparecem aqui pelo iCloud. Ou escaneie o código para criar uma na web."
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Les comptes à rebours créés sur votre iPhone, iPad ou Mac apparaissent ici via iCloud. Ou scannez le code pour en créer un sur le web."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "iPhone、iPad、Macで作ったカウントダウンはiCloud経由でここに表示されます。コードをスキャンしてWebで作ることもできます。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "As contagens que você cria no iPhone, iPad ou Mac aparecem aqui pelo iCloud. Ou escaneie o código para criar uma na web."
           }
         }
       }
@@ -14211,6 +14279,40 @@
         }
       }
     },
+    "Settings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "設定"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einstellungen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajustes"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajustes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réglages"
+          }
+        }
+      }
+    },
     "Settle": {
       "localizations": {
         "de": {
@@ -15709,12 +15811,6 @@
     },
     "The Crypt is out of reach": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "クリプトに接続できません"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -15727,16 +15823,22 @@
             "value": "No se puede llegar a la Cripta"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "A Cripta está fora de alcance"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "La Crypte est hors d’atteinte"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "クリプトに接続できません"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A Cripta está fora de alcance"
           }
         }
       }
