@@ -195,7 +195,8 @@ export function LiveCountdown({
       {countdown.pool ? <PoolPanel slug={countdown.slug} estimate={countdown.targetDate} /> : null}
       {/* Link-shared countdowns only: public crypt entries and plain count-ups have no coffin. */}
       {!countdown.isPublic && (countdown.kind !== "countUp" || countdown.keptCounting) ? (
-        <CoffinPanel slug={countdown.slug} opensAt={countdown.targetDate} initialSealed={sealed || recap?.notes || 0} />
+        <CoffinPanel slug={countdown.slug} opensAt={countdown.targetDate} initialSealed={sealed || recap?.notes || 0}
+                     maxPhotos={countdown.host ? 4 : 1} />
       ) : null}
       <Box sx={{ bgcolor: "background.default", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
         <Stack
@@ -203,14 +204,17 @@ export function LiveCountdown({
           spacing={2}
           sx={{ maxWidth: 960, mx: "auto", alignItems: { xs: "stretch", md: "center" }, justifyContent: "space-between" }}
         >
-          <Box>
-            <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
-            <Typography sx={{ opacity: 0.7 }}>
-              {words
-                ? "Count down to your next big day together: it shows up on your Lock Screen, watch and menu bar."
-                : "Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes."}
-            </Typography>
-          </Box>
+          {/* A hosted page is the host's: no Count Downcula pitch. */}
+          {countdown.host ? <Box /> : (
+            <Box>
+              <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
+              <Typography sx={{ opacity: 0.7 }}>
+                {words
+                  ? "Count down to your next big day together: it shows up on your Lock Screen, watch and menu bar."
+                  : "Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes."}
+              </Typography>
+            </Box>
+          )}
           <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1.5, flexWrap: "wrap", "& .MuiButton-root": { whiteSpace: "nowrap" } }}>
             {/* Same-site links don't open the app, so this uses the app's own scheme. */}
             {words ? null : (
@@ -242,9 +246,11 @@ export function LiveCountdown({
                 Add to Apple Wallet
               </Button>
             ) : null}
-            <Button variant={words ? "contained" : "outlined"} size="large" href={DOWNLOAD}>
-              Get the app
-            </Button>
+            {countdown.host ? null : (
+              <Button variant={words ? "contained" : "outlined"} size="large" href={DOWNLOAD}>
+                Get the app
+              </Button>
+            )}
           </Stack>
         </Stack>
         {embeddable(countdown) ? (

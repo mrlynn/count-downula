@@ -36,7 +36,8 @@ enum SharedCountdowns {
     /// A fresh local countdown for a shared one you just joined.
     static func makeCountdown(from remote: RemoteCountdown, slug: String, url: URL, now: Date = Date()) -> Countdown {
         var countdown = Countdown(title: remote.title, details: remote.details, targetDate: remote.targetDate)
-        countdown.extras.subscription = SharedSubscription(slug: slug, url: url, joinedAt: now,
+        // Joined through a custom link, the real slug is the one to keep: the name can change.
+        countdown.extras.subscription = SharedSubscription(slug: remote.slug ?? slug, url: url, joinedAt: now,
                                                            remoteUpdatedAt: nil, memberCount: remote.memberCount)
         return apply(remote, to: countdown)
     }
@@ -64,6 +65,9 @@ enum SharedCountdowns {
         countdown.extras.subscription?.remoteUpdatedAt = remote.updatedAt
         countdown.extras.subscription?.memberCount = remote.memberCount
         countdown.extras.subscription?.isPublic = remote.isPublic ? true : nil
+        countdown.extras.subscription?.isHosted = remote.isHosted ? true : nil
+        // A host's custom link is the one to pass on.
+        if let url = remote.url { countdown.extras.subscription?.url = url }
         countdown.extras.pool = remote.pool
         return countdown
     }
@@ -151,6 +155,10 @@ struct RemoteCountdown: Equatable {
     var keptCounting = false
     /// After zero: who counted, what the coffin held, who guessed closest.
     var recap: Recap? = nil
+    /// A Host Pass is applied: custom link, no branding, bigger coffin, keepsake.
+    var isHosted = false
+    /// The countdown's real slug; the link may use a custom name instead.
+    var slug: String? = nil
 }
 
 extension RemoteCountdown {
@@ -175,6 +183,8 @@ extension RemoteCountdown {
         let isPublic: Bool?
         let pool: Lenient<DatePool>?
         let keptCounting: Bool?
+        let host: Bool?
+        let slug: String?
     }
 
     /// A style or milestone list written by a newer app can fail to decode here; fall back rather
@@ -197,7 +207,8 @@ extension RemoteCountdown {
             style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
             hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url,
             floating: body.floating, isPublic: body.isPublic ?? false, pool: body.pool?.value,
-            keptCounting: body.keptCounting ?? false, recap: envelope.recap
+            keptCounting: body.keptCounting ?? false, recap: envelope.recap,
+            isHosted: body.host ?? false, slug: body.slug
         )
     }
 

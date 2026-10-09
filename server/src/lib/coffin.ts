@@ -14,6 +14,11 @@ export const COFFIN_LIMITS = {
   name: 40,
   text: 500,
   photoBytes: 400 * 1024,
+  /** Photos per note: one, or several on a hosted countdown. */
+  photos: 1,
+  hostPhotos: 4,
+  /** A hosted countdown's notes can carry a short video, sent raw (under Vercel's 4.5 MB body limit). */
+  videoBytes: 4_300_000,
   /** Contributions per countdown, so one link can't fill the store. */
   perCountdown: 500,
 };
@@ -24,8 +29,12 @@ export interface ContributionDoc {
   authorTokenHash: string;
   name: string;
   text: string;
-  /** Pathname in the private Blob store, when there's a photo. */
+  /** Pathname in the private Blob store of the first photo (older notes have only this). */
   photoPath?: string;
+  /** Every photo, first one included, on notes with more than one. */
+  photoPaths?: string[];
+  /** A short video, on hosted countdowns. */
+  videoPath?: string;
   createdAt: Date;
   removedAt?: Date;
   reports: number;
@@ -37,8 +46,25 @@ export interface PublicContribution {
   name: string;
   text: string;
   hasPhoto: boolean;
+  photoCount: number;
+  hasVideo: boolean;
   createdAt: string;
   mine: boolean;
+}
+
+/** A note's photos, in order. */
+export function photoPathsOf(c: Pick<ContributionDoc, "photoPath" | "photoPaths">): string[] {
+  return c.photoPaths?.length ? c.photoPaths : c.photoPath ? [c.photoPath] : [];
+}
+
+/** True for an MP4 or QuickTime file: both start with a box whose type is `ftyp`. Pure, for tests. */
+export function looksLikeVideo(bytes: Uint8Array): boolean {
+  return bytes.length > 12 && String.fromCharCode(...bytes.subarray(4, 8)) === "ftyp";
+}
+
+/** Everything a note keeps in Blob storage, for removal. */
+export function mediaPathsOf(c: Pick<ContributionDoc, "photoPath" | "photoPaths" | "videoPath">): string[] {
+  return [...new Set([...photoPathsOf(c), ...(c.videoPath ? [c.videoPath] : [])])];
 }
 
 export type Role = "owner" | "member" | "guest";
@@ -104,7 +130,9 @@ export function toPublic(c: ContributionDoc, viewerHash: string | null): PublicC
     id: c._id.toHexString(),
     name: c.name,
     text: c.text,
-    hasPhoto: Boolean(c.photoPath),
+    hasPhoto: photoPathsOf(c).length > 0,
+    photoCount: photoPathsOf(c).length,
+    hasVideo: Boolean(c.videoPath),
     createdAt: c.createdAt.toISOString(),
     mine: viewerHash === c.authorTokenHash,
   };
@@ -113,11 +141,14 @@ export function toPublic(c: ContributionDoc, viewerHash: string | null): PublicC
 export interface ContributionInput {
   name: string;
   text: string;
-  photo: Buffer | null;
+  photos: Buffer[];
 }
 
-/** Checks a contribution request body. Pure, so it's easy to test. */
-export function validateContribution(body: unknown): { ok: true; value: ContributionInput } | { ok: false; error: string } {
+/**
+ * Checks a contribution request body: `photos` (base64 JPEGs) or, from older apps, one `photo`.
+ * `maxPhotos` is one, or more on a hosted countdown. Pure, so it's easy to test.
+ */
+export function validateContribution(body: unknown, maxPhotos: number = COFFIN_LIMITS.photos): { ok: true; value: ContributionInput } | { ok: false; error: string } {
   if (!body || typeof body !== "object") return { ok: false, error: "Send a JSON body." };
   const b = body as Record<string, unknown>;
   const name = typeof b.name === "string" ? b.name.trim() : "";
@@ -125,15 +156,20 @@ export function validateContribution(body: unknown): { ok: true; value: Contribu
   if (!name) return { ok: false, error: "Add your name so people know who it's from." };
   if (name.length > COFFIN_LIMITS.name) return { ok: false, error: `Names are limited to ${COFFIN_LIMITS.name} characters.` };
   if (text.length > COFFIN_LIMITS.text) return { ok: false, error: `Notes are limited to ${COFFIN_LIMITS.text} characters.` };
-  let photo: Buffer | null = null;
-  if (b.photo != null) {
-    if (typeof b.photo !== "string") return { ok: false, error: "photo must be a base64 JPEG." };
-    photo = Buffer.from(b.photo, "base64");
+  const sent = Array.isArray(b.photos) ? b.photos : b.photo != null ? [b.photo] : [];
+  if (sent.length > maxPhotos) {
+    return { ok: false, error: maxPhotos === 1 ? "One photo per note. More come with a Host Pass." : `Up to ${maxPhotos} photos per note.` };
+  }
+  const photos: Buffer[] = [];
+  for (const item of sent) {
+    if (typeof item !== "string") return { ok: false, error: "Photos must be base64 JPEGs." };
+    const photo = Buffer.from(item, "base64");
     if (photo.length > COFFIN_LIMITS.photoBytes) return { ok: false, error: "That photo is too large." };
     if (photo[0] !== 0xff || photo[1] !== 0xd8) return { ok: false, error: "Photos must be JPEG." };
+    photos.push(photo);
   }
-  if (!text && !photo) return { ok: false, error: "Write a note or add a photo." };
-  return { ok: true, value: { name, text, photo } };
+  if (!text && photos.length === 0) return { ok: false, error: "Write a note or add a photo." };
+  return { ok: true, value: { name, text, photos } };
 }
 
 // MARK: - Report links
@@ -165,7 +201,7 @@ export function parseId(id: string): ObjectId | null {
 /** Deletes a countdown's whole coffin, photos included. Used when the owner stops sharing. */
 export async function purgeCoffin(slug: string) {
   const collection = await contributions();
-  const paths = (await collection.find({ slug, photoPath: { $exists: true } }).toArray()).map((c) => c.photoPath!);
+  const paths = (await collection.find({ slug }).toArray()).flatMap(mediaPathsOf);
   if (paths.length) await del(paths).catch(() => {});
   await collection.deleteMany({ slug });
   await (await guests()).deleteMany({ slug });

@@ -52,6 +52,12 @@ export function EmbedCountdown({
         }
       : THEMES[options.theme];
   const finished = p.isPast;
+  // At zero a hosted embed can send the page it's on somewhere: embed.js listens for this and goes
+  // to the page's own data-redirect URL, so the destination is always the site owner's choice.
+  const redirects = options.end === "redirect" && countdown.host === true;
+  useEffect(() => {
+    if (finished && redirects) window.parent.postMessage({ type: "countdowncula:zero", slug: countdown.slug }, "*");
+  }, [finished, redirects, countdown.slug]);
   if (finished && options.end === "hide") return null;
 
   const unit = (value: number, label: string) => (
@@ -93,9 +99,11 @@ export function EmbedCountdown({
           {unit(p.seconds, "sec")}
         </div>
       )}
-      <div className="embed-credit" style={{ fontSize: "clamp(10px, 2.4vw, 13px)", opacity: 0.7, textAlign: "right" }}>
-        Made with <span style={{ color: theme.accent, fontWeight: 700 }}>Count Downcula</span>
-      </div>
+      {countdown.host ? null : (
+        <div className="embed-credit" style={{ fontSize: "clamp(10px, 2.4vw, 13px)", opacity: 0.7, textAlign: "right" }}>
+          Made with <span style={{ color: theme.accent, fontWeight: 700 }}>Count Downcula</span>
+        </div>
+      )}
     </a>
   );
 }

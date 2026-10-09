@@ -7,7 +7,7 @@ import { loadRecap, recapText } from "@/lib/recap.ts";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
 import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
-import { publicOrigin } from "@/lib/http.ts";
+import { linkFor, publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
 import { LiveCountdown } from "./LiveCountdown.tsx";
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: doc.title,
       description,
-      url: `${publicOrigin()}/c/${slug}`,
+      url: linkFor(doc),
       siteName: "Count Downcula",
       images: [{ url: image, width: 1200, height: 630, alt: `${doc.title}: ${description}` }],
       type: "website",

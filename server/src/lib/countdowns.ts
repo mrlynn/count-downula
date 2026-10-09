@@ -33,6 +33,10 @@ export interface CountdownDoc {
   pool?: PoolState;
   /** It reached zero and the owner kept it counting up from there ("Married 1 year"). */
   keptCounting?: boolean;
+  /** A Host Pass applied to it (see host.ts). */
+  host?: { since: Date; environment: string; transactionId: string };
+  /** Its custom link, `/c/<alias>`, once a host sets one. The random slug keeps working too. */
+  alias?: string;
 }
 
 export interface PoolState {
@@ -76,6 +80,9 @@ export interface PublicCountdown {
   category?: string;
   pool?: { closed: boolean; answer?: string };
   keptCounting?: boolean;
+  /** Hosted: custom link, no branding, bigger coffin, keepsake. */
+  host?: boolean;
+  alias?: string;
 }
 
 let indexesReady: Promise<unknown> | undefined;
@@ -123,6 +130,8 @@ export function toPublic(doc: CountdownDoc): PublicCountdown {
       ? { pool: { closed: doc.pool.closed, ...(doc.pool.answer ? { answer: doc.pool.answer.toISOString() } : {}) } }
       : {}),
     ...(doc.keptCounting ? { keptCounting: true } : {}),
+    ...(doc.host ? { host: true } : {}),
+    ...(doc.alias ? { alias: doc.alias } : {}),
   };
 }
 

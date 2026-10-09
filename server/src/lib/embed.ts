@@ -2,8 +2,12 @@
 // the query string, so the one-line script and a hand-written iframe work the same way.
 
 export type EmbedTheme = "style" | "dark" | "light";
-/** What the embed shows at zero: a message, the recap, a count up from zero, or nothing. */
-export type EmbedEnd = "message" | "recap" | "countup" | "hide";
+/**
+ * What the embed shows at zero: a message, the recap, a count up from zero, or nothing. "redirect"
+ * (hosted countdowns, script embeds only) asks the page it's on to go to its `data-redirect` URL,
+ * and shows the message until it does.
+ */
+export type EmbedEnd = "message" | "recap" | "countup" | "hide" | "redirect";
 
 export interface EmbedOptions {
   theme: EmbedTheme;
@@ -22,7 +26,7 @@ export function embedOptions(query: Record<string, string | string[] | undefined
   const message = (one("message") ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, EMBED_MESSAGE_LIMIT);
   return {
     theme: theme === "dark" || theme === "light" ? theme : "style",
-    end: end === "recap" || end === "countup" || end === "hide" ? end : "message",
+    end: end === "recap" || end === "countup" || end === "hide" || end === "redirect" ? end : "message",
     message: message || "It's here!",
   };
 }

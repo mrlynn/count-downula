@@ -19,12 +19,26 @@ enum Coffin {
         var name: String
         var text: String
         var hasPhoto: Bool
+        /// How many photos; older servers only say whether there's one.
+        var photoCount: Int?
+        var hasVideo: Bool?
         var createdAt: Date
         var mine: Bool
+
+        var photos: Int { photoCount ?? (hasPhoto ? 1 : 0) }
     }
 
     static let maxName = 40
     static let maxText = 500
+    /// Photos per note: one, or more on a hosted countdown, which can also carry a short video.
+    static func maxPhotos(hosted: Bool) -> Int { hosted ? 4 : 1 }
+    static let maxVideoBytes = 4_300_000
+    static let maxVideoSeconds: Double = 15
+
+    /// A Host Pass is applied to this countdown, as far as this device knows.
+    static func isHosted(_ countdown: Countdown) -> Bool {
+        countdown.extras.link?.isHosted == true || countdown.extras.subscription?.isHosted == true
+    }
 
     /// The slug and key this device uses for a countdown's coffin: the owner's for one you
     /// published, the member's for one you joined. Count-ups have no coffin, and neither do public
@@ -57,9 +71,11 @@ extension LiveLinkAPI {
     }
 
     @discardableResult
-    static func addToCoffin(slug: String, token: String, name: String, text: String, photo: Data?) async throws -> Coffin.Contribution {
+    static func addToCoffin(slug: String, token: String, name: String, text: String, photos: [Data]) async throws -> Coffin.Contribution {
         var body: [String: Any] = ["name": name, "text": text]
-        if let photo { body["photo"] = photo.base64EncodedString() }
+        // One photo goes up the way older servers expect it.
+        if photos.count == 1 { body["photo"] = photos[0].base64EncodedString() }
+        if photos.count > 1 { body["photos"] = photos.map { $0.base64EncodedString() } }
         let (data, status) = try await raw("POST", path: "api/countdowns/\(slug)/coffin", token: token,
                                            body: try JSONSerialization.data(withJSONObject: body))
         try check(status, data)
@@ -76,8 +92,20 @@ extension LiveLinkAPI {
         try check(status, data)
     }
 
-    static func coffinPhoto(slug: String, token: String, id: String) async throws -> Data? {
-        let (data, status) = try await raw("GET", path: "api/countdowns/\(slug)/coffin/\(id)/photo", token: token, body: nil)
+    static func coffinPhoto(slug: String, token: String, id: String, index: Int = 0) async throws -> Data? {
+        let (data, status) = try await raw("GET", path: "api/countdowns/\(slug)/coffin/\(id)/photo?i=\(index)", token: token, body: nil)
+        return status == 200 && !data.isEmpty ? data : nil
+    }
+
+    /// Adds a short video (MP4, under `Coffin.maxVideoBytes`) to your own note on a hosted countdown.
+    static func addCoffinVideo(slug: String, token: String, id: String, video: Data) async throws {
+        let (data, status) = try await upload("POST", path: "api/countdowns/\(slug)/coffin/\(id)/video", token: token,
+                                              body: video, contentType: "video/mp4")
+        try check(status, data)
+    }
+
+    static func coffinVideo(slug: String, token: String, id: String) async throws -> Data? {
+        let (data, status) = try await raw("GET", path: "api/countdowns/\(slug)/coffin/\(id)/video", token: token, body: nil)
         return status == 200 && !data.isEmpty ? data : nil
     }
 }

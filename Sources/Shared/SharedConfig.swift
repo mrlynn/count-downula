@@ -14,6 +14,8 @@ enum SharedConfig {
 
     /// One-time, non-consumable "Count Downcula Unlimited" in-app purchase (App Store Connect + Countdownula.storekit).
     static let unlimitedProductID = "com.countdownula.app.unlimited"
+    /// Consumable "Host Pass": hosts one shared countdown (custom link, no branding, bigger coffin, keepsake).
+    static let hostPassProductID = "com.countdownula.app.hostpass"
     /// Active countdowns (upcoming, running timers and count-ups) allowed without Unlimited. Finished ones don't count.
     static let freeActiveLimit = 3
 

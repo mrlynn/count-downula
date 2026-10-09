@@ -76,7 +76,8 @@ test("the coffin takes drops only while a shared countdown is counting", () => {
 test("embed options fall back to safe defaults", () => {
   assert.deepEqual(embedOptions({}), { theme: "style", end: "message", message: "It's here!" });
   assert.deepEqual(embedOptions({ theme: "light", end: "recap", message: "  Doors open!\n" }), { theme: "light", end: "recap", message: "Doors open!" });
-  assert.equal(embedOptions({ theme: "neon", end: "redirect" }).end, "message", "No redirects: that waits for the host tier");
+  assert.equal(embedOptions({ theme: "neon", end: "fireworks" }).end, "message");
+  assert.equal(embedOptions({ end: "redirect" }).end, "redirect", "Hosted embeds only; the component checks");
   assert.equal(embedOptions({ message: "x".repeat(200) }).message.length, 80);
 });
 

@@ -7,7 +7,8 @@ import { purgeCoffin } from "@/lib/coffin.ts";
 import { purgePool } from "@/lib/pool.ts";
 import { forgetLiveDevices } from "@/lib/live.ts";
 import { forgetPass, pushPassUpdates } from "@/lib/walletPass.ts";
-import { bearer, errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
+import { bearer, errorResponse, linkFor, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
+import { purgeAliases } from "@/lib/host.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { isSlug, poolFlag, validateCountdown, validatePhoto } from "@/lib/validate.ts";
 
@@ -20,7 +21,7 @@ export async function GET(_request: Request, { params }: Context) {
   if (!doc) return errorResponse(404, "Not found.");
   const [members, recap] = await Promise.all([memberCount(slug), loadRecap(doc)]);
   return NextResponse.json(
-    { url: shareURL(slug), countdown: toPublic(doc), memberCount: members, ...(recap ? { recap } : {}) },
+    { url: linkFor(doc), countdown: toPublic(doc), memberCount: members, ...(recap ? { recap } : {}) },
     { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
   );
 }
@@ -52,7 +53,7 @@ export async function PUT(request: Request, { params }: Context) {
   after(() => notifyMembers(slug).catch(() => {}));
   // Wallet passes of this countdown fetch the new version.
   after(() => pushPassUpdates(slug).catch(() => {}));
-  return NextResponse.json({ slug, url: shareURL(slug), countdown: doc ? toPublic(doc) : null });
+  return NextResponse.json({ slug, url: doc ? linkFor(doc) : shareURL(slug), countdown: doc ? toPublic(doc) : null });
 }
 
 export async function DELETE(request: Request, { params }: Context) {
@@ -71,6 +72,7 @@ export async function DELETE(request: Request, { params }: Context) {
   after(() => purgePool(slug).catch(() => {}));
   after(() => forgetLiveDevices(slug).catch(() => {}));
   after(() => logEvent("unpublish", request, { slug }));
+  after(() => purgeAliases(slug).catch(() => {}));
   after(() => forgetPass(slug).catch(() => {}));
   return new NextResponse(null, { status: 204 });
 }

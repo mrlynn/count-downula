@@ -14,6 +14,8 @@ export const SERVER_EVENTS = [
   "wallet_pass_download", "wallet_pass_add", "page_view",
   // The web loop (5.3): an embed shown on someone's site, and a new calendar feed client.
   "embed_view", "calendar_subscribed",
+  // The host tier (5.6): a Host Pass applied to a countdown; source is production, sandbox or xcode.
+  "host_pass_applied",
 ] as const;
 
 /** Things only the app knows about, sent in batches to POST /api/events. */

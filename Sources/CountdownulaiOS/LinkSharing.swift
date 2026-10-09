@@ -130,6 +130,9 @@ struct LiveLinkSection: View {
                     .buttonStyle(.bordered)
                 }
 
+                // Custom link, no branding, bigger coffin, keepsake.
+                HostSection(countdown: countdown, link: link, now: Date())
+
                 Button(role: .destructive) {
                     confirmingUnpublish = true
                 } label: {
