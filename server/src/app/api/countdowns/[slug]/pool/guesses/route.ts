@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { logEvent } from "@/lib/events.ts";
 import { getCountdown, hashToken } from "@/lib/countdowns.ts";
 import { bearer, errorResponse, readJSON, tooManyRequests } from "@/lib/http.ts";
 import { guesses, newGuesserToken, POOL_LIMITS, validateGuess } from "@/lib/pool.ts";
@@ -51,6 +52,7 @@ export async function POST(request: Request, { params }: Context) {
     },
     { upsert: true, returnDocument: "after" },
   );
+  if (!existing) after(() => logEvent("pool_guess", request, { slug }));
   return NextResponse.json(
     {
       guess: { id: saved!._id.toHexString(), name: saved!.name, guess: saved!.guess.toISOString(), mine: true },

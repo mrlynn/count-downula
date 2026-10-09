@@ -84,8 +84,13 @@ final class CountdownStore {
     func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
         var countdown = countdown
         if !countdown.isPast(at: Date()) { countdown.hasNotified = false }
+        let isNew = self.countdown(id: countdown.id) == nil
         repository.upsert(countdown, image: image)
         reload()
+        // Joined countdowns are counted by the server when they're joined.
+        if isNew, countdown.extras.subscription == nil {
+            Analytics.log(.countdownCreated, source: Analytics.source(for: countdown))
+        }
     }
 
     func delete(_ countdown: Countdown) {

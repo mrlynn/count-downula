@@ -45,6 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         store.onUpdate = { [weak self] in self?.refreshPinnedItems() }
         refreshPinnedItems()
         Notifier.requestAuthorization()
+        Analytics.appBecameActive()
 
         #if DEBUG
         // Screenshots: -openPopover shows the list without clicking the menu bar, -select "<title>" opens a
@@ -85,6 +86,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             return
         }
         navigation.selectedID = id
+        // A menu bar app is never "opened" again after launch, so a day counts once the list is opened.
+        Analytics.appBecameActive()
         NSApp.activate(ignoringOtherApps: true)
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         popover.contentViewController?.view.window?.makeKey()

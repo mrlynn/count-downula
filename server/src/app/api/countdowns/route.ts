@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { createCountdown, toPublic } from "@/lib/countdowns.ts";
+import { logEvent } from "@/lib/events.ts";
 import { errorResponse, readJSON, shareURL, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
 import { poolFlag, validateCountdown, validatePhoto } from "@/lib/validate.ts";
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
   if (!photo.ok) return errorResponse(422, photo.error);
 
   const { doc, ownerToken } = await createCountdown(countdown.value, photo.value ?? undefined, poolFlag(body?.countdown) === true);
+  after(() => logEvent("publish", request, { slug: doc.slug, source: doc.pool ? "pool" : undefined }));
   return NextResponse.json(
     { slug: doc.slug, url: shareURL(doc.slug), ownerToken, countdown: toPublic(doc) },
     { status: 201 },

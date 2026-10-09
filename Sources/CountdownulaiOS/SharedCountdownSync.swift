@@ -193,6 +193,9 @@ struct SharedMemberSection: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .simultaneousGesture(TapGesture().onEnded {
+                Analytics.log(.shareSheetOpened, slug: subscription.slug, source: "member_invite")
+            })
 
             Button(role: .destructive) {
                 confirmingLeave = true

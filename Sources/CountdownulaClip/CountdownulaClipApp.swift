@@ -49,6 +49,8 @@ final class ClipModel {
             return
         }
         state = .loading
+        Analytics.log(.clipLaunch, slug: slug)
+        Analytics.flush()
         do {
             let remote = try await LiveLinkAPI.fetch(slug: slug)
             let photo = remote.hasPhoto ? (try? await LiveLinkAPI.photo(slug: slug)).flatMap(UIImage.init(data:)) : nil
@@ -63,6 +65,9 @@ final class ClipModel {
     func keep(_ slug: String) {
         ClipHandoff.keep(slug)
         kept = true
+        // Sent now: once the App Store sheet is up, the clip may not get another chance.
+        Analytics.log(.clipKeepIt, slug: slug)
+        Analytics.flush()
     }
 }
 
@@ -147,6 +152,9 @@ struct ClipView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)
+                        .simultaneousGesture(TapGesture().onEnded {
+                            Analytics.log(.shareSheetOpened, slug: slug, source: "clip")
+                        })
                     }
                     .controlSize(.large)
 

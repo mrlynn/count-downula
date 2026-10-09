@@ -106,6 +106,9 @@ struct LiveLinkSection: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .simultaneousGesture(TapGesture().onEnded {
+                    Analytics.log(.shareSheetOpened, slug: link.slug, source: "owner_link")
+                })
 
                 Button(role: .destructive) {
                     confirmingUnpublish = true
@@ -150,6 +153,7 @@ struct LiveLinkSection: View {
         .sheet(item: $sharedURL) { url in
             ActivitySheet(items: [url])
                 .presentationDetents([.medium, .large])
+                .onAppear { Analytics.log(.shareSheetOpened, slug: countdown.extras.link?.slug, source: "new_link") }
         }
     }
 

@@ -31,6 +31,8 @@ export const limits = {
   reportsPerHour: { name: "report-hour", max: 20, windowSeconds: 3_600 },
   /** A wedding might have a few hundred guests join in an hour; a script would have far more. */
   joinsPerCountdownPerHour: { name: "join-slug", max: 500, windowSeconds: 3_600 },
+  /** The app sends a batch at launch and when it goes to the background, so a few an hour at most. */
+  eventBatchesPerHour: { name: "events-hour", max: 60, windowSeconds: 3_600 },
 } satisfies Record<string, Limit>;
 
 export interface Window {

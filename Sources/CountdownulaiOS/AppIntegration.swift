@@ -18,7 +18,7 @@ extension PhoneStore {
         var first: UUID?
         while let draft = waiting.first, entitlements.canAdd(to: countdowns) {
             let countdown = draft.countdown()
-            upsert(countdown)
+            upsert(countdown, source: "screenshot")
             first = first ?? countdown.id
             waiting.removeFirst()
         }
@@ -159,7 +159,7 @@ struct AddCountdownIntent: AppIntent {
             return .result(dialog: "You're at the free limit. Open Count Downcula to unlock more.")
         }
         guard date > Date() else { return .result(dialog: "That date has already passed.") }
-        store.upsert(Countdown(title: title, details: "", targetDate: date))
+        store.upsert(Countdown(title: title, details: "", targetDate: date), source: "siri")
         return .result(dialog: "Added \(title). It's in \(CountdownFormat.relative(from: Date(), to: date)).")
     }
 }

@@ -65,20 +65,29 @@ struct CountdownulaApp: App {
             // Pick up anything CloudKit imported while we were in the background, and
             // start Live Activities for pinned countdowns that entered their final hours.
             if phase == .active {
+                Analytics.appBecameActive()
                 store.reload()
                 // Countdowns confirmed in the share sheet while the app was closed.
                 if let added = store.importSharedDrafts() { appDelegate.router.show(added) }
                 Task {
                     // Countdowns kept in the App Clip before the app was installed.
                     for slug in ClipHandoff.pending {
-                        if await joiner.join(slug, store: store, router: appDelegate.router) { ClipHandoff.done(slug) }
+                        if await joiner.join(slug, store: store, router: appDelegate.router) {
+                            ClipHandoff.done(slug)
+                            // Kept in the clip, then installed: the link brought this person in.
+                            Analytics.log(.installFromLink, slug: slug)
+                        }
                     }
+                    Analytics.flush()
                     await store.refreshShared(force: true)
                     await store.registerPushForShared()
                     await SynchronizedZero.registerAll(store: store)
                 }
             }
-            if phase == .background { SharedRefreshTask.schedule() }
+            if phase == .background {
+                SharedRefreshTask.schedule()
+                Analytics.flush()
+            }
         }
     }
 }

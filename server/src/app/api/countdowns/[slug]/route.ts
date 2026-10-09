@@ -1,5 +1,6 @@
 import { after, NextResponse } from "next/server";
 import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, updateCountdown } from "@/lib/countdowns.ts";
+import { logEvent } from "@/lib/events.ts";
 import { notifyMembers } from "@/lib/notify.ts";
 import { purgeCoffin } from "@/lib/coffin.ts";
 import { purgePool } from "@/lib/pool.ts";
@@ -67,6 +68,7 @@ export async function DELETE(request: Request, { params }: Context) {
   after(() => purgeCoffin(slug).catch(() => {}));
   after(() => purgePool(slug).catch(() => {}));
   after(() => forgetLiveDevices(slug).catch(() => {}));
+  after(() => logEvent("unpublish", request, { slug }));
   after(() => forgetPass(slug).catch(() => {}));
   return new NextResponse(null, { status: 204 });
 }

@@ -98,6 +98,8 @@ final class Entitlements {
                 await transaction.finish()
                 setUnlocked(true)
                 purchaseState = .idle
+                Analytics.log(.purchaseCompleted)
+                Analytics.flush()
             case .success(.unverified):
                 purchaseState = .failed("The App Store couldn't verify this purchase.")
             case .pending:

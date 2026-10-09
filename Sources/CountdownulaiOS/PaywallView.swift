@@ -6,9 +6,18 @@ struct PaywallView: View {
     @Environment(PhoneStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
+    /// What opened it ("free_limit", "footer"), for the metrics dashboard.
+    var reason = "unknown"
+
     private var entitlements: Entitlements { store.entitlements }
 
     var body: some View {
+        content.onAppear {
+            if !entitlements.isUnlocked { Analytics.log(.paywallShown, source: reason) }
+        }
+    }
+
+    private var content: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 28) {

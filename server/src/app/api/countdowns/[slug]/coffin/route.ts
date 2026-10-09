@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { COFFIN_LIMITS, contributions, isOpen, loadCountdownAndRole, toPublic, validateContribution } from "@/lib/coffin.ts";
+import { logEvent } from "@/lib/events.ts";
 import { hashToken } from "@/lib/countdowns.ts";
 import { bearer, errorResponse, readJSON, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
@@ -77,5 +78,6 @@ export async function POST(request: Request, { params }: Context) {
     ...(photoPath ? { photoPath } : {}), createdAt: new Date(), reports: 0,
   };
   await collection.insertOne(doc2);
+  after(() => logEvent("coffin_drop", request, { slug, source: photoPath ? "photo" : "note" }));
   return NextResponse.json(toPublic(doc2, doc2.authorTokenHash), { status: 201 });
 }

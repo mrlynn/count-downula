@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { hashToken, joinCountdown, leaveCountdown, setMemberPushToken } from "@/lib/countdowns.ts";
+import { logEvent } from "@/lib/events.ts";
 import { forgetLiveDevices } from "@/lib/live.ts";
 import { bearer, errorResponse, readJSON, tooManyRequests } from "@/lib/http.ts";
 import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
@@ -18,6 +19,7 @@ export async function POST(request: Request, { params }: Context) {
   if (!verdict.ok) return tooManyRequests(verdict, "joins");
   const joined = await joinCountdown(slug);
   if (!joined) return errorResponse(404, "This countdown isn't shared anymore.");
+  after(() => logEvent("join", request, { slug }));
   return NextResponse.json(joined, { status: 201 });
 }
 
@@ -44,6 +46,7 @@ export async function DELETE(request: Request, { params }: Context) {
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
   const token = bearer(request);
   await leaveCountdown(slug, token);
+  after(() => logEvent("leave", request, { slug }));
   if (token) await forgetLiveDevices(slug, hashToken(token));
   return new NextResponse(null, { status: 204 });
 }

@@ -82,6 +82,7 @@ struct ShareCard: Transferable {
         DataRepresentation(exportedContentType: .png) { card in
             try await MainActor.run {
                 guard let data = card.renderPNG() else { throw CocoaError(.fileWriteUnknown) }
+                Analytics.log(.imageExported, slug: card.countdown.extras.link?.slug ?? card.countdown.extras.subscription?.slug)
                 return data
             }
         }
