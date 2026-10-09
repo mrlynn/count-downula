@@ -67,9 +67,11 @@ final class WatchStore {
     func add(_ countdown: Countdown) {
         repository.upsert(countdown)
         reload()
+        Analytics.log(.countdownCreated, source: "watch", unit: countdown.countUnit)
     }
 
     func delete(_ countdown: Countdown) {
+        Analytics.log(.countdownDeleted, source: Analytics.deletionSource(for: countdown))
         repository.delete(id: countdown.id)
         reload()
     }

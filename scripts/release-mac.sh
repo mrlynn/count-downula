@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Archives the Mac app for the GitHub download, exports it signed with Developer ID (iCloud uses the Production
 # CloudKit environment), notarizes it when NOTARY_PROFILE is set, and zips it for a GitHub release.
+# The screensaver (Count Downcula.saver) is built, signed, notarized and zipped beside it: the Mac App
+# Store doesn't take screensavers, and only this unsandboxed build can feed it countdowns.
 #
 # One-time notarization setup (stores credentials in your keychain):
 #   xcrun notarytool store-credentials countdownula --apple-id <you> --team-id YZ36Z8GSEN
@@ -55,3 +57,24 @@ fi
 
 ditto -c -k --keepParent "$APP" "$ZIP"
 echo "Release ready: $ZIP"
+
+# The screensaver: a plain bundle, signed with Developer ID and the hardened runtime, then notarized.
+SAVER_BUILD=build/saver
+SAVER="$SAVER_BUILD/Release/Count Downcula.saver"
+SAVER_ZIP="build/Count-Downcula-Screensaver-$VERSION.zip"
+rm -rf "$SAVER_BUILD" "$SAVER_ZIP"
+xcodebuild -project Countdownula.xcodeproj -target CountdownculaSaver -configuration Release \
+  SYMROOT="$PWD/$SAVER_BUILD" MARKETING_VERSION="$VERSION" \
+  CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Developer ID Application" DEVELOPMENT_TEAM="$TEAM" \
+  ENABLE_HARDENED_RUNTIME=YES OTHER_CODE_SIGN_FLAGS=--timestamp -quiet build
+codesign --verify --strict "$SAVER"
+
+if [[ -n "${NOTARY_PROFILE:-}" ]]; then
+  ditto -c -k --keepParent "$SAVER" build/notarize-saver.zip
+  xcrun notarytool submit build/notarize-saver.zip --keychain-profile "$NOTARY_PROFILE" --wait
+  xcrun stapler staple "$SAVER"
+  rm build/notarize-saver.zip
+fi
+
+ditto -c -k --keepParent "$SAVER" "$SAVER_ZIP"
+echo "Screensaver ready: $SAVER_ZIP (double-click the .saver to install)"

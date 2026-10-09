@@ -42,6 +42,7 @@ struct WatchCountdownList: View {
                             }
                         }
                     }
+                    WatchPrivacySection()
                 }
             }
             .navigationTitle("Count Downcula")
@@ -365,5 +366,22 @@ private struct WatchUnlockView: View {
         }
         .navigationTitle("Unlimited")
         .task { await entitlements.loadProduct() }
+    }
+}
+
+/// Share Analytics on the watch, at the bottom of the list: the watch has no Settings pane for apps.
+private struct WatchPrivacySection: View {
+    @AppStorage(Analytics.enabledKey) private var shareAnalytics = true
+
+    var body: some View {
+        Section {
+            Toggle("Share Analytics", isOn: $shareAnalytics)
+            if shareAnalytics {
+                Button("Reset Analytics ID") { Analytics.resetInstallID() }
+            }
+        } footer: {
+            Text("Anonymous counts, like how many countdowns get made. No titles, dates or names.")
+        }
+        .onChange(of: shareAnalytics) { _, on in Analytics.setEnabled(on) }
     }
 }
