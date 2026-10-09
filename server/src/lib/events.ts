@@ -17,6 +17,8 @@ export const SERVER_EVENTS = [
   "embed_view", "calendar_subscribed",
   // The host tier (5.6): a Host Pass applied to a countdown; source is production, sandbox or xcode.
   "host_pass_applied",
+  // The big screen (5.9): the web's present page opened, and still open at zero (source "web").
+  "present_view", "present_zero",
 ] as const;
 
 /** Things only the app knows about, sent in batches to POST /api/events. */
@@ -33,6 +35,8 @@ export const CLIENT_EVENTS = [
   // Ways to count (5.8): an edit that switched a countdown to a unit. Creations and exported cards
   // carry the unit too.
   "unit_chosen",
+  // The big screen (5.9): presenting from the app (source "mac" or "tv"), and still presenting at zero.
+  "present_started", "present_zero",
 ] as const;
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];

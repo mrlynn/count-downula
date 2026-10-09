@@ -122,6 +122,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         return true
     }
 
+    /// A TV or projector shows the countdown full screen instead of mirroring the phone. The app's
+    /// own window stays with SwiftUI.
+    func application(_ application: UIApplication, configurationForConnecting session: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(name: nil, sessionRole: session.role)
+        if session.role == .windowExternalDisplayNonInteractive {
+            configuration.delegateClass = ExternalDisplaySceneDelegate.self
+        }
+        return configuration
+    }
+
     /// What widget buttons and Control Center controls do. iOS runs them in the app (in the
     /// background when they don't need to open it), so they go through the same store as everything else.
     private func registerWidgetActions() {

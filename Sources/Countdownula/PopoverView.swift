@@ -5,6 +5,8 @@ struct PopoverActions {
     var edit: (Countdown) -> Void
     var unlock: () -> Void
     var quit: () -> Void
+    /// Opens the countdown full screen, for a TV, a projector or a second display.
+    var present: (Countdown) -> Void
 }
 
 struct PopoverView: View {
@@ -19,7 +21,8 @@ struct PopoverView: View {
                     countdown: countdown,
                     store: store,
                     onBack: { navigation.selectedID = nil },
-                    onEdit: { actions.edit(countdown) }
+                    onEdit: { actions.edit(countdown) },
+                    onPresent: { actions.present(countdown) }
                 )
             } else {
                 CountdownListView(store: store, navigation: navigation, actions: actions)
@@ -52,6 +55,15 @@ private struct CountdownListView: View {
                 }
                 .font(.headline)
                 Spacer()
+                if let next = store.countdowns.featured(at: store.now) {
+                    Button { actions.present(next) } label: {
+                        Image(systemName: "play.display")
+                            .font(.system(size: 13, weight: .semibold))
+                            .frame(width: 26, height: 26)
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Present \(next.title) full screen")
+                }
                 Button(action: actions.add) {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))

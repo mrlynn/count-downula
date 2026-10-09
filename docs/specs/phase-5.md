@@ -360,6 +360,30 @@ Depends on: nothing new for present mode. The screensaver needs the spike.
 
 Measure: present-mode sessions, how many are open at zero, and joins from the room QR code.
 
+Built (October 9, 2026): present mode on the web, full screen on the Mac, and the iPhone's external display. The screensaver spike and the Apple TV app are not started.
+
+- **Web present mode:** `/c/<slug>/present` (custom links work too), opened from a Present button on the live page.
+  - The countdown's style full screen. The digits drop days and then hours as they run out, and a countdown with a unit shows it ("76 sleeps").
+  - The last ten seconds are one huge number in the accent color, beating each second. At zero it reads "It's here!" with CSS confetti.
+  - The Wake Lock API keeps the screen on, and takes the lock again when the tab comes back.
+  - A Full screen button (or the F key), and the cursor hides when it's still.
+  - The corner QR code opens the live link with `?src=present`. It's drawn on the server with `qrcode-generator` (MIT, no dependencies; the only new package).
+  - Not indexed by search.
+- **Mac:** a Present button on each countdown's detail view, and one in the popover header for Next Up.
+  - It opens a full-screen window on a second display when there is one, else the main one. Escape closes it.
+  - The display is kept awake while it's open, and the window follows edits and sync.
+  - It shares `Sources/Shared/PresentView.swift` with the iPhone. The QR code comes from Core Image and shows only for countdowns that have a live link.
+- **iPhone on a TV:** the app gives iOS a scene for the external display role.
+  - A TV connected by AirPlay or a cable shows the presentation instead of mirroring the phone.
+  - The phone stays the remote, with "Show on the Big Screen" on each countdown (Next Up until one is picked), and doesn't lock while connected.
+  - Not runtime-tested: the simulator was running headless, so I checked the view by rendering it at 1920 × 1080 rather than on an attached display.
+- **Measure:**
+  - Server events `present_view` and `present_zero` (source `web`). A page still open at zero sends a beacon, counted only near the real zero.
+  - App events `present_started` (source `mac` or `tv`) and `present_zero`.
+  - Joins from the room are live page views with source `present`.
+  - `/admin/metrics` has a "The big screen" table.
+- **Next:** the screensaver spike (sandbox data access, `legacyScreenSaver` on Sonoma and later, distribution outside the Mac App Store), then Apple TV if present mode shows demand.
+
 ### Considered, not planned
 
 - **AI-generated backgrounds.** DayDrop has them. Apple's Image Playground can do it on device for free. A nice addition to the style editor, but it doesn't move a metric in this phase.

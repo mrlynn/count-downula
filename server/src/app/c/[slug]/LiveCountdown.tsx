@@ -251,6 +251,12 @@ export function LiveCountdown({
                 </Menu>
               </>
             ) : null}
+            {/* The countdown full screen on a TV or projector, with a QR code to join. */}
+            {words ? null : (
+              <Button variant="outlined" size="large" href={`/c/${countdown.slug}/present`}>
+                {t(locale, "present")}
+              </Button>
+            )}
             {walletURL && !words ? (
               <Button variant="outlined" size="large" href={walletURL}>
                 {t(locale, "addToWallet")}

@@ -68,6 +68,7 @@ The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or 
 - **Sealed coffin:** notes and photos people leave stay sealed on the server until zero, then open for everyone at once.
 - **Date pools:** not sure when it happens (a baby, a ship date, the first snow)? Friends guess from the app or the web, and when the owner sets the real date the closest guess wins. Bragging rights only.
 - **Apple Wallet:** add a shared countdown as a pass that comes to the Lock Screen on the day, with a QR code back to the live page. Owner edits update it.
+- **The big screen:** put a countdown on a TV or projector for the party. The live page's **Present** button opens `/c/<slug>/present`: full screen in the countdown's style, with the last ten seconds as one huge number, confetti at zero, the screen kept awake, and a QR code in the corner so the room can join. The Mac app's **Present** (in the popover header and on each countdown) does the same full screen, on a second display if one is connected. An iPhone connected to a TV by AirPlay or a cable shows the countdown there instead of mirroring, and stays the remote.
 - **The Crypt:** a curated list of public countdowns (holidays, eclipses, meteor showers, big games) at [go.countdowncula.com/crypt](https://go.countdowncula.com/crypt) and in the app. Holidays tick to midnight on each viewer's own clock.
 
 ## Apple Watch

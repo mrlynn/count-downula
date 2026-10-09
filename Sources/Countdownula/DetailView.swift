@@ -5,6 +5,7 @@ struct DetailView: View {
     let store: CountdownStore
     let onBack: () -> Void
     let onEdit: () -> Void
+    let onPresent: () -> Void
     @State private var confirmingDelete = false
 
     var body: some View {
@@ -106,6 +107,10 @@ struct DetailView: View {
                     Label(countdown.isPinned ? "Unpin" : "Pin to Menu Bar",
                           systemImage: countdown.isPinned ? "pin.slash" : "pin")
                 }
+                Button(action: onPresent) {
+                    Label("Present", systemImage: "play.display")
+                }
+                .help("Full screen, for a TV, a projector or a second display")
                 Spacer()
                 if confirmingDelete {
                     Button("Cancel") { confirmingDelete = false }
