@@ -12,7 +12,7 @@ struct UpNextWidget: Widget {
         }
         .configurationDisplayName("Up Next")
         .description("Your next few countdowns.")
-        .supportedFamilies([.systemMedium, .systemLarge])
+        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
@@ -77,7 +77,7 @@ private struct UpNextView: View {
     let entry: UpNextEntry
 
     var body: some View {
-        let isLarge = family == .systemLarge
+        let isLarge = family == .systemLarge || family == .systemExtraLarge
         let rows = entry.upcoming(limit: isLarge ? 6 : 3)
 
         VStack(alignment: .leading, spacing: isLarge ? 10 : 6) {
@@ -117,7 +117,7 @@ private struct UpNextView: View {
 
         return HStack(spacing: 10) {
             Group {
-                if let data = entry.thumbnails[countdown.id], let image = UIImage(data: data) {
+                if let data = entry.thumbnails[countdown.id], let image = WidgetImage.image(from: data, maxPixelDimension: 120) {
                     FullColorPhoto(image: image)
                 } else {
                     FangDial(remaining: 1 - countdown.progress(at: entry.date), trackOpacity: 0.35)
@@ -159,13 +159,13 @@ private struct UpNextView: View {
 
 /// Keeps photos in color on iOS 18's tinted Home Screen.
 private struct FullColorPhoto: View {
-    let image: UIImage
+    let image: Image
 
     var body: some View {
-        if #available(iOS 18.0, *) {
-            Image(uiImage: image).resizable().widgetAccentedRenderingMode(.fullColor).scaledToFill()
+        if #available(iOS 18.0, macOS 15.0, *) {
+            image.resizable().widgetAccentedRenderingMode(.fullColor).scaledToFill()
         } else {
-            Image(uiImage: image).resizable().scaledToFill()
+            image.resizable().scaledToFill()
         }
     }
 }

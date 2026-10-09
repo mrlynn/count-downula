@@ -94,6 +94,15 @@ extension Array where Element == Countdown {
             ?? first { $0.countsUp && $0.isPinned }
             ?? upcoming.first
     }
+
+    /// What a Next Up widget steps through with its cycle button: the featured one first, then the
+    /// rest of what's coming, soonest first. `offset` counts presses and wraps around.
+    func featured(at now: Date, offset: Int) -> Countdown? {
+        guard let first = featured(at: now) else { return nil }
+        let rest = filter { $0.isUpcoming(at: now) && $0.id != first.id }.sorted { $0.targetDate < $1.targetDate }
+        let order = [first] + rest
+        return order[((offset % order.count) + order.count) % order.count]
+    }
 }
 
 struct TimeParts {

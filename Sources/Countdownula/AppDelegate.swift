@@ -80,6 +80,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         togglePopover(from: sender, selecting: id)
     }
 
+    /// A desktop widget was clicked: `countdownula://countdown/<id>` opens that countdown in the popover.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let id = urls.lazy.compactMap(CountdownLink.id(from:)).first, let button = mainItem.button else { return }
+        if popover.isShown { popover.performClose(nil) }
+        togglePopover(from: button, selecting: id)
+    }
+
     private func togglePopover(from button: NSStatusBarButton, selecting id: UUID?) {
         if popover.isShown {
             popover.performClose(nil)

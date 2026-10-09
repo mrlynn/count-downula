@@ -15,7 +15,7 @@ xcodegen generate --quiet
 OVERRIDES=()
 if [[ "${DIRECT:-0}" == "1" ]]; then
   OVERRIDES=(SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DISTRIBUTION'
-             CODE_SIGN_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements)
+             MAC_APP_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements)
 fi
 xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration "$CONFIG" \
   -derivedDataPath .build/xcode -allowProvisioningUpdates ${OVERRIDES[@]+"${OVERRIDES[@]}"} -quiet build

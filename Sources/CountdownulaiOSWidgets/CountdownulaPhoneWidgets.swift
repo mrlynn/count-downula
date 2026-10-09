@@ -7,6 +7,10 @@ struct CountdownulaPhoneWidgets: WidgetBundle {
         CountdownWidget()
         UpNextWidget()
         CountdownLiveActivity()
+        if #available(iOS 18.0, *) {
+            QuickTimerControl()
+            NextUpControl()
+        }
     }
 }
 
@@ -28,7 +32,8 @@ struct CountdownWidget: Widget {
         .configurationDisplayName("Countdown")
         .description("Time left until one of your countdowns.")
         .supportedFamilies([
-            .systemSmall, .systemMedium, .systemLarge,
+            // Extra large shows up on iPad.
+            .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge,
             .accessoryCircular, .accessoryRectangular, .accessoryInline,
         ])
     }
@@ -40,25 +45,10 @@ private struct CountdownWidgetView: View {
 
     var body: some View {
         switch family {
-        case .systemSmall, .systemMedium, .systemLarge:
+        case .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge:
             HomeCountdownView(entry: entry)
         default:
             ComplicationView(entry: entry)
         }
-    }
-}
-
-/// The countdown's photo, scene, gradient or color under a scrim. StandBy and tinted Home Screens
-/// remove it, so the views on top switch to plain white text there.
-struct WidgetBackdrop: View {
-    var photo: Data?
-    var style: CountdownStyle = .default
-
-    var body: some View {
-        let image = photo.flatMap { ImageDownsampling.image(from: $0, maxPixelDimension: 700) }
-        StyledBackdrop(style: style, photo: image.map { Image(uiImage: $0) })
-            .overlay {
-                if image != nil || style.background != .automatic { StyleScrim(style: style) }
-            }
     }
 }

@@ -99,3 +99,18 @@ final class RepeatAndImportTests: XCTestCase {
         XCTAssertEqual(CountdownImport.split(picked, room: nil).heldBack.count, 0)
     }
 }
+
+final class WidgetCycleTests: XCTestCase {
+    func testNextUpStepsFromTheFeaturedOneThroughWhatsComingAndWraps() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        var pinned = Countdown(title: "Pinned", details: "", targetDate: now + 9 * 86_400)
+        pinned.isPinned = true
+        let soon = Countdown(title: "Soon", details: "", targetDate: now + 86_400)
+        let later = Countdown(title: "Later", details: "", targetDate: now + 3 * 86_400)
+        let done = Countdown(title: "Done", details: "", targetDate: now - 86_400)
+        let all = [later, done, soon, pinned]
+        XCTAssertEqual((0...4).map { all.featured(at: now, offset: $0)?.title },
+                       ["Pinned", "Soon", "Later", "Pinned", "Soon"])
+        XCTAssertNil([done].featured(at: now, offset: 2))
+    }
+}

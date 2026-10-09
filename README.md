@@ -16,6 +16,7 @@ The app shows up as **Count Downcula** everywhere you see it. The project, targe
 </p>
 
 - Click the fanged timer in the menu bar to see **Upcoming** and **Past** countdowns.
+- **Desktop widgets:** the Countdown widget (small to extra large) and the Up Next list, on the desktop or in Notification Center. Click one to open that countdown.
 - Each countdown has a **title**, **description**, **photo**, and either a target **date & time**, a **timer** duration, or a **start date to count up from** (time since quitting smoking, getting sober, meeting someone).
 - **Milestones** mark the moments along the way ("Halfway there", "1 week to go", "90 days"), each with its own notification and, on iPhone, a burst of confetti.
 - **Pin** any countdown and it gets its own live menu bar item (photo thumbnail + title + time left). Click it to jump straight to its details.
@@ -48,6 +49,9 @@ The iPhone (and iPad) app lists your countdowns with the next one up as a full-b
 | StandBy | The small Countdown widget, drawn to read on black |
 | Lock Screen | Circular, rectangular and inline widgets, the same designs as the watch complications |
 | Live Activity | Lock Screen banner and Dynamic Island with a live timer and progress ring |
+| Control Center | **Quick Timer** (pick its length) starts a timer on the Lock Screen without opening the app, and **Next Up** shows your next countdown (iOS 18) |
+
+Medium and larger Countdown widgets have buttons that work without opening the app: put it on the Lock Screen in its final 8 hours, pin or unpin it, and on a Next Up widget, step to the next countdown. iPad adds an extra-large size.
 
 The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or a countdown you pick. Tapping any widget or Live Activity opens that countdown.
 

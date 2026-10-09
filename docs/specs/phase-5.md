@@ -191,6 +191,22 @@ Depends on: nothing new.
 
 Measure: control and widget taps, actions taken from notifications, and Mac widget installs.
 
+Built, remaining surfaces (October 9, 2026):
+- **Interactive widgets:** medium, large and extra-large Countdown widgets get small buttons in their header.
+  - Show on Lock Screen, in the final 8 hours.
+  - Pin or Unpin.
+  - Next, on Next Up widgets, which steps through what's coming and wraps around.
+  - Pin and Lock Screen are `LiveActivityIntent`s, so iOS runs them in the app's process, where the store is; the app registers `WidgetActions.handler` at launch.
+  - Next only moves an offset in the App Group (`WidgetCycle`), shared by every Next Up widget on the device.
+- **Control Center controls (iOS 18):** Quick Timer, with a configurable length, starts a timer and its Live Activity without opening the app. At the free limit it fails with a message instead. Next Up shows the featured countdown and its time left, and opens it. The app reloads the control whenever countdowns change.
+- **Extra-large widget:** Countdown and Up Next both support `systemExtraLarge` on iPad and the Mac.
+- **Mac widgets:** a new `CountdownulaMacWidgets` extension draws the Countdown and Up Next widgets with the iPhone's views.
+  - Photos now decode through ImageIO (`WidgetImage`), so the views no longer need UIKit.
+  - The menu bar app writes the widget snapshot to the App Group `YZ36Z8GSEN.com.countdownula.app`, named with the team ID as the Mac requires.
+  - A click opens that countdown in the popover, through a new `countdownula://` URL type.
+  - The release scripts now pass `MAC_APP_ENTITLEMENTS` instead of `CODE_SIGN_ENTITLEMENTS`, so the direct build's entitlements reach only the app and the extension stays sandboxed.
+- **Events:** taps log `widget_action` with source pin, lockscreen, quick_timer or open.
+
 ### 5.6 The host tier (size L)
 
 What it is: pricing that charges the people who get the most from sharing.

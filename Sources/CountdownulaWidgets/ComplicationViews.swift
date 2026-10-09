@@ -8,6 +8,8 @@ struct CountdownEntry: TimelineEntry {
     var thumbnail: Data?
     /// Display-size photo for Home Screen widgets (iPhone only).
     var photo: Data?
+    /// Following Next Up rather than a chosen countdown, so it can offer to cycle.
+    var isNextUp = false
 
     static var sample: CountdownEntry {
         let now = Date()
@@ -130,6 +132,7 @@ struct RectangularComplication: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
+                #if canImport(UIKit)
                 if showsPhoto, let data = entry.thumbnail, let image = UIImage(data: data) {
                     Image(uiImage: image)
                         .resizable()
@@ -137,6 +140,7 @@ struct RectangularComplication: View {
                         .frame(width: 42, height: 42)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 }
+                #endif
             }
         } else {
             HStack(spacing: 6) {
