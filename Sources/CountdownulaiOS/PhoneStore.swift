@@ -220,6 +220,7 @@ final class PhoneStore {
             case .silent: content.sound = nil
             }
             content.userInfo = ["countdownID": item.countdownID.uuidString]
+            if let category = item.category { content.categoryIdentifier = category.rawValue }
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
             center.add(UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger))
         }

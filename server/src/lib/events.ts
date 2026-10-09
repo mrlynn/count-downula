@@ -21,6 +21,8 @@ export const CLIENT_EVENTS = [
   // After zero (5.2). A deletion's source says when: "before_zero", "after_zero_30d" (within 30 days
   // of zero) or "after_zero_later".
   "countdown_finished", "keep_counting", "countdown_deleted",
+  // A button under an alert (5.5): source is lockscreen, share, recap or coffin.
+  "notification_action",
 ] as const;
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];

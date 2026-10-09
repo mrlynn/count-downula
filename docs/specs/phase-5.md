@@ -141,6 +141,17 @@ What it is: put Count Downcula in the places iOS and macOS added that the app ha
 
 The notification actions are the cheapest and probably the most valuable here, because every milestone alert already reaches people and today offers no next step.
 
+Built, notification actions (October 9, 2026):
+- **Buttons:** each alert the iPhone schedules gets a category, and long-pressing it shows the matching buttons.
+  - Milestones in the final 8 hours: Put on Lock Screen and Share.
+  - Other milestones: Share.
+  - Zero: Share the Recap, plus Open the Coffin on shared countdowns that have a coffin.
+  - Anniversaries: Share the Recap.
+  - Timers, birthdays and sunrises get no buttons at zero, since they roll on.
+- **What a tap does:** every button opens the app. Put on Lock Screen starts the Live Activity, because ActivityKit needs the app in the foreground. Share renders the card, or the recap after zero, into the share sheet. Open the Coffin opens the reveal.
+- **Events:** each tap logs `notification_action` with the button as its source.
+- **Watch:** nothing new. These actions need the phone. When a forwarded alert shows them on the watch, tapping one just opens the watch app.
+
 Mac widgets matter more than the draft first said. macOS Sonoma can show iPhone widgets on the desktop, but only when the iPhone is nearby on the same Apple Account, and tapping one asks you to open the app on the iPhone. A native widget works for Mac-only users and opens the menu bar app. The only well-reviewed competitor with native Mac widgets is Countdowns (Shayes), and we already have the Mac app, the widget views and the snapshot.
 
 Depends on: nothing new.

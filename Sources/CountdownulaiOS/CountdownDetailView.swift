@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CountdownDetailView: View {
     @Environment(PhoneStore.self) private var store
+    @Environment(Router.self) private var router
     @Environment(\.dismiss) private var dismiss
     let id: UUID
     let onEdit: (Countdown) -> Void
@@ -11,6 +12,8 @@ struct CountdownDetailView: View {
     @State private var activityRevision = 0
     /// After zero, a shared countdown's people, for the recap section and card.
     @State private var recap: Recap?
+    /// The card a notification's Share button made, waiting in the share sheet.
+    @State private var sharedCard: URL?
     /// Lives in the store: saving the celebration reloads the store, which can rebuild this view.
     private var celebration: Celebration? {
         store.celebration?.countdownID == id ? store.celebration : nil
@@ -99,6 +102,16 @@ struct CountdownDetailView: View {
                 if store.celebration?.id == shown.id { store.celebration = nil }
             }
             .sensoryFeedback(.success, trigger: celebration?.id) { _, new in new != nil }
+            // "Share" or "Share the Recap" under an alert.
+            .onChange(of: router.pending, initial: true) { _, pending in
+                guard pending == .share(id) else { return }
+                router.pending = nil
+                Task { await shareCard(of: countdown) }
+            }
+            .sheet(item: $sharedCard) { url in
+                ActivitySheet(items: [url])
+                    .presentationDetents([.medium, .large])
+            }
             .navigationTitle(countdown.kind == .timer ? "Timer" : countdown.countsUp ? "Count Up" : "Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -198,6 +211,26 @@ struct CountdownDetailView: View {
         }
         .controlSize(.large)
         .padding(.top, 4)
+    }
+
+    // MARK: - Sharing from a notification
+
+    /// Renders the share card (the recap, after zero) to a file for the share sheet. ShareLink can't
+    /// be opened from code, so this is the same card by another route.
+    private func shareCard(of countdown: Countdown) async {
+        let now = Date()
+        if recap == nil, countdown.hasReachedZero(at: now),
+           let slug = countdown.extras.link?.slug ?? countdown.extras.subscription?.slug {
+            recap = (try? await LiveLinkAPI.fetch(slug: slug))?.recap
+        }
+        let card = ShareCard(countdown: countdown, photo: store.image(for: countdown), now: now, recap: recap)
+        guard let png = card.renderPNG() else { return }
+        let name = countdown.title.components(separatedBy: CharacterSet.alphanumerics.inverted).filter { !$0.isEmpty }.joined(separator: "-")
+        let url = URL.temporaryDirectory.appending(path: "\(name.isEmpty ? "Countdown" : name).png")
+        guard (try? png.write(to: url)) != nil else { return }
+        Analytics.log(.imageExported, slug: countdown.extras.link?.slug ?? countdown.extras.subscription?.slug,
+                      source: countdown.hasReachedZero(at: now) ? "recap" : "notification")
+        sharedCard = url
     }
 
     // MARK: - Celebrations

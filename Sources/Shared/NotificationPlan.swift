@@ -11,6 +11,21 @@ enum NotificationPlan {
         case silent
     }
 
+    /// Which buttons an alert offers when it's long-pressed. The iPhone registers the actions (see
+    /// `NotificationActions`); other devices schedule the same items without them.
+    enum Category: String, CaseIterable {
+        /// A milestone in the final 8 hours: Put on Lock Screen, Share.
+        case soon = "countdown.soon"
+        /// Any other milestone: Share.
+        case milestone = "countdown.milestone"
+        /// A countdown reaching zero: Share the Recap.
+        case done = "countdown.done"
+        /// A shared countdown reaching zero: Open the Coffin, Share the Recap.
+        case doneCoffin = "countdown.done.coffin"
+        /// A year on: Share the Recap.
+        case anniversary = "countdown.anniversary"
+    }
+
     struct Item: Hashable {
         let identifier: String
         let countdownID: UUID
@@ -18,6 +33,7 @@ enum NotificationPlan {
         let title: String
         let body: String
         var sound: Sound = .standard
+        var category: Category?
     }
 
     /// The Count's final ten seconds, ending on the chime at zero. Ships as an original placeholder
@@ -55,7 +71,8 @@ enum NotificationPlan {
             date: countdown.targetDate,
             title: "\(speaks ? CountLines.emoji : completionEmoji(for: countdown)) \(countdown.title)",
             body: speaks ? CountLines.completion(for: countdown)
-                : countdown.details.isEmpty ? "The countdown is complete!" : countdown.details
+                : countdown.details.isEmpty ? "The countdown is complete!" : countdown.details,
+            category: completionCategory(for: countdown)
         )
     }
 
@@ -77,7 +94,8 @@ enum NotificationPlan {
             countdownID: countdown.id,
             date: scheduled.date,
             title: "\(scheduled.milestone.displayEmoji) \(countdown.title)",
-            body: speaks ? CountLines.milestone(scheduled, of: countdown) : scheduled.milestone.title
+            body: speaks ? CountLines.milestone(scheduled, of: countdown) : scheduled.milestone.title,
+            category: milestoneCategory(at: scheduled.date, of: countdown)
         )
     }
 
@@ -93,10 +111,27 @@ enum NotificationPlan {
                 countdownID: countdown.id,
                 date: date,
                 title: "🦇 \(countdown.title)",
-                body: years == 1 ? "A year ago today. Look back, and share how it went." : "\(years) years ago today. Look back, and share how it went."
+                body: years == 1 ? "A year ago today. Look back, and share how it went." : "\(years) years ago today. Look back, and share how it went.",
+                category: .anniversary
             )
         }
         return nil
+    }
+
+    /// Zero on a date that comes and goes gets the recap; a shared one with a coffin opens it too.
+    /// Timers, birthdays and sunrises roll on, so there's nothing to look back on.
+    static func completionCategory(for countdown: Countdown) -> Category? {
+        guard countdown.kind == .event, !countdown.extras.repeatsYearly, countdown.extras.auto == nil else { return nil }
+        let hasCoffin = countdown.extras.link != nil
+            || (countdown.extras.subscription != nil && countdown.extras.subscription?.isPublic != true)
+        return hasCoffin ? .doneCoffin : .done
+    }
+
+    /// A milestone close enough to zero that the Lock Screen can follow it from there, or any other.
+    static func milestoneCategory(at date: Date, of countdown: Countdown) -> Category {
+        guard !countdown.countsUp else { return .milestone }
+        let lead = countdown.targetDate.timeIntervalSince(date)
+        return lead > 0 && lead <= 8 * 3_600 ? .soon : .milestone
     }
 
     private static func completionEmoji(for countdown: Countdown) -> String {

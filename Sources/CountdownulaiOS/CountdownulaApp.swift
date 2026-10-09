@@ -97,6 +97,8 @@ struct CountdownulaApp: App {
 @Observable
 final class Router {
     var path: [UUID] = []
+    /// Set by a notification action ("Share", "Open the Coffin"); the countdown's screen does it and clears it.
+    var pending: PendingAction?
 
     func show(_ id: UUID) {
         path = [id]
@@ -110,6 +112,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        NotificationActions.register()
         SharedRefreshTask.register { [weak self] in await self?.store?.refreshShared() }
         // CloudKit pushes wake the app so widgets and alerts stay current while it's closed.
         application.registerForRemoteNotifications()
@@ -141,6 +144,23 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         guard let raw = response.notification.request.content.userInfo["countdownID"] as? String,
               let id = UUID(uuidString: raw) else { return }
-        await MainActor.run { router.show(id) }
+        let action = NotificationActions.Action(rawValue: response.actionIdentifier)
+        await MainActor.run {
+            switch action {
+            case .lockScreen:
+                // The app is in the foreground now, so ActivityKit will start it.
+                if let countdown = store?.countdown(id: id) { LiveActivities.start(countdown) }
+            case .share, .recap:
+                router.pending = .share(id)
+            case .coffin:
+                router.pending = .openCoffin(id)
+            case nil:
+                break
+            }
+            router.show(id)
+            if let action {
+                Analytics.log(.notificationAction, source: action.rawValue)
+            }
+        }
     }
 }
