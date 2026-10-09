@@ -11,6 +11,7 @@ import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
 import { reading } from "@/lib/units.ts";
 import CoffinPanel from "./CoffinPanel.tsx";
+import { OwnerBar } from "./OwnerBar.tsx";
 import PoolPanel from "./PoolPanel.tsx";
 
 const DOWNLOAD = "https://www.countdowncula.com";
@@ -63,6 +64,7 @@ export function LiveCountdown({
   recap = null,
   calendarURL = null,
   locale = "en",
+  emailEnabled = false,
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
@@ -78,6 +80,8 @@ export function LiveCountdown({
   calendarURL?: string | null;
   /** The viewer's language, from Accept-Language. */
   locale?: Locale;
+  /** Edit links can be emailed (a verified sender is set up). */
+  emailEnabled?: boolean;
 }) {
   const [calendarMenu, setCalendarMenu] = useState<HTMLElement | null>(null);
   const [embedOpen, setEmbedOpen] = useState(false);
@@ -112,6 +116,7 @@ export function LiveCountdown({
 
   return (
     <Box component="main" sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+      <OwnerBar slug={countdown.slug} locale={locale} emailEnabled={emailEnabled} />
       <Box
         sx={{
           position: "relative",
@@ -265,6 +270,12 @@ export function LiveCountdown({
             {countdown.host ? null : (
               <Button variant={words ? "contained" : "outlined"} size="large" href={DOWNLOAD}>
                 {t(locale, "getTheApp")}
+              </Button>
+            )}
+            {/* No iPhone? Make one right here. */}
+            {countdown.host ? null : (
+              <Button variant="outlined" size="large" href="/new?src=live">
+                {t(locale, "makeYourOwn")}
               </Button>
             )}
           </Stack>

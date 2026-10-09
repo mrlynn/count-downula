@@ -19,6 +19,9 @@ export const SERVER_EVENTS = [
   "host_pass_applied",
   // The big screen (5.9): the web's present page opened, and still open at zero (source "web").
   "present_view", "present_zero",
+  // Web create: the /new editor opened (source "live" from a live page's Make your own). Countdowns
+  // made there are publish events from the web platform.
+  "new_view",
 ] as const;
 
 /** Things only the app knows about, sent in batches to POST /api/events. */
