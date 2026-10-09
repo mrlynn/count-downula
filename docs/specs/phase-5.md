@@ -109,6 +109,25 @@ Depends on: nothing new for the first three. Web create would need its own spec.
 
 Measure: web coffin drops, calendar subscriptions, embed views and click-throughs, and non-iPhone participants per shared countdown.
 
+Built (October 9, 2026), everything except web create:
+- **Web coffin:** the live page has a coffin panel. A browser's first drop gets a guest key (the server keeps only its hash), and the key lets the guest see and remove their own drops before zero. At zero, guests open the coffin along with the owner and members. Guests can report, and the same remove and review flow applies. Guest drops are limited to 6 an hour per client and 100 an hour per countdown.
+- **Calendar feeds:** `/c/<slug>/calendar.ics` is the feed.
+  - A countdown to midnight in the owner's zone becomes an all-day event. Floating holidays stay floating.
+  - Count-ups repeat yearly, and pools that haven't settled say "(estimate)".
+  - The feed asks subscribers to refresh hourly.
+  - The page's Add to Calendar offers webcal:// (Apple and Outlook), a Google Calendar subscription, and a download.
+  - Subscriptions are counted by salted address hash and forgotten after 45 days. Google fetches for many people from shared addresses, so its count runs low.
+- **Embeds:** `/embed/<slug>` and `/embed.js`.
+  - The countdown can use its own style, or a dark or light theme.
+  - At zero it can show a message, the recap, a count-up, or nothing.
+  - Each embed carries a "Made with Count Downcula" link back to the live page (`?src=embed`).
+  - Plain count-ups can't be embedded.
+  - Only embeds may be framed by other sites; every other page now sends `frame-ancestors 'self'`.
+  - The live page has "Embed on your site", and the app's live link section has Copy Embed Code.
+  - Embed views count into `stats.embedViews` and an `embed_view` event that records the embedding site's name.
+- **Not built yet:** redirects at zero wait for the host tier.
+- **Dashboard:** a new Web Loop section.
+
 ### 5.4 Calendar import and more repeats (size M)
 
 What it is: start people with the dates they already have, and give them countdowns they check every week instead of a few times a year. Both are table stakes. Countdowns (Shayes), Pretty Progress, Time Until and Outside all import from Calendar, and most competitors repeat more often than yearly.

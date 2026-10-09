@@ -73,6 +73,7 @@ export default async function CountdownPage({ params, searchParams }: Props) {
       memberCount={await memberCount(slug)}
       sealed={isOpen(doc) ? 0 : await sealedCount(slug)}
       recap={await loadRecap(doc)}
+      calendarURL={`${publicOrigin()}/c/${slug}/calendar.ics`}
       walletURL={walletConfigured() && doc.kind !== "countUp" ? `/c/${slug}/pass` : null}
     />
   );

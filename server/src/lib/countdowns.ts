@@ -19,7 +19,7 @@ export interface CountdownDoc {
   milestones: unknown[];
   hasPhoto: boolean;
   visibility: "link" | "public";
-  stats: { views: number };
+  stats: { views: number; embedViews?: number };
   /**
    * A floating local time ("2027-01-01T00:00:00"): each viewer counts to that moment on their own
    * clock. For these, targetDate holds the same wall-clock time read as UTC and timeZone is "UTC",
@@ -183,6 +183,11 @@ export async function getPhoto(slug: string): Promise<Buffer | null> {
 export async function recordView(slug: string) {
   const { countdowns } = await collections();
   await countdowns.updateOne({ slug }, { $inc: { "stats.views": 1 } });
+}
+
+export async function recordEmbedView(slug: string) {
+  const { countdowns } = await collections();
+  await countdowns.updateOne({ slug }, { $inc: { "stats.embedViews": 1 } });
 }
 
 export type OwnerResult = "ok" | "not-found" | "forbidden";
