@@ -66,7 +66,7 @@ export default async function MetricsPage() {
     sources("paywall_shown"),
     sourceCounts([
       "countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported",
-      "page_view", "calendar_subscribed", "present_started", "present_zero",
+      "page_view", "calendar_subscribed", "present_started", "present_zero", "new_view",
     ]),
     unitCounts(["countdown_created", "unit_chosen", "image_exported", "video_exported"]),
   ]);
@@ -250,6 +250,9 @@ export default async function MetricsPage() {
                 ["…in Google Calendar", bySource("calendar_subscribed", "google")],
                 ["…in Apple Calendar", bySource("calendar_subscribed", "apple")],
                 ["Embed views", count("embed_view")],
+                ["Web editor opened", count("new_view")],
+                ["…from a live page's Make your own", bySource("new_view", "live")],
+                ["Countdowns made on the web", last30.get("publish")?.get("web") ?? 0],
                 ["Clicks from embeds to the live page", bySource("page_view", "embed")],
               ].map(([label, n]) => (
                 <TableRow key={label as string}>

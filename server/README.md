@@ -21,6 +21,10 @@ Built with Next.js (App Router), Material UI and MongoDB. See `docs/specs/viral-
 | `POST /api/countdowns/:slug/host` | Applies a Host Pass, `{ transaction }` (StoreKit 2's signed JWS), checked against Apple's certificate chain. Owner only |
 | `PUT /api/countdowns/:slug/alias` | Sets a hosted countdown's custom link, `{ alias }`. The proxy maps `/c/<alias>`, `/embed/<alias>` and `/api/countdowns/<alias>/…` to the real slug |
 | `POST /api/countdowns/:slug/coffin/:id/video` | Adds a short video (raw MP4 under 4.3 MB) to your own note on a hosted countdown. `GET` returns it with the same rules as photos, which take `?i=` for a note's second, third or fourth photo |
+| `GET /new` | Make a countdown in the browser (web create). It publishes through `POST /api/countdowns` and keeps the owner token in the browser's `localStorage` |
+| `GET /c/:slug/edit` | Edit or delete with the owner token this browser holds, or one an emailed link brings in its fragment (`#t=<token>`, never sent to the server) |
+| `POST /api/countdowns/:slug/edit-link` | Emails the owner an edit link, `{ email }`, `Authorization: Bearer <ownerToken>`. The address is used once and not stored. Answers `503` until a sending domain is set up |
+| `GET /c/:slug/present` | The countdown full screen for a TV or projector, with a QR code to join |
 | `POST /api/events` | A batch of app-side events, `{ installId, platform, appVersion, events: [{ name, at, slug?, source? }] }`. See Metrics below |
 | `GET /admin/metrics` | The metrics dashboard, behind HTTP Basic auth with `METRICS_PASSWORD` |
 
@@ -59,6 +63,7 @@ TEST_RUNNER_LINK_SERVER=http://localhost:4300 xcodebuild test -project Countdown
 2. Create a Vercel project `countdowncula-server` from this repo with Root Directory `server`.
 3. Set `MONGODB_URI`, `MONGODB_DB=countdowncula`, `PUBLIC_ORIGIN=https://go.countdowncula.com` and `RATE_LIMIT_SALT` (any long random string; it keeps the hashed client addresses from being guessable).
    For the metrics dashboard, set `METRICS_PASSWORD` (16 characters or more, any user name). Without it, `/admin/metrics` stays shut.
+   For emailed edit links on countdowns made on the web, set `RESEND_API_KEY` and `EMAIL_FROM` (an address on a domain verified in Resend). Without them, the editor doesn't offer the email, and only the browser that made a countdown can edit it.
    For instant updates to members, also set `APNS_KEY_ID`, `APNS_TEAM_ID` (`YZ36Z8GSEN`) and `APNS_PRIVATE_KEY` (the whole `.p8` file, mark it Sensitive). Without them the server skips pushes and members catch up when their app refreshes.
 4. Add the domain `go.countdowncula.com` to the project and a `CNAME go → cname.vercel-dns.com` record.
 
@@ -83,6 +88,7 @@ Writes are counted in MongoDB (`rateLimits`, fixed windows, removed by a TTL ind
 | Edit | 120 an hour per client, 60 an hour per countdown |
 | Unpublish | 60 an hour per client |
 | Event batches | 60 an hour per client |
+| Emailed edit links | 5 an hour per client, 10 a day per countdown |
 | Coffin drops from the web (guests) | 6 an hour per client and 100 an hour per countdown, on top of the coffin's own limits |
 
 Over a limit, the API answers `429` with `Retry-After` and a message the app shows as is. Reading pages and preview images isn't limited; the CDN caches those. The limits live in `src/lib/rateLimit.ts`. Vercel Firewall rules can sit in front of this for floods, but they aren't needed to launch.

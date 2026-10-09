@@ -36,6 +36,9 @@ export const limits = {
   joinsPerCountdownPerHour: { name: "join-slug", max: 500, windowSeconds: 3_600 },
   /** The app sends a batch at launch and when it goes to the background, so a few an hour at most. */
   eventBatchesPerHour: { name: "events-hour", max: 60, windowSeconds: 3_600 },
+  /** Emailed edit links for web-made countdowns: a few for typos, not a mail cannon. */
+  editLinksPerHour: { name: "edit-link-hour", max: 5, windowSeconds: 3_600 },
+  editLinksPerCountdownPerDay: { name: "edit-link-slug", max: 10, windowSeconds: 86_400 },
 } satisfies Record<string, Limit>;
 
 export interface Window {

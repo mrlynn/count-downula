@@ -7,6 +7,7 @@ import { loadRecap, recapText } from "@/lib/recap.ts";
 import { pickLocale, t } from "@/lib/i18n.ts";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
 import { walletConfigured } from "@/lib/wallet.ts";
+import { editLinksEnabled } from "@/lib/email.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
 import { linkFor, publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
@@ -72,6 +73,7 @@ export default async function CountdownPage({ params, searchParams }: Props) {
   return (
     <LiveCountdown
       locale={pickLocale(h.get("accept-language"))}
+      emailEnabled={editLinksEnabled()}
       countdown={toPublic(doc)}
       photoURL={photoURL}
       serverNow={Date.now()}

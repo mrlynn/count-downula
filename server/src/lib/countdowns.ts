@@ -216,6 +216,11 @@ export async function recordEmbedView(slug: string) {
 
 export type OwnerResult = "ok" | "not-found" | "forbidden";
 
+/** Whether a token is this countdown's owner token. */
+export async function isOwner(slug: string, token: string | null): Promise<OwnerResult> {
+  return authorize(slug, token);
+}
+
 async function authorize(slug: string, token: string | null): Promise<OwnerResult> {
   const doc = await getCountdown(slug);
   if (!doc) return "not-found";

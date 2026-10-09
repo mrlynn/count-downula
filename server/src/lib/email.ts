@@ -35,3 +35,41 @@ export async function sendReportEmail(report: ReportEmail, env = process.env): P
   if (!response.ok) console.error(`Report email failed (${response.status}): ${await response.text()}`);
   return response.ok;
 }
+
+/**
+ * Edit links go out only with a verified sending domain (EMAIL_FROM, or REPORT_FROM): Resend's
+ * shared test sender can only write to the account's own address.
+ */
+export function editLinksEnabled(env = process.env): boolean {
+  return !!env.RESEND_API_KEY && !!(env.EMAIL_FROM ?? env.REPORT_FROM);
+}
+
+export interface EditLinkEmail {
+  to: string;
+  subject: string;
+  /** Paragraphs of plain text, already in the reader's language. */
+  lines: string[];
+  link: string;
+  linkLabel: string;
+}
+
+/** The link that lets a web-made countdown be edited from another browser. The address isn't stored. */
+export async function sendEditLinkEmail(mail: EditLinkEmail, env = process.env): Promise<boolean> {
+  if (!editLinksEnabled(env)) return false;
+  const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const html = mail.lines.map((line) => `<p>${escape(line)}</p>`).join("")
+    + `<p><a href="${escape(mail.link)}">${escape(mail.linkLabel)}</a></p>`;
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      from: env.EMAIL_FROM ?? env.REPORT_FROM,
+      to: [mail.to],
+      subject: mail.subject,
+      html,
+      text: [...mail.lines, mail.link].join("\n\n"),
+    }),
+  });
+  if (!response.ok) console.error(`Edit link email failed (${response.status}): ${await response.text()}`);
+  return response.ok;
+}

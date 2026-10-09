@@ -126,6 +126,15 @@ Built (October 9, 2026), everything except web create:
   - The live page has "Embed on your site", and the app's live link section has Copy Embed Code.
   - Embed views count into `stats.embedViews` and an `embed_view` event that records the embedding site's name.
 - **Not built yet:** redirects at zero wait for the host tier.
+- **Web create (built October 9, 2026; decision 3 below):** `go.countdowncula.com/new` makes a countdown in any browser.
+  - The form has a title, date and time in a time zone (the browser's by default), details, a look and a "Count in" unit.
+  - The look is one of the 22 scenes, 8 of the app's gradients, or a photo, which the browser resizes to the server's 400 KB.
+  - It publishes through the same `POST /api/countdowns` as the app, so web-made countdowns are ordinary live links: people join them in the app, and the coffin, calendar feed, embed and present mode all work. Styles are the app's own JSON, so they look the same in the app.
+  - The owner token stays in the browser's localStorage. The live page shows that browser an owner bar with Edit, and `/c/<slug>/edit` edits or deletes.
+  - "Email me an edit link" sends `/c/<slug>/edit#t=<token>`, with the token in the fragment so it never reaches a server log. The address isn't stored. It needs `RESEND_API_KEY` and `EMAIL_FROM` on a verified domain, and without them the option isn't shown.
+  - Live pages get a "Make your own" button (`/new?src=live`), except hosted ones.
+  - Measured with `new_view` (and its source) and publishes from the web platform, in the dashboard's web loop section.
+  - Not in version one: count-ups, timers, date pools and milestones on the web, and handing a web-made countdown over to the app so it can be edited there.
 - **Dashboard:** a new Web Loop section.
 
 ### 5.4 Calendar import and more repeats (size M)
@@ -427,7 +436,7 @@ These are small and unblock features that are already built. Confirm the APNs ke
 
 1. Analytics: everything in Atlas, or TelemetryDeck for app events?
 2. Do Calendar and Contacts imports count toward the free limit?
-3. Build web create now, or keep creation in the app?
+3. ~~Build web create now, or keep creation in the app?~~ Built now (October 9, 2026).
 4. Host tier: Host Pass, subscription, or both? And does Unlimited stay at $2.99?
 5. Which languages go first?
 6. Who records the Count's voice?
