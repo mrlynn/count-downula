@@ -442,7 +442,7 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
 
 ## Carried over from phases 1 to 4
 
-These are small and unblock features that are already built. Confirm the APNs key is set on Vercel, since silent pushes, synchronized zero and the pool settle push all wait on it. Record the Count's voice to replace the placeholder. Get a Meta app ID to turn on the Instagram Stories handoff. Automate the yearly reseed of crypt holidays, before New Year's Eve if possible, since every holiday drops off a day after zero.
+These are small and unblock features that are already built. Confirm the APNs key is set on Vercel, since silent pushes, synchronized zero and the pool settle push all wait on it. Record the Count's voice to replace the placeholder. Get a Meta app ID to turn on the Instagram Stories handoff. Automate the yearly reseed of crypt holidays, before New Year's Eve if possible, since every holiday drops off a day after zero. *Done October 9, 2026:* `server/src/lib/holidays.ts` holds each holiday and fun day as a rule (fixed dates, Thanksgiving and the end of daylight saving by weekday, Lunar New Year from a table through 2035), and a daily Vercel cron (`/api/cron/crypt`, 9:00 UTC) keeps the next occurrence of each in the Crypt. Sky events and sports stay hand-curated in `server/crypt/launch.json`.
 
 ## Decisions needed
 

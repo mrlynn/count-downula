@@ -25,6 +25,7 @@ Built with Next.js (App Router), Material UI and MongoDB. See `docs/specs/viral-
 | `GET /c/:slug/edit` | Edit or delete with the owner token this browser holds, or one an emailed link brings in its fragment (`#t=<token>`, never sent to the server) |
 | `POST /api/countdowns/:slug/edit-link` | Emails the owner an edit link, `{ email }`, `Authorization: Bearer <ownerToken>`. The address is used once and not stored. Answers `503` until a sending domain is set up |
 | `GET /c/:slug/present` | The countdown full screen for a TV or projector, with a QR code to join |
+| `GET /api/cron/crypt` | Daily (Vercel cron, `CRON_SECRET`). Keeps the next occurrence of every yearly holiday and fun day in the Crypt, from the rules in `src/lib/holidays.ts`, so each one comes back the day after it drops off. Sky events and sports are still loaded by hand from `crypt/launch.json` with `scripts/seed-crypt.mjs`; extend `LUNAR_NEW_YEAR` past 2035 when the time comes |
 | `POST /api/events` | A batch of app-side events, `{ installId, platform, appVersion, events: [{ name, at, slug?, source? }] }`. See Metrics below |
 | `GET /admin/metrics` | The metrics dashboard, behind HTTP Basic auth with `METRICS_PASSWORD` |
 
