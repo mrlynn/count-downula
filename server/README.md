@@ -63,7 +63,7 @@ TEST_RUNNER_LINK_SERVER=http://localhost:4300 xcodebuild test -project Countdown
 2. Create a Vercel project `countdowncula-server` from this repo with Root Directory `server`.
 3. Set `MONGODB_URI`, `MONGODB_DB=countdowncula`, `PUBLIC_ORIGIN=https://go.countdowncula.com` and `RATE_LIMIT_SALT` (any long random string; it keeps the hashed client addresses from being guessable).
    For the metrics dashboard, set `METRICS_PASSWORD` (16 characters or more, any user name). Without it, `/admin/metrics` stays shut.
-   For emailed edit links on countdowns made on the web, set `RESEND_API_KEY` and `EMAIL_FROM` (an address on a domain verified in Resend). Without them, the editor doesn't offer the email, and only the browser that made a countdown can edit it.
+   For emailed edit links on countdowns made on the web, set `RESEND_API_KEY` and `EMAIL_FROM` (an address on a domain verified in Resend), and optionally `EMAIL_REPLY_TO` for where replies go. Without them, the editor doesn't offer the email, and only the browser that made a countdown can edit it.
    For instant updates to members, also set `APNS_KEY_ID`, `APNS_TEAM_ID` (`YZ36Z8GSEN`) and `APNS_PRIVATE_KEY` (the whole `.p8` file, mark it Sensitive). Without them the server skips pushes and members catch up when their app refreshes.
 4. Add the domain `go.countdowncula.com` to the project and a `CNAME go → cname.vercel-dns.com` record.
 

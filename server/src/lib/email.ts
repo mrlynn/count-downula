@@ -29,6 +29,7 @@ export async function sendReportEmail(report: ReportEmail, env = process.env): P
       to: [env.REPORT_TO],
       subject: `Reported in the coffin: ${report.countdownTitle}`,
       html,
+      ...replyTo(env),
     }),
   });
   // Shows up in Vercel's function logs, so a misconfigured sender doesn't fail silently.
@@ -68,8 +69,17 @@ export async function sendEditLinkEmail(mail: EditLinkEmail, env = process.env):
       subject: mail.subject,
       html,
       text: [...mail.lines, mail.link].join("\n\n"),
+      ...replyTo(env),
     }),
   });
   if (!response.ok) console.error(`Edit link email failed (${response.status}): ${await response.text()}`);
   return response.ok;
+}
+
+/**
+ * Where answers go (EMAIL_REPLY_TO): the sending domain may have no inbox of its own, so replies
+ * to an edit link or a report reach a mailbox that's read.
+ */
+export function replyTo(env: Record<string, string | undefined> = process.env): { reply_to?: string } {
+  return env.EMAIL_REPLY_TO ? { reply_to: env.EMAIL_REPLY_TO } : {};
 }
