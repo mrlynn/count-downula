@@ -18417,6 +18417,40 @@
     },
     "🦇": {
       "shouldTranslate": false
+    },
+    "Open Count Downcula on this Mac to show your countdowns here.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "このMacでCount Downculaを開くと、ここにカウントダウンが表示されます。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Öffne Count Downcula auf diesem Mac, um deine Countdowns hier zu zeigen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abre Count Downcula en este Mac para ver aquí tus cuentas atrás."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abra o Count Downcula neste Mac para mostrar suas contagens aqui."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ouvrez Count Downcula sur ce Mac pour afficher vos comptes à rebours ici."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

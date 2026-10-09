@@ -69,6 +69,43 @@ targets:
         com.apple.security.application-groups: [$(TeamIdentifierPrefix)com.countdownula.app]
 
   # Desktop and Notification Center widgets for the Mac app.
+  # The screensaver (5.9 spike). Ships only with the GitHub build: the Mac App Store doesn't take
+  # screensavers. Runs inside Apple's legacyScreenSaver host and reads the copy of the countdowns
+  # the GitHub build mirrors into that host's container (SaverSnapshot).
+  CountdownculaSaver:
+    type: bundle
+    platform: macOS
+    sources:
+      - Resources/Localizable.xcstrings
+      - Sources/CountdownculaSaver
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
+      - path: Sources/Shared/WidgetSnapshot.swift
+      - path: Sources/Shared/SaverSnapshot.swift
+      - path: Sources/Shared/PresentView.swift
+      - path: Sources/Shared/ConfettiView.swift
+      - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/Milestone.swift
+      - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
+      - path: Sources/Shared/Astronomy.swift
+    settings:
+      base:
+        PRODUCT_NAME: Count Downcula
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdowncula.saver
+        PRODUCT_MODULE_NAME: CountdownculaSaver
+        WRAPPER_EXTENSION: saver
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSPrincipalClass: CountdownculaSaver.CountdownculaSaverView
+        INFOPLIST_KEY_CFBundleDisplayName: Count Downcula
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+        CODE_SIGN_STYLE: Automatic
+
   CountdownulaMacWidgets:
     type: app-extension
     platform: macOS
