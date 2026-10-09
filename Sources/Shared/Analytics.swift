@@ -58,13 +58,10 @@ enum Analytics {
     private static let lock = NSLock()
     nonisolated(unsafe) private static var isFlushing = false
 
+    /// On unless turned off: in the iPhone's Settings app, the Mac's privacy menu, or the watch and
+    /// Apple TV apps' own switches.
     static var isEnabled: Bool {
-        #if os(watchOS)
-        // The watch has no place for the setting yet, so it stays quiet.
-        return false
-        #else
-        return defaults.object(forKey: enabledKey) as? Bool ?? true
-        #endif
+        defaults.object(forKey: enabledKey) as? Bool ?? true
     }
 
     static func setEnabled(_ enabled: Bool) {

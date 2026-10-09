@@ -13,7 +13,10 @@ struct CountdownulaWatchApp: App {
         }
         .onChange(of: scenePhase) { _, phase in
             // Pick up anything CloudKit imported while we were in the background.
-            if phase == .active { store.reload() }
+            if phase == .active {
+                store.reload()
+                Analytics.appBecameActive()
+            }
         }
     }
 

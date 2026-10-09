@@ -34,7 +34,6 @@ final class CountdownculaSaverView: ScreenSaverView {
         layer?.backgroundColor = NSColor.black.cgColor
         Self.log.notice("init #\(self.number) preview=\(isPreview) frame=\(frame.width)x\(frame.height) pid=\(ProcessInfo.processInfo.processIdentifier)")
         Self.observeStop()
-        SaverSpike.probe(instance: number)
     }
 
     required init?(coder: NSCoder) { nil }
