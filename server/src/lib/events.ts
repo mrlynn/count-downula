@@ -44,7 +44,7 @@ export const CLIENT_EVENTS = [
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];
 
-export const PLATFORMS = ["ios", "ipados", "macos", "watchos", "clip", "web", "unknown"] as const;
+export const PLATFORMS = ["ios", "ipados", "macos", "watchos", "tvos", "clip", "web", "unknown"] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
 export interface EventDoc {
@@ -141,8 +141,8 @@ export function validateBatch(body: unknown, now = new Date()): BatchResult {
   const b = body as Record<string, unknown>;
   if (typeof b.installId !== "string" || !INSTALL_ID.test(b.installId)) return { ok: false, error: "installId is missing or malformed." };
   const platform = b.platform;
-  if (typeof platform !== "string" || !["ios", "ipados", "macos", "watchos", "clip"].includes(platform)) {
-    return { ok: false, error: "platform must be ios, ipados, macos, watchos or clip." };
+  if (typeof platform !== "string" || !["ios", "ipados", "macos", "watchos", "tvos", "clip"].includes(platform)) {
+    return { ok: false, error: "platform must be ios, ipados, macos, watchos, tvos or clip." };
   }
   if (typeof b.appVersion !== "string" || !VERSION.test(b.appVersion)) return { ok: false, error: "appVersion is missing or malformed." };
   if (!Array.isArray(b.events)) return { ok: false, error: "events must be an array." };

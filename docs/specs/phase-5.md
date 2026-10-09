@@ -400,7 +400,18 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
   - Data comes from a snapshot the GitHub build mirrors into the `legacyScreenSaver` container.
   - The prototype includes workarounds for the host's lifecycle bugs.
   - Tested in the real host on macOS 26.6: it reads the mirror, real starts and stops behave, and the host quits cleanly. The recommendation is a go for the GitHub build.
-- **Next:** Apple TV, if present mode shows demand.
+- **Apple TV (started October 9, 2026, ahead of the plan's "wait for demand"):** a tvOS app, `CountdownculaTV`, with a Top Shelf extension.
+  - It shares the iPhone app's bundle ID so Unlimited is one universal purchase, and syncs through the same iCloud store, so everything made or joined on the iPhone, Mac or watch is there.
+  - **Countdowns tab:** the next one big, then Coming Up and Counting Up shelves of focusable cards in each countdown's style.
+  - **The Crypt tab:** public countdowns by category. Select one to show it full screen; press and hold to add it (it joins like the iPhone does).
+  - **Full screen:** the shared `PresentView`, kept awake. Left and right on the remote step through your countdowns, and Menu goes back.
+  - **Top Shelf:** Coming Up and Counting Up from the app's snapshot in the App Group. Selecting one opens it full screen (`countdownula://countdown/<id>`).
+  - Joined countdowns follow their owners' edits on the TV too. With nothing synced yet, a QR code opens `/new?src=tv`.
+  - Analytics platform `tvos`, accepted by the server, with `present_started`/`present_zero` source `appletv`.
+  - **Not yet:**
+    - an app icon and Top Shelf image (tvOS's layered brand assets)
+    - a run in the tvOS simulator, which isn't installed on the build Mac
+    - making or editing countdowns on the TV (by design: it shows)
 
 ### Considered, not planned
 

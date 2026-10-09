@@ -95,6 +95,10 @@ Each complication can follow **Next Up** (your soonest pinned countdown, otherwi
 
 Apple doesn't allow third-party watch faces. To share a "Count Downcula face", set one up (Infograph or Modular work well, in a red color), then long-press it and choose **Share**. That creates a `.watchface` file anyone with the app can add in one tap.
 
+## Apple TV
+
+The Apple TV app shows your countdowns, synced through iCloud from the iPhone, Mac and watch. It has the next one big and shelves of the rest, plus the Crypt, and any countdown goes full screen for the room at a press. Left and right on the remote step through them. When the app is in the top row, the Top Shelf shows what's coming up. Joined countdowns follow their owners' edits, and Crypt countdowns can be added from the TV.
+
 ## Download
 
 The current Mac release is **1.1.1**. Grab **Countdownula-1.1.1.zip** from the [latest release](https://github.com/mrlynn/count-downula/releases/latest) (or [countdowncula.com/download](https://www.countdowncula.com/download)), unzip it, and drag **Countdownula.app** to `/Applications`.
