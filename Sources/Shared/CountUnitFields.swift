@@ -1,3 +1,4 @@
+#if !os(tvOS) && !os(watchOS)
 import SwiftUI
 
 /// The editor rows for what a countdown counts in, its bedtime for sleeps, and the time zone its
@@ -155,3 +156,4 @@ extension Date {
         return calendar.date(from: parts) ?? self
     }
 }
+#endif

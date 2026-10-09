@@ -23,6 +23,7 @@ PNG dimensions, catalog file references, opacity, and ICNS contents were checked
 
 - `Resources/iOS/Assets.xcassets/AppIcon.appiconset`: the Adaptive set (light and dark), for the iPhone/iPad app and the App Clip.
 - `Resources/AppIcon.icns`: the macOS Dark ICNS.
+- `Resources/TV/Assets.xcassets/App Icon & Top Shelf Image.brandassets`: the Apple TV's layered icon and Top Shelf images, rendered from `Mascot-original.png` by `scripts/render-tv-assets.swift`.
 - `Resources/Watch/Assets.xcassets/AppIcon.appiconset/icon-1024.png`: `Masters/Count-Downcula-Dark-1024.png` (watchOS masks it to a circle).
 - `site/assets/app-icon.png`, `server/assets/app-icon.png`, `design/app-icon.png`: the macOS dark tile at 512 px. `site/assets/apple-touch-icon.png` (180) and `favicon.png` (64) come from the dark masters.
 

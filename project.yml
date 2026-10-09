@@ -8,6 +8,7 @@ options:
     macOS: "14.0"
     watchOS: "10.0"
     iOS: "17.0"
+    tvOS: "18.0"
 
 settings:
   base:
@@ -69,6 +70,83 @@ targets:
         com.apple.security.application-groups: [$(TeamIdentifierPrefix)com.countdownula.app]
         # From Calendar reads upcoming events on the Mac (the user is asked first).
         com.apple.security.personal-information.calendars: true
+
+  # Apple TV (5.9): your countdowns through iCloud and the Crypt, each one full screen. Shares the
+  # iPhone app's bundle ID so Unlimited is one universal purchase.
+  CountdownculaTV:
+    type: application
+    platform: tvOS
+    sources:
+      - Resources/Localizable.xcstrings
+      - Sources/CountdownculaTV
+      - Sources/Shared
+      # The layered app icon and Top Shelf images (scripts/render-tv-assets.swift).
+      - Resources/TV/Assets.xcassets
+    dependencies:
+      - target: CountdownculaTVTopShelf
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
+        PRODUCT_NAME: Countdowncula
+        PRODUCT_MODULE_NAME: CountdownculaTV
+        ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Count Downcula
+        CODE_SIGN_ENTITLEMENTS: Resources/TV/CountdownculaTV.entitlements
+    info:
+      path: Resources/TV/Info.plist
+      properties:
+        CFBundleDisplayName: Count Downcula
+        ITSAppUsesNonExemptEncryption: false
+        UIBackgroundModes: [remote-notification]
+        UILaunchScreen: {}
+        # The Top Shelf opens countdowns with countdownula://countdown/<id>.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.countdownula.app
+            CFBundleURLSchemes: [countdownula]
+    entitlements:
+      path: Resources/TV/CountdownculaTV.entitlements
+      properties:
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
+        com.apple.developer.icloud-services: [CloudKit]
+        aps-environment: development
+        com.apple.security.application-groups: [group.com.countdownula.app]
+
+  CountdownculaTVTopShelf:
+    type: app-extension
+    platform: tvOS
+    sources:
+      - Resources/Localizable.xcstrings
+      - Sources/CountdownculaTVTopShelf
+      - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
+      - path: Sources/Shared/WidgetSnapshot.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/Milestone.swift
+      - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
+      - path: Sources/Shared/Astronomy.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.topshelf
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Count Downcula
+        CODE_SIGN_ENTITLEMENTS: Resources/TV/CountdownculaTVTopShelf.entitlements
+        SKIP_INSTALL: YES
+    info:
+      path: Resources/TV/TopShelf-Info.plist
+      properties:
+        CFBundleDisplayName: Count Downcula
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.tv-top-shelf
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ContentProvider
+    entitlements:
+      path: Resources/TV/CountdownculaTVTopShelf.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.countdownula.app]
 
   # The screensaver (5.9 spike). Ships only with the GitHub build: the Mac App Store doesn't take
   # screensavers. Runs inside Apple's legacyScreenSaver host and reads the copy of the countdowns

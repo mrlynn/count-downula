@@ -400,7 +400,19 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
   - Data comes from a snapshot the GitHub build mirrors into the `legacyScreenSaver` container.
   - The prototype includes workarounds for the host's lifecycle bugs.
   - Tested in the real host on macOS 26.6: it reads the mirror, real starts and stops behave, and the host quits cleanly. The recommendation is a go for the GitHub build.
-- **Next:** Apple TV, if present mode shows demand.
+- **Apple TV (started October 9, 2026, ahead of the plan's "wait for demand"):** a tvOS app, `CountdownculaTV`, with a Top Shelf extension.
+  - It shares the iPhone app's bundle ID so Unlimited is one universal purchase, and syncs through the same iCloud store, so everything made or joined on the iPhone, Mac or watch is there.
+  - **Countdowns tab:** the next one big, then Coming Up and Counting Up shelves of focusable cards in each countdown's style.
+  - **The Crypt tab:** public countdowns by category. Select one to show it full screen; press and hold to add it (it joins like the iPhone does).
+  - **Full screen:** the shared `PresentView`, kept awake. Left and right on the remote step through your countdowns, and Menu goes back.
+  - **Top Shelf:** Coming Up and Counting Up from the app's snapshot in the App Group. Selecting one opens it full screen (`countdownula://countdown/<id>`).
+  - Joined countdowns follow their owners' edits on the TV too. With nothing synced yet, a QR code opens `/new?src=tv`.
+  - Analytics platform `tvos`, accepted by the server, with `present_started`/`present_zero` source `appletv`.
+  - **Icon and Top Shelf image:** `scripts/render-tv-assets.swift` renders them from the approved Count artwork into `Resources/TV/Assets.xcassets`.
+    - The icon has three parallax layers: a burgundy night with stars, a red glow, and the Count with his dial.
+    - The Top Shelf images (standard and wide, at 1x and 2x) show the Count beside the wordmark. Apple TV shows them when the app has no countdowns for its own Top Shelf.
+  - **Checked in the tvOS 27 simulator:** the home screen, full screen and the Crypt, and the icon on the Apple TV Home Screen.
+  - **Not yet:** making or editing countdowns on the TV (by design: it shows), and a pass with a real remote.
 
 ### Considered, not planned
 

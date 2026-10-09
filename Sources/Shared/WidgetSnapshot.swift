@@ -34,6 +34,12 @@ enum WidgetSnapshot {
         return (try? decoder.decode([Countdown].self, from: data)) ?? []
     }
 
+    /// The thumbnail's file, for surfaces that take an image URL (the Apple TV's Top Shelf).
+    static func thumbnailFileURL(for countdown: Countdown) -> URL? {
+        let url = thumbnailURL(for: countdown.id)
+        return countdown.hasImage && FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
     static func thumbnail(for id: UUID) -> Data? {
         try? Data(contentsOf: thumbnailURL(for: id))
     }

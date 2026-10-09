@@ -9,7 +9,8 @@ cd "$(dirname "$0")/.."
 DERIVED=.build/strings
 xcodegen generate -q
 for pair in "Countdownula:platform=macOS" "CountdownulaiOS:generic/platform=iOS Simulator" \
-            "CountdownulaWatch:generic/platform=watchOS Simulator"; do
+            "CountdownulaWatch:generic/platform=watchOS Simulator" \
+            "CountdownculaTV:generic/platform=tvOS Simulator"; do
   scheme=${pair%%:*}
   destination=${pair#*:}
   build() {

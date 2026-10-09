@@ -46,7 +46,7 @@ const PARTICIPATION: [EventName, string][] = [
   ["wallet_pass_add", "Wallet passes added"],
 ];
 
-const PLATFORMS = ["ios", "ipados", "macos", "watchos", "clip", "web", "unknown"];
+const PLATFORMS = ["ios", "ipados", "macos", "watchos", "tvos", "clip", "web", "unknown"];
 
 const UNITS: [string, string][] = [
   ["weeks", "Weeks"], ["sleeps", "Sleeps"], ["workdays", "Workdays"], ["weekends", "Weekends"], ["percent", "Percent"],

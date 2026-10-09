@@ -99,6 +99,8 @@ enum Analytics {
     static var platform: String {
         #if os(watchOS)
         return "watchos"
+        #elseif os(tvOS)
+        return "tvos"
         #elseif os(macOS)
         return "macos"
         #else
