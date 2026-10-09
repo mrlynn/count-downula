@@ -69,20 +69,19 @@ struct ShareCardView: View {
         if countdown.countsUp {
             let days = parts.days
             return days > 0
-                ? ("\(days) \(days == 1 ? "day" : "days")", "since \(countdown.targetDate.formatted(.dateTime.month(.wide).day().year()))")
-                : (CountdownFormat.compact(countdown, at: now), "and counting")
+                ? (L("\(days) days"), L("since \(countdown.targetDate.formatted(.dateTime.month(.wide).day().year()))"))
+                : (CountdownFormat.compact(countdown, at: now), L("and counting"))
         }
         if parts.isPast {
             let date = countdown.targetDate.formatted(.dateTime.month(.wide).day().year())
             // The recap: "142 days", counted.
-            if countdown.kind == .event, let counted = Recap.counted(countdown) { return (counted, "counted · \(date)") }
-            return ("It's here!", date)
+            if countdown.kind == .event, let counted = Recap.counted(countdown) { return (counted, L("counted · \(date)")) }
+            return (L("It's here!"), date)
         }
         if parts.days > 0 {
-            return ("\(parts.days) \(parts.days == 1 ? "day" : "days")",
-                    "to go · \(countdown.targetDate.formatted(.dateTime.month(.wide).day()))")
+            return (L("\(parts.days) days"), L("to go · \(countdown.targetDate.formatted(.dateTime.month(.wide).day()))"))
         }
-        return (CountdownFormat.compact(countdown, at: now), "to go")
+        return (CountdownFormat.compact(countdown, at: now), L("to go"))
     }
 }
 

@@ -4,6 +4,7 @@ import { ImageResponse } from "next/og";
 import { getCountdown, getPhoto } from "@/lib/countdowns.ts";
 import { backdropSrc } from "@/lib/backdrop.ts";
 import { loadRecap, recapText } from "@/lib/recap.ts";
+import { pickLocale, t } from "@/lib/i18n.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, headline } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -20,7 +21,7 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 
 /** The link preview: renders on request so it always shows today's number. */
-export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const doc = isSlug(slug) ? await getCountdown(slug) : null;
   if (!doc) return new Response("Not found", { status: 404 });
@@ -30,11 +31,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const style = webStyle(doc.style, !!photo);
   const backdrop = await backdropSrc(style, photo);
   const now = new Date();
-  const live = headline(now, doc.targetDate, doc.kind, doc.timeZone);
+  // Chat apps fetch previews without a language most of the time, so English is the usual answer.
+  const locale = pickLocale(request.headers.get("accept-language"));
+  const live = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale);
   // After zero: "It happened." and who was there, instead of a date that's passed.
   const recap = doc.kind === "countUp" ? null : await loadRecap(doc, now);
-  const words = recap ? recapText(recap, doc.visibility === "public") : null;
-  const value = words ? "It happened." : live.value;
+  const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;
+  const value = words ? t(locale, "itHappened") : live.value;
   const caption = words ? (words.together ?? words.counted ?? live.caption) : live.caption;
   const remaining = dialRemaining(now, doc.createdAt, doc.targetDate, doc.kind);
   const serifNumbers = (doc.style as { font?: string }).font === "serif";
@@ -132,6 +135,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
     },
   );
   // Fresh within the hour. The page also changes the image URL each day, for apps that cache by URL.
+  image.headers.set("Vary", "Accept-Language");
   image.headers.set("Cache-Control", "public, max-age=600, s-maxage=3600, stale-while-revalidate=600");
   return image;
 }

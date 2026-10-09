@@ -1,6 +1,7 @@
 // The words of a recap, shared by the server and the live page's client code. No database here, so
 // the browser can import it.
 import type { CountdownDoc } from "./countdowns.ts";
+import { listOf, t, type Locale } from "./i18n.ts";
 
 export interface Recap {
   /** How long it was counted, from when it was made to zero. Left out for public crypt entries. */
@@ -24,29 +25,22 @@ export function countedSpan(created: Date, target: Date): { days: number; hours:
   return { days: Math.floor(seconds / 86_400), hours: Math.floor(seconds / 3_600) };
 }
 
-const plural = (n: number, one: string, many = `${one}s`) => `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
-
-function names(list: string[]): string {
-  if (list.length <= 2) return list.join(" and ");
-  return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
-}
-
 /**
- * The words: "142 days counted", and "23 of us · 41 notes in the coffin · Dana guessed closest".
- * Pure, for tests. `isPublic` speaks of everyone counting rather than "us".
+ * The words: "142 days counted", and "23 of us · 41 notes in the coffin · Dana guessed closest",
+ * in the viewer's language. Pure, for tests. `isPublic` speaks of everyone counting rather than "us".
  */
-export function recapText(recap: Recap, isPublic = false): { counted: string | null; people: string | null; together: string | null } {
+export function recapText(recap: Recap, isPublic = false, locale: Locale = "en"): { counted: string | null; people: string | null; together: string | null } {
   const counted = recap.counted
     ? recap.counted.days >= 1
-      ? `${plural(recap.counted.days, "day")} counted`
+      ? t(locale, "counted", { n: recap.counted.days })
       : recap.counted.hours >= 1
-        ? `${plural(recap.counted.hours, "hour")} counted`
+        ? t(locale, "countedHours", { n: recap.counted.hours })
         : null
     : null;
   const parts: string[] = [];
-  if (recap.people > 1) parts.push(isPublic ? `${recap.people.toLocaleString("en-US")} counted down` : `${recap.people.toLocaleString("en-US")} of us`);
-  if (recap.notes > 0) parts.push(`${plural(recap.notes, "note")} in the coffin`);
-  if (recap.closest.length) parts.push(`${names(recap.closest.slice(0, 3))} guessed closest`);
-  const together = recap.people > 1 ? `${recap.people.toLocaleString("en-US")} counted down together` : null;
+  if (recap.people > 1) parts.push(t(locale, isPublic ? "countedDown" : "ofUs", { n: recap.people }));
+  if (recap.notes > 0) parts.push(t(locale, "notesInCoffin", { n: recap.notes }));
+  if (recap.closest.length) parts.push(t(locale, "guessedClosest", { names: listOf(locale, recap.closest.slice(0, 3)) }));
+  const together = recap.people > 1 ? t(locale, "together", { n: recap.people }) : null;
   return { counted, people: parts.length ? parts.join(" · ") : null, together };
 }

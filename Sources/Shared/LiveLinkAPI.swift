@@ -27,8 +27,8 @@ enum LiveLinkAPI {
         var errorDescription: String? {
             switch self {
             case let .server(message): message
-            case .notOwner: "Only the device that published this link, or one signed in to the same iCloud Keychain, can change it."
-            case .unreachable: "Couldn't reach Count Downcula. Check your connection and try again."
+            case .notOwner: L("Only the device that published this link, or one signed in to the same iCloud Keychain, can change it.")
+            case .unreachable: L("Couldn't reach Count Downcula. Check your connection and try again.")
             }
         }
     }
@@ -115,7 +115,7 @@ enum LiveLinkAPI {
     // MARK: - Shared countdowns
 
     struct NotShared: LocalizedError {
-        var errorDescription: String? { "This countdown isn't shared anymore. The link may have been turned off." }
+        var errorDescription: String? { L("This countdown isn't shared anymore. The link may have been turned off.") }
     }
 
     /// The owner's current copy. Throws `NotShared` once the owner stops sharing.
@@ -228,7 +228,7 @@ enum LiveLinkAPI {
     static func check(_ status: Int, _ data: Data) throws {
         guard !(200..<300).contains(status) else { return }
         let message = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.error
-        throw Failure.server(message ?? "Count Downcula's server returned an error (\(status)).")
+        throw Failure.server(message ?? L("Count Downcula's server returned an error (\(status))."))
     }
 
     @discardableResult
@@ -261,7 +261,7 @@ enum LiveLinkAPI {
             throw Failure.notOwner
         default:
             let message = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.error
-            throw Failure.server(message ?? "Count Downcula's server returned an error (\(status)).")
+            throw Failure.server(message ?? L("Count Downcula's server returned an error (\(status))."))
         }
     }
 }

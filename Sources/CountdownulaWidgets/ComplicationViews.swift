@@ -77,7 +77,7 @@ struct CircularComplication: View {
                 .font(.system(size: 14, weight: .bold))
         } else if parts.days > 0 || parts.hours > 0 {
             let value = parts.days > 0 ? parts.days : parts.hours
-            let unit = parts.days > 0 ? (parts.days == 1 ? "DAY" : "DAYS") : (parts.hours == 1 ? "HR" : "HRS")
+            let unit = parts.days > 0 ? (parts.days == 1 ? L("DAY") : L("DAYS")) : (parts.hours == 1 ? L("HR") : L("HRS"))
             VStack(spacing: -2) {
                 Text("\(value)")
                     .font(.system(size: 17, weight: .bold, design: .rounded))

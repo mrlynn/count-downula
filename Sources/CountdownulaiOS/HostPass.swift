@@ -49,7 +49,7 @@ final class HostPassStore {
             switch try await product.purchase() {
             case let .success(verification):
                 guard case let .verified(transaction) = verification else {
-                    state = .failed("The App Store couldn't verify this purchase.")
+                    state = .failed(L("The App Store couldn't verify this purchase."))
                     return false
                 }
                 remember(slug: link.slug, for: transaction.id)
@@ -91,7 +91,7 @@ final class HostPassStore {
             state = .idle
             return true
         } catch LiveLinkAPI.Failure.unreachable {
-            state = .failed("Your Host Pass is bought but couldn't reach Count Downcula. It'll be applied next time the app opens.")
+            state = .failed(L("Your Host Pass is bought but couldn't reach Count Downcula. It'll be applied next time the app opens."))
         } catch {
             // Refused for good (refunded, already used elsewhere): keeping it would retry forever.
             await transaction.finish()

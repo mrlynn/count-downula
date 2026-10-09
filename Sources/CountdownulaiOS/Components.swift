@@ -159,7 +159,7 @@ struct MilestoneTimeline: View {
                 .opacity(reached || isNext ? 1 : 0.7)
             }
             if hidden > 0 {
-                Text("\(hidden) more \(hidden == 1 ? "milestone" : "milestones")")
+                Text("\(hidden) more milestones")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.top, 4)

@@ -12,13 +12,13 @@ enum NotificationActions {
     }
 
     static func register() {
-        let lockScreen = UNNotificationAction(identifier: Action.lockScreen.rawValue, title: "Put on Lock Screen",
+        let lockScreen = UNNotificationAction(identifier: Action.lockScreen.rawValue, title: L("Put on Lock Screen"),
                                               options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "lock.iphone"))
-        let share = UNNotificationAction(identifier: Action.share.rawValue, title: "Share",
+        let share = UNNotificationAction(identifier: Action.share.rawValue, title: L("Share"),
                                          options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "square.and.arrow.up"))
-        let recap = UNNotificationAction(identifier: Action.recap.rawValue, title: "Share the Recap",
+        let recap = UNNotificationAction(identifier: Action.recap.rawValue, title: L("Share the Recap"),
                                          options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "square.and.arrow.up"))
-        let coffin = UNNotificationAction(identifier: Action.coffin.rawValue, title: "Open the Coffin",
+        let coffin = UNNotificationAction(identifier: Action.coffin.rawValue, title: L("Open the Coffin"),
                                           options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "sparkles"))
         let actions: [NotificationPlan.Category: [UNNotificationAction]] = [
             .soon: [lockScreen, share],

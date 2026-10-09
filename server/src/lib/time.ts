@@ -1,4 +1,5 @@
 // Ports of the app's TimeParts and share-card headline, so the web shows the same numbers.
+import { t, type Locale } from "./i18n.ts";
 
 export type Kind = "event" | "timer" | "countUp";
 
@@ -39,34 +40,36 @@ export function compact(now: Date, target: Date, countsUp = false): string {
   return `${pad(p.minutes)}:${pad(p.seconds)}`;
 }
 
-function longDate(d: Date, withYear: boolean, timeZone: string): string {
+function longDate(d: Date, withYear: boolean, timeZone: string, locale: Locale = "en"): string {
   const options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", ...(withYear ? { year: "numeric" } : {}) };
+  const tag = locale === "en" ? "en-US" : locale;
   try {
-    return d.toLocaleDateString("en-US", { ...options, timeZone });
+    return d.toLocaleDateString(tag, { ...options, timeZone });
   } catch {
-    return d.toLocaleDateString("en-US", { ...options, timeZone: "UTC" });
+    return d.toLocaleDateString(tag, { ...options, timeZone: "UTC" });
   }
 }
 
-/** The big number and the line under it, as on the app's share card. */
+/** The big number and the line under it, as on the app's share card, in the viewer's language. */
 export function headline(
   now: Date,
   target: Date,
   kind: Kind,
   timeZone = "UTC",
+  locale: Locale = "en",
 ): { value: string; caption: string } {
   const countsUp = kind === "countUp";
   const p = timeParts(now, target, countsUp);
   if (countsUp) {
     return p.days > 0
-      ? { value: `${p.days} ${p.days === 1 ? "day" : "days"}`, caption: `since ${longDate(target, true, timeZone)}` }
-      : { value: compact(now, target, true), caption: "and counting" };
+      ? { value: t(locale, "daysLeft", { n: p.days }), caption: t(locale, "sinceLower", { date: longDate(target, true, timeZone, locale) }) }
+      : { value: compact(now, target, true), caption: t(locale, "andCounting") };
   }
-  if (p.isPast) return { value: "It's here!", caption: longDate(target, true, timeZone) };
+  if (p.isPast) return { value: t(locale, "itsHere"), caption: longDate(target, true, timeZone, locale) };
   if (p.days > 0) {
-    return { value: `${p.days} ${p.days === 1 ? "day" : "days"}`, caption: `to go · ${longDate(target, false, timeZone)}` };
+    return { value: t(locale, "daysLeft", { n: p.days }), caption: t(locale, "toGoOn", { date: longDate(target, false, timeZone, locale) }) };
   }
-  return { value: compact(now, target), caption: "to go" };
+  return { value: compact(now, target), caption: t(locale, "toGo") };
 }
 
 /**

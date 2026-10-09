@@ -23,7 +23,7 @@ test("a solo countdown has no people line, and short waits count hours", () => {
 test("public entries speak of everyone, and ties name each winner", () => {
   const words = recapText({ people: 1204, notes: 0, closest: ["Ana", "Ben", "Cy"] }, true);
   assert.equal(words.counted, null);
-  assert.equal(words.people, "1,204 counted down · Ana, Ben and Cy guessed closest");
+  assert.equal(words.people, `1,204 counted down · ${new Intl.ListFormat("en", { type: "conjunction" }).format(["Ana", "Ben", "Cy"])} guessed closest`);
 });
 
 test("counted spans run from creation to zero", () => {

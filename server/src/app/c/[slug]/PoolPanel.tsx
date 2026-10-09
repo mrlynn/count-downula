@@ -2,6 +2,7 @@
 
 import { Alert, Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
+import { listOf, t, type Locale } from "@/lib/i18n.ts";
 
 interface Guess {
   id: string;
@@ -36,21 +37,23 @@ function localInputValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function offBy(seconds: number): string {
-  if (seconds < 60) return "spot on";
+function offBy(seconds: number, locale: Locale): string {
+  if (seconds < 60) return t(locale, "spotOn");
   const days = Math.floor(seconds / 86_400);
   const hours = Math.floor((seconds % 86_400) / 3_600);
   const minutes = Math.floor((seconds % 3_600) / 60);
-  if (days > 0) return `off by ${days}d ${hours}h`;
-  if (hours > 0) return `off by ${hours}h ${minutes}m`;
-  return `off by ${minutes}m`;
+  // Short units in the viewer's language: "2 d 3 h", "2日3時間".
+  const unit = (n: number, u: "day" | "hour" | "minute") =>
+    new Intl.NumberFormat(locale, { style: "unit", unit: u, unitDisplay: "narrow" }).format(n);
+  const span = days > 0 ? `${unit(days, "day")} ${unit(hours, "hour")}` : hours > 0 ? `${unit(hours, "hour")} ${unit(minutes, "minute")}` : unit(minutes, "minute");
+  return t(locale, "offBy", { span });
 }
 
 const when = (iso: string) =>
   new Date(iso).toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 /** Guess when it happens. Anyone with the link can; the closest guess wins once the owner sets the date. */
-export default function PoolPanel({ slug, estimate }: { slug: string; estimate: string }) {
+export default function PoolPanel({ slug, estimate, locale = "en" }: { slug: string; estimate: string; locale?: Locale }) {
   const [pool, setPool] = useState<Pool | null>(null);
   const [name, setName] = useState("");
   const [guess, setGuess] = useState("");
@@ -87,7 +90,7 @@ export default function PoolPanel({ slug, estimate }: { slug: string; estimate: 
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(body.error ?? "Couldn't save your guess.");
+        setError(body.error ?? t(locale, "couldntSaveGuess"));
         return;
       }
       if (body.token) storage()?.setItem(tokenKey(slug), body.token);
@@ -106,29 +109,29 @@ export default function PoolPanel({ slug, estimate }: { slug: string; estimate: 
     <Box sx={{ bgcolor: "background.paper", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
       <Box sx={{ maxWidth: 960, mx: "auto" }}>
         <Typography variant="h2" sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: { xs: 26, sm: 32 }, mb: 1 }}>
-          {settled ? "The results are in" : "Guess the date"}
+          {t(locale, settled ? "resultsIn" : "guessTheDate")}
         </Typography>
         <Typography sx={{ opacity: 0.75, mb: 3 }}>
           {settled
             ? winners.length > 0
-              ? `${winners.map((w) => w.name).join(" and ")} called it closest. It happened ${when(pool.answer!)}.`
-              : `It happened ${when(pool.answer!)}.`
+              ? t(locale, "calledIt", { names: listOf(locale, winners.map((w) => w.name)), date: when(pool.answer!) })
+              : t(locale, "happenedOn", { date: when(pool.answer!) })
             : pool.closed
-              ? "Guessing is closed. The closest guess wins once the real date is in."
-              : "When do you think it'll happen? The closest guess wins bragging rights."}
+              ? t(locale, "guessingClosed")
+              : t(locale, "guessPrompt")}
         </Typography>
 
         {!pool.closed ? (
           <Stack component="form" onSubmit={submit} direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mb: 3 }}>
             <TextField
-              label="Your name"
+              label={t(locale, "yourName")}
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 40))}
               required
               size="small"
             />
             <TextField
-              label="Your guess"
+              label={t(locale, "yourGuess")}
               type="datetime-local"
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
@@ -137,14 +140,14 @@ export default function PoolPanel({ slug, estimate }: { slug: string; estimate: 
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <Button type="submit" variant="contained" disabled={saving || !name.trim() || !guess}>
-              {mine ? "Change my guess" : "Lock it in"}
+              {t(locale, mine ? "changeGuess" : "lockIn")}
             </Button>
           </Stack>
         ) : null}
         {error ? <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert> : null}
 
         {pool.guesses.length === 0 ? (
-          <Typography sx={{ opacity: 0.6 }}>No guesses yet. Be the first.</Typography>
+          <Typography sx={{ opacity: 0.6 }}>{t(locale, "noGuesses")}</Typography>
         ) : (
           <Stack spacing={1}>
             {pool.guesses.map((g) => (
@@ -161,13 +164,13 @@ export default function PoolPanel({ slug, estimate }: { slug: string; estimate: 
                 <Typography sx={{ width: 28, fontWeight: 700 }}>{g.place === 1 ? "🏆" : g.place ? `${g.place}.` : ""}</Typography>
                 <Typography sx={{ flex: 1, fontWeight: 600 }}>
                   {g.name}
-                  {g.mine ? " (you)" : ""}
+                  {g.mine ? ` ${t(locale, "you")}` : ""}
                 </Typography>
                 <Typography sx={{ opacity: 0.8 }} suppressHydrationWarning>
                   {when(g.guess)}
                 </Typography>
                 {g.offBySeconds !== undefined ? (
-                  <Typography sx={{ opacity: 0.6, minWidth: 110, textAlign: "right" }}>{offBy(g.offBySeconds)}</Typography>
+                  <Typography sx={{ opacity: 0.6, minWidth: 110, textAlign: "right" }}>{offBy(g.offBySeconds, locale)}</Typography>
                 ) : null}
               </Stack>
             ))}

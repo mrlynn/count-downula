@@ -7,6 +7,7 @@ import { embeddable, embedOptions } from "@/lib/embed.ts";
 import { logEvent, referrerSource } from "@/lib/events.ts";
 import { publicOrigin, shareURL } from "@/lib/http.ts";
 import { loadRecap, recapText } from "@/lib/recap.ts";
+import { pickLocale, t } from "@/lib/i18n.ts";
 import { isSlug } from "@/lib/validate.ts";
 import { EmbedCountdown } from "./EmbedCountdown.tsx";
 
@@ -42,7 +43,8 @@ export default async function EmbedPage({ params, searchParams }: Props) {
     after(() => logEvent("embed_view", { headers: h }, { slug, source: site }));
   }
   const recap = await loadRecap(doc);
-  const words = recap ? recapText(recap, doc.visibility === "public") : null;
+  const locale = pickLocale(h.get("accept-language"));
+  const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;
   return (
     <>
       {/* The host page shows through around the card. */}
@@ -54,6 +56,7 @@ export default async function EmbedPage({ params, searchParams }: Props) {
       `}</style>
       {embeddable(doc) ? (
         <EmbedCountdown
+          locale={locale}
           countdown={toPublic(doc)}
           photoURL={doc.hasPhoto ? `/c/${slug}/photo?v=${doc.updatedAt.getTime()}` : null}
           serverNow={Date.now()}
@@ -62,7 +65,7 @@ export default async function EmbedPage({ params, searchParams }: Props) {
           liveURL={`${shareURL(slug)}?src=embed`}
         />
       ) : (
-        <p style={{ fontFamily: "system-ui, sans-serif", color: "#888", padding: 16 }}>This countdown can't be embedded.</p>
+        <p style={{ fontFamily: "system-ui, sans-serif", color: "#888", padding: 16 }}>{t(locale, "cantEmbed")}</p>
       )}
     </>
   );

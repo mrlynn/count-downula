@@ -159,7 +159,7 @@ struct HomeCountdownView: View {
                 Text(parts.days == 1 ? "day" : "days")
                     .font(style.font(size: valueSize * 0.34))
                 if parts.hours > 0 {
-                    Text("\(parts.hours) \(parts.hours == 1 ? "hr" : "hrs")")
+                    Text("\(parts.hours) hrs")
                         .font(style.font(size: valueSize * 0.34))
                         .foregroundStyle(style.foregroundColor.opacity(0.7))
                 }

@@ -1,0 +1,5 @@
+/* Draft, needs review. */
+"Privacy" = "Confidentialité";
+"Share Analytics" = "Partager les analyses";
+"Reset Analytics ID" = "Réinitialiser l’identifiant d’analyse";
+"Anonymous counts, like how many countdowns get made and how many people open a shared link. No titles, dates, names or contacts. Turn on Reset Analytics ID to start over as a new, unconnected install next time Count Downcula opens." = "Des chiffres anonymes, comme le nombre de comptes à rebours créés ou de personnes qui ouvrent un lien partagé. Ni titres, ni dates, ni noms, ni contacts. Activez Réinitialiser l’identifiant d’analyse pour repartir comme une nouvelle installation, sans lien, à la prochaine ouverture de Count Downcula.";

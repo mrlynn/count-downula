@@ -320,11 +320,11 @@ struct CountdownEditorView: View {
 
     private var repeatFooter: String {
         switch extras.repetition {
-        case .yearly: "After the day passes it rolls over to next year. Good for birthdays and anniversaries."
-        case .monthly: "Rolls over to the same day next month. Good for payday and rent."
-        case .weekly: "Rolls over to the same time next week. Good for Friday at 5."
-        case .weekdays: "Rolls over to the next weekday at the same time, skipping Saturday and Sunday."
-        case let .everyDays(n): n == 1 ? "Rolls over to the same time tomorrow." : "Rolls over every \(n) days at the same time."
+        case .yearly: L("After the day passes it rolls over to next year. Good for birthdays and anniversaries.")
+        case .monthly: L("Rolls over to the same day next month. Good for payday and rent.")
+        case .weekly: L("Rolls over to the same time next week. Good for Friday at 5.")
+        case .weekdays: L("Rolls over to the next weekday at the same time, skipping Saturday and Sunday.")
+        case let .everyDays(n): n == 1 ? L("Rolls over to the same time tomorrow.") : L("Rolls over every \(n) days at the same time.")
         case nil: ""
         }
     }
@@ -456,9 +456,9 @@ struct CountdownEditorView: View {
 
     private var durationPicker: some View {
         HStack(spacing: 0) {
-            wheel("days", selection: $days, range: 0...365)
-            wheel("hr", selection: $hours, range: 0...23)
-            wheel("min", selection: $minutes, range: 0...59)
+            wheel(L("days"), selection: $days, range: 0...365)
+            wheel(L("hr"), selection: $hours, range: 0...23)
+            wheel(L("min"), selection: $minutes, range: 0...59)
         }
         .frame(height: 150)
     }

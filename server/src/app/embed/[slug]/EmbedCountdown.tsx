@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { PublicCountdown } from "@/lib/countdowns.ts";
 import type { EmbedOptions } from "@/lib/embed.ts";
+import { t, type Locale } from "@/lib/i18n.ts";
 import { webStyle } from "@/lib/style.ts";
 import { timeParts, viewerTarget } from "@/lib/time.ts";
 
@@ -22,6 +23,7 @@ export function EmbedCountdown({
   options,
   recapLine,
   liveURL,
+  locale = "en",
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
@@ -29,6 +31,7 @@ export function EmbedCountdown({
   options: EmbedOptions;
   recapLine: string | null;
   liveURL: string;
+  locale?: Locale;
 }) {
   const [now, setNow] = useState(() => new Date(serverNow));
   const [mounted, setMounted] = useState(false);
@@ -60,10 +63,10 @@ export function EmbedCountdown({
   }, [finished, redirects, countdown.slug]);
   if (finished && options.end === "hide") return null;
 
-  const unit = (value: number, label: string) => (
+  const unit = (value: number, label: string, pad = 2) => (
     <div style={{ textAlign: "center", minWidth: "18%" }}>
       <div style={{ fontSize: "clamp(20px, 8.5vw, 60px)", fontWeight: style.fontWeight, lineHeight: 1, fontVariantNumeric: "tabular-nums", fontFamily: style.fontFamily }}>
-        {String(value).padStart(label === "days" ? 1 : 2, "0")}
+        {String(value).padStart(pad, "0")}
       </div>
       <div style={{ fontSize: "clamp(10px, 2.6vw, 14px)", opacity: 0.75, marginTop: 4, letterSpacing: 0.5 }}>{label}</div>
     </div>
@@ -86,22 +89,22 @@ export function EmbedCountdown({
       </div>
       {finished && options.end !== "countup" ? (
         <div style={{ fontSize: "clamp(22px, 9vw, 56px)", fontWeight: 700, lineHeight: 1.05, fontFamily: style.fontFamily }}>
-          {options.end === "recap" ? "It happened." : options.message}
+          {options.end === "recap" ? t(locale, "itHappened") : options.message === "It's here!" ? t(locale, "itsHere") : options.message}
           {options.end === "recap" && recapLine ? (
             <div style={{ fontSize: "clamp(12px, 3.4vw, 20px)", fontWeight: 500, opacity: 0.85, marginTop: 6 }}>{recapLine}</div>
           ) : null}
         </div>
       ) : (
         <div style={{ display: "flex", justifyContent: "space-between", gap: "2vw" }} suppressHydrationWarning>
-          {unit(p.days, "days")}
-          {unit(p.hours, "hours")}
-          {unit(p.minutes, "min")}
-          {unit(p.seconds, "sec")}
+          {unit(p.days, t(locale, "days"), 1)}
+          {unit(p.hours, t(locale, "hours"))}
+          {unit(p.minutes, t(locale, "min"))}
+          {unit(p.seconds, t(locale, "sec"))}
         </div>
       )}
       {countdown.host ? null : (
         <div className="embed-credit" style={{ fontSize: "clamp(10px, 2.4vw, 13px)", opacity: 0.7, textAlign: "right" }}>
-          Made with <span style={{ color: theme.accent, fontWeight: 700 }}>Count Downcula</span>
+          {t(locale, "madeWith")} <span style={{ color: theme.accent, fontWeight: 700 }}>Count Downcula</span>
         </div>
       )}
     </a>

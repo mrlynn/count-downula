@@ -1,0 +1,77 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "shouldTranslate": false
+    },
+    "NSCalendarsFullAccessUsageDescription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula zeigt deine anstehenden Ereignisse, damit du auswählen kannst, zu welchen du runterzählen willst. Ereignisse bleiben auf deinem iPhone; nur die Countdowns, die du hinzufügst, werden synchronisiert."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula muestra tus próximos eventos para que elijas a cuáles quieres contar. Los eventos se quedan en tu iPhone; solo se sincronizan las cuentas atrás que añadas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula affiche vos prochains évènements pour que vous choisissiez ceux à décompter. Les évènements restent sur votre iPhone ; seuls les comptes à rebours ajoutés sont synchronisés."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "カウントダウンしたいイベントを選べるよう、予定を表示します。イベントはiPhoneから出ません。同期されるのは追加したカウントダウンだけです。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O Count Downcula mostra seus próximos eventos para você escolher para quais contar. Os eventos ficam no seu iPhone; só as contagens que você adicionar são sincronizadas."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula nutzt deinen ungefähren Standort, um für Sonnenauf- und -untergangs-Countdowns zu berechnen, wann die Sonne auf- und untergeht."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula usa tu ubicación aproximada para calcular cuándo sale y se pone el sol en tus cuentas atrás de amanecer y atardecer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Count Downcula utilise votre position approximative pour calculer l’heure du lever et du coucher du soleil de vos comptes à rebours."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "日の出と日の入りのカウントダウンの時刻を計算するため、おおよその現在地を使います。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O Count Downcula usa sua localização aproximada para calcular quando o sol nasce e se põe nas suas contagens de nascer e pôr do sol."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -220,9 +220,10 @@ struct SharedMemberSection: View {
 
     private var summary: String {
         let others = max(0, (subscription.memberCount ?? 1) - 1)
-        let verb = countdown.hasReachedZero(at: Date()) ? "counted down" : "are counting down"
-        let who = others == 0 ? "Shared with you" : "You and \(others) other\(others == 1 ? "" : "s") \(verb)"
-        return "\(who). Only the owner can change it."
+        if others == 0 { return L("Shared with you. Only the owner can change it.") }
+        return countdown.hasReachedZero(at: Date())
+            ? L("You and \(others) others counted down. Only the owner can change it.")
+            : L("You and \(others) others are counting down. Only the owner can change it.")
     }
 }
 

@@ -71,7 +71,7 @@ enum NotificationPlan {
             date: countdown.targetDate,
             title: "\(speaks ? CountLines.emoji : completionEmoji(for: countdown)) \(countdown.title)",
             body: speaks ? CountLines.completion(for: countdown)
-                : countdown.details.isEmpty ? "The countdown is complete!" : countdown.details,
+                : countdown.details.isEmpty ? L("The countdown is complete!") : countdown.details,
             category: completionCategory(for: countdown)
         )
     }
@@ -111,7 +111,8 @@ enum NotificationPlan {
                 countdownID: countdown.id,
                 date: date,
                 title: "🦇 \(countdown.title)",
-                body: years == 1 ? "A year ago today. Look back, and share how it went." : "\(years) years ago today. Look back, and share how it went.",
+                body: years == 1 ? L("A year ago today. Look back, and share how it went.")
+                    : L("\(years) years ago today. Look back, and share how it went."),
                 category: .anniversary
             )
         }

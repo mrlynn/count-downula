@@ -2,6 +2,7 @@ name: Countdownula
 
 options:
   bundleIdPrefix: com.countdownula
+  developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:
     macOS: "14.0"
@@ -17,6 +18,9 @@ settings:
     CURRENT_PROJECT_VERSION: 2
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
+    # Text the apps show comes from Resources/Localizable.xcstrings (see scripts/sync-strings.sh).
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
 
 targets:
   # macOS menu bar app
@@ -24,6 +28,7 @@ targets:
     type: application
     platform: macOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/Countdownula
       - Sources/Shared
       - path: Resources/AppIcon.icns
@@ -68,6 +73,7 @@ targets:
     type: app-extension
     platform: macOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaMacWidgets
       - Sources/CountdownulaWidgets
       - path: Sources/CountdownulaiOSWidgets/HomeWidgetViews.swift
@@ -75,6 +81,7 @@ targets:
       - path: Sources/PhoneShared/WidgetIntents.swift
       - path: Sources/Shared/Countdown.swift
       - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
       - path: Sources/Shared/WidgetSnapshot.swift
       - path: Sources/Shared/FangMark.swift
       - path: Sources/Shared/CountdownStyle.swift
@@ -108,6 +115,7 @@ targets:
     type: application
     platform: watchOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaWatch
       - Sources/Shared
       - Sources/CountdownulaWidgets/ComplicationViews.swift
@@ -150,9 +158,11 @@ targets:
     type: app-extension
     platform: watchOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaWidgets
       - path: Sources/Shared/Countdown.swift
       - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
       - path: Sources/Shared/WidgetSnapshot.swift
       - path: Sources/Shared/FangMark.swift
       - path: Sources/Shared/CountdownStyle.swift
@@ -184,9 +194,12 @@ targets:
     type: application
     platform: iOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaiOS
       - Sources/Shared
       - Sources/PhoneShared
+      # Localized permission prompts.
+      - Resources/iOS/InfoPlist.xcstrings
       - Resources/iOS/Assets.xcassets
       - path: Resources/iOS/PrivacyInfo.xcprivacy
         buildPhase: resources
@@ -254,6 +267,7 @@ targets:
     type: application.on-demand-install-capable
     platform: iOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaClip
       - Sources/CountdownulaiOS/TimeBlocks.swift
       - Resources/iOS/Assets.xcassets
@@ -268,6 +282,7 @@ targets:
       - path: Sources/Shared/SharedCountdowns.swift
       - path: Sources/Shared/LiveLinkAPI.swift
       - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
       - path: Sources/Shared/ImageUpdate.swift
       - path: Sources/Shared/ClipHandoff.swift
       - path: Sources/Shared/Analytics.swift
@@ -314,6 +329,7 @@ targets:
     type: app-extension
     platform: iOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaShare
       - path: Sources/Shared/Countdown.swift
       - path: Sources/Shared/CountdownStyle.swift
@@ -324,6 +340,7 @@ targets:
       - path: Sources/Shared/CountdownExtras.swift
       - path: Sources/Shared/Astronomy.swift
       - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
       - path: Sources/Shared/CountdownDraft.swift
     settings:
       base:
@@ -356,11 +373,13 @@ targets:
     type: app-extension
     platform: iOS
     sources:
+      - Resources/Localizable.xcstrings
       - Sources/CountdownulaiOSWidgets
       - Sources/CountdownulaWidgets
       - Sources/PhoneShared
       - path: Sources/Shared/Countdown.swift
       - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/Localization.swift
       - path: Sources/Shared/WidgetSnapshot.swift
       - path: Sources/Shared/FangMark.swift
       - path: Sources/Shared/CountdownStyle.swift
@@ -395,6 +414,7 @@ targets:
     sources:
       - Tests
       - Sources/Shared
+      - Resources/Localizable.xcstrings
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.tests

@@ -21,15 +21,13 @@ struct Recap: Codable, Equatable {
     /// "23 of us · 41 notes in the coffin · Dana guessed closest", or nil for a countdown nobody shared.
     func peopleLine(isPublic: Bool = false) -> String? {
         var parts: [String] = []
-        if people > 1 { parts.append(isPublic ? "\(people.formatted()) counted down" : "\(people.formatted()) of us") }
-        if notes > 0 { parts.append("\(notes.formatted()) \(notes == 1 ? "note" : "notes") in the coffin") }
-        if !closest.isEmpty { parts.append("\(Self.names(Array(closest.prefix(3)))) guessed closest") }
+        if people > 1 { parts.append(isPublic ? L("\(people) counted down") : L("\(people) of us")) }
+        if notes > 0 { parts.append(L("\(notes) notes in the coffin")) }
+        if !closest.isEmpty {
+            let names = Array(closest.prefix(3)).formatted(.list(type: .and))
+            parts.append(L("\(names) guessed closest"))
+        }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
-    }
-
-    private static func names(_ list: [String]) -> String {
-        guard list.count > 2 else { return list.joined(separator: " and ") }
-        return list.dropLast().joined(separator: ", ") + " and " + list.last!
     }
 
     /// How long a countdown was counted, from when it was made to zero: ("142 days", "counted").
@@ -37,8 +35,8 @@ struct Recap: Codable, Equatable {
     static func counted(_ countdown: Countdown) -> String? {
         let seconds = Int(countdown.targetDate.timeIntervalSince(countdown.createdAt))
         let days = seconds / 86_400, hours = seconds / 3_600
-        if days >= 1 { return "\(days.formatted()) \(days == 1 ? "day" : "days")" }
-        if hours >= 1 { return "\(hours) \(hours == 1 ? "hour" : "hours")" }
+        if days >= 1 { return L("\(days) days") }
+        if hours >= 1 { return L("\(hours) hours") }
         return nil
     }
 }
