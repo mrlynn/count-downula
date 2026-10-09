@@ -6,6 +6,7 @@ import SwiftUI
 /// The sealed coffin on a shared countdown's detail screen: how many are sealed, your own, a way
 /// to add one, and at zero, the reveal.
 struct CoffinSection: View {
+    @Environment(Router.self) private var router
     let countdown: Countdown
     let now: Date
 
@@ -23,6 +24,12 @@ struct CoffinSection: View {
                 }
                 .fullScreenCover(isPresented: $revealing) {
                     CoffinRevealView(countdown: countdown, access: access, initial: state)
+                }
+                // "Open the Coffin" under the alert at zero.
+                .onChange(of: router.pending, initial: true) { _, pending in
+                    guard pending == .openCoffin(countdown.id), countdown.isPast(at: Date()) || countdown.countsUp else { return }
+                    router.pending = nil
+                    revealing = true
                 }
                 .alert("Sealed Coffin", isPresented: Binding(get: { errorMessage != nil },
                                                             set: { if !$0 { errorMessage = nil } })) {
