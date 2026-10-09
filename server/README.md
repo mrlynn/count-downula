@@ -15,6 +15,9 @@ Built with Next.js (App Router), Material UI and MongoDB. See `docs/specs/viral-
 | `GET /c/:slug` | The page |
 | `GET /c/:slug/og` | 1200 × 630 PNG preview. The page's `og:image` adds `?d=<days left>` so chat apps that cache by URL refetch each day |
 | `GET /c/:slug/photo` | The backdrop JPEG (a photo, or the app's scene rendered at 1080 × 1350) |
+| `GET /c/:slug/calendar.ics` | The countdown as an iCalendar feed. The page's Add to Calendar offers it as a `webcal://` subscription, a Google Calendar subscription, or a download |
+| `GET /embed/:slug` | A small live countdown for an iframe, `noindex`, canonical to the live page. Query options: `theme` (style, dark, light), `end` (message, recap, countup, hide), `message`. Only embeds may be framed by other sites (`frame-ancestors`); everything else is `'self'` |
+| `GET /embed.js` | The one-line embed: `<script async src="https://go.countdowncula.com/embed.js" data-countdown="<slug>"></script>`, with optional `data-theme`, `data-end`, `data-message`, `data-width`, `data-height` |
 | `POST /api/events` | A batch of app-side events, `{ installId, platform, appVersion, events: [{ name, at, slug?, source? }] }`. See Metrics below |
 | `GET /admin/metrics` | The metrics dashboard, behind HTTP Basic auth with `METRICS_PASSWORD` |
 
@@ -77,6 +80,7 @@ Writes are counted in MongoDB (`rateLimits`, fixed windows, removed by a TTL ind
 | Edit | 120 an hour per client, 60 an hour per countdown |
 | Unpublish | 60 an hour per client |
 | Event batches | 60 an hour per client |
+| Coffin drops from the web (guests) | 6 an hour per client and 100 an hour per countdown, on top of the coffin's own limits |
 
 Over a limit, the API answers `429` with `Retry-After` and a message the app shows as is. Reading pages and preview images isn't limited; the CDN caches those. The limits live in `src/lib/rateLimit.ts`. Vercel Firewall rules can sit in front of this for floods, but they aren't needed to launch.
 

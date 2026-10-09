@@ -1,10 +1,10 @@
 import { put } from "@vercel/blob";
 import { after, NextResponse } from "next/server";
-import { COFFIN_LIMITS, contributions, isOpen, loadCountdownAndRole, toPublic, validateContribution } from "@/lib/coffin.ts";
+import { addGuest, COFFIN_LIMITS, coffinRefusal, contributions, isOpen, loadCountdownAndRole, toPublic, validateContribution } from "@/lib/coffin.ts";
 import { logEvent } from "@/lib/events.ts";
 import { hashToken } from "@/lib/countdowns.ts";
 import { bearer, errorResponse, readJSON, tooManyRequests } from "@/lib/http.ts";
-import { checkLimits, clientSubject, limits } from "@/lib/rateLimit.ts";
+import { checkLimits, clientSubject, limits, type Limit } from "@/lib/rateLimit.ts";
 import { isSlug } from "@/lib/validate.ts";
 import { ObjectId } from "mongodb";
 
@@ -36,22 +36,27 @@ export async function GET(request: Request, { params }: Context) {
   );
 }
 
-/** Drop something in. Owner or member, before zero. */
+/**
+ * Drop something in, before zero. The owner and members send their key from the app. A browser
+ * sends the guest key it got with its first drop, or nothing, and gets one back.
+ */
 export async function POST(request: Request, { params }: Context) {
   const { slug } = await params;
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
-  const token = bearer(request);
-  const { doc, role } = await loadCountdownAndRole(slug, token);
+  const sent = bearer(request);
+  const { doc, role } = await loadCountdownAndRole(slug, sent);
   if (!doc) return errorResponse(404, "Not found.");
-  if (!role) return errorResponse(403, "Join this countdown to add to its coffin.");
-  if (doc.kind === "countUp") return errorResponse(422, "Count-ups don't have a coffin.");
-  if (doc.visibility === "public") return errorResponse(422, "Public countdowns don't have a coffin.");
-  if (isOpen(doc)) return errorResponse(409, "The coffin is already open.");
+  const refusal = coffinRefusal(doc);
+  if (refusal) return errorResponse(isOpen(doc) ? 409 : 422, refusal);
 
-  const verdict = await checkLimits([
-    [limits.contributionsPerHour, clientSubject(request)],
+  const client = clientSubject(request);
+  const isGuest = role === null || role === "guest";
+  const checks: [Limit, string][] = [
+    [limits.contributionsPerHour, client],
     [limits.contributionsPerCountdownPerHour, slug],
-  ]);
+  ];
+  if (isGuest) checks.push([limits.guestContributionsPerHour, client], [limits.guestContributionsPerCountdownPerHour, slug]);
+  const verdict = await checkLimits(checks);
   if (!verdict.ok) return tooManyRequests(verdict, "notes");
 
   let body: unknown;
@@ -67,6 +72,9 @@ export async function POST(request: Request, { params }: Context) {
   if ((await collection.countDocuments({ slug, removedAt: { $exists: false } })) >= COFFIN_LIMITS.perCountdown) {
     return errorResponse(409, "This coffin is full.");
   }
+  // A browser's first drop: a key of its own, kept in its storage, to see and remove it later.
+  const issued = role === null ? await addGuest(slug) : null;
+  const token = issued?.token ?? sent!;
   const _id = new ObjectId();
   let photoPath: string | undefined;
   if (input.value.photo) {
@@ -74,10 +82,13 @@ export async function POST(request: Request, { params }: Context) {
     await put(photoPath, input.value.photo, { access: "private", contentType: "image/jpeg", addRandomSuffix: false });
   }
   const doc2 = {
-    _id, slug, authorTokenHash: hashToken(token!), name: input.value.name, text: input.value.text,
+    _id, slug, authorTokenHash: issued?.tokenHash ?? hashToken(token), name: input.value.name, text: input.value.text,
     ...(photoPath ? { photoPath } : {}), createdAt: new Date(), reports: 0,
   };
   await collection.insertOne(doc2);
   after(() => logEvent("coffin_drop", request, { slug, source: photoPath ? "photo" : "note" }));
-  return NextResponse.json(toPublic(doc2, doc2.authorTokenHash), { status: 201 });
+  return NextResponse.json(
+    { ...toPublic(doc2, doc2.authorTokenHash), ...(issued ? { token: issued.token } : {}) },
+    { status: 201 },
+  );
 }

@@ -12,6 +12,8 @@ import { isSlug } from "./validate.ts";
 export const SERVER_EVENTS = [
   "publish", "unpublish", "join", "leave", "coffin_drop", "pool_guess",
   "wallet_pass_download", "wallet_pass_add", "page_view",
+  // The web loop (5.3): an embed shown on someone's site, and a new calendar feed client.
+  "embed_view", "calendar_subscribed",
 ] as const;
 
 /** Things only the app knows about, sent in batches to POST /api/events. */

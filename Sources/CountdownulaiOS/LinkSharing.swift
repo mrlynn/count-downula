@@ -85,6 +85,12 @@ struct LiveLinkSection: View {
 
     @State private var confirmingPublish = false
     @State private var confirmingUnpublish = false
+    @State private var embedCopied = false
+
+    /// The one-line embed, the same snippet the live page offers (server/src/lib/embed.ts).
+    static func embedSnippet(slug: String) -> String {
+        "<script async src=\"\(LiveLinkAPI.baseURL.absoluteString)/embed.js\" data-countdown=\"\(slug)\"></script>"
+    }
     @State private var working = false
     @State private var errorMessage: String?
     @State private var sharedURL: URL?
@@ -109,6 +115,20 @@ struct LiveLinkSection: View {
                 .simultaneousGesture(TapGesture().onEnded {
                     Analytics.log(.shareSheetOpened, slug: link.slug, source: "owner_link")
                 })
+
+                // A live countdown for a wedding site or a launch page. Count-ups stay private.
+                if !countdown.countsUp || countdown.extras.keptCountingAt != nil {
+                    Button {
+                        UIPasteboard.general.string = Self.embedSnippet(slug: link.slug)
+                        embedCopied = true
+                        Analytics.log(.shareSheetOpened, slug: link.slug, source: "embed_code")
+                    } label: {
+                        Label(embedCopied ? "Embed Code Copied" : "Copy Embed Code",
+                              systemImage: embedCopied ? "checkmark" : "chevron.left.forwardslash.chevron.right")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                }
 
                 Button(role: .destructive) {
                     confirmingUnpublish = true

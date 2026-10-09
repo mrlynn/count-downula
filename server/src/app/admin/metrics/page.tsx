@@ -52,7 +52,7 @@ export default async function MetricsPage() {
   // The proxy asks for the password; this makes sure nothing renders without it.
   if (!metricsAuthorized((await headers()).get("authorization"))) notFound();
 
-  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy, afterZero] = await Promise.all([
+  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy, bySource] = await Promise.all([
     monthly(),
     totals(30),
     newInstalls(30),
@@ -60,10 +60,13 @@ export default async function MetricsPage() {
     sources("page_view"),
     sources("countdown_created"),
     sources("paywall_shown"),
-    sourceCounts(["countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported"]),
+    sourceCounts([
+      "countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported",
+      "page_view", "calendar_subscribed",
+    ]),
   ]);
-  const finished = afterZero("countdown_finished");
-  const deletedSoon = afterZero("countdown_deleted", "after_zero_30d");
+  const finished = bySource("countdown_finished");
+  const deletedSoon = bySource("countdown_deleted", "after_zero_30d");
   const thisMonth = months[0];
   const count = (name: EventName) => sum(last30.get(name));
   const paywalls = count("paywall_shown");
@@ -161,9 +164,9 @@ export default async function MetricsPage() {
             <TableBody>
               {[
                 ["Reached zero", finished, ""],
-                ["Kept counting up", afterZero("keep_counting"), pct(ratio(afterZero("keep_counting"), finished))],
-                ["Recap cards shared", afterZero("image_exported", "recap"), pct(ratio(afterZero("image_exported", "recap"), finished))],
-                ["Recap videos made", afterZero("video_exported", "recap"), pct(ratio(afterZero("video_exported", "recap"), finished))],
+                ["Kept counting up", bySource("keep_counting"), pct(ratio(bySource("keep_counting"), finished))],
+                ["Recap cards shared", bySource("image_exported", "recap"), pct(ratio(bySource("image_exported", "recap"), finished))],
+                ["Recap videos made", bySource("video_exported", "recap"), pct(ratio(bySource("video_exported", "recap"), finished))],
                 ["Deleted within 30 days of zero", deletedSoon, pct(ratio(deletedSoon, finished))],
                 ["Kept 30 days after zero", Math.max(finished - deletedSoon, 0), pct(ratio(Math.max(finished - deletedSoon, 0), finished))],
               ].map(([label, n, share]) => (
@@ -171,6 +174,30 @@ export default async function MetricsPage() {
                   <TableCell>{label}</TableCell>
                   <TableCell align="right">{n}</TableCell>
                   <TableCell align="right" sx={{ opacity: 0.7 }}>{share}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Section>
+
+        <Section
+          title="The web loop"
+          note="People taking part without the iPhone app, and countdowns out on other sites. Calendar subscriptions count new feed clients; Google fetches for many people at once, so its number runs low."
+        >
+          <Table size="small">
+            <TableBody>
+              {[
+                ["Coffin drops from the web", last30.get("coffin_drop")?.get("web") ?? 0],
+                ["Pool guesses from the web", last30.get("pool_guess")?.get("web") ?? 0],
+                ["Calendar subscriptions", bySource("calendar_subscribed")],
+                ["…in Google Calendar", bySource("calendar_subscribed", "google")],
+                ["…in Apple Calendar", bySource("calendar_subscribed", "apple")],
+                ["Embed views", count("embed_view")],
+                ["Clicks from embeds to the live page", bySource("page_view", "embed")],
+              ].map(([label, n]) => (
+                <TableRow key={label as string}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell align="right">{n}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

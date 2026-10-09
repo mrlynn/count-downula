@@ -26,6 +26,9 @@ export const limits = {
   joinsPerHour: { name: "join-hour", max: 60, windowSeconds: 3_600 },
   contributionsPerHour: { name: "coffin-hour", max: 20, windowSeconds: 3_600 },
   contributionsPerCountdownPerHour: { name: "coffin-slug", max: 300, windowSeconds: 3_600 },
+  /** Web guests have no app or account behind them, so they get less room than members. */
+  guestContributionsPerHour: { name: "coffin-guest-hour", max: 6, windowSeconds: 3_600 },
+  guestContributionsPerCountdownPerHour: { name: "coffin-guest-slug", max: 100, windowSeconds: 3_600 },
   guessesPerHour: { name: "guess-hour", max: 30, windowSeconds: 3_600 },
   guessesPerPoolPerHour: { name: "guess-slug", max: 300, windowSeconds: 3_600 },
   reportsPerHour: { name: "report-hour", max: 20, windowSeconds: 3_600 },

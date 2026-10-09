@@ -16,6 +16,16 @@ const config: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         ],
       },
+      // Only embeds may be framed by other sites; everything else (the live page's Join button,
+      // the dashboard) refuses, so it can't be dressed up inside someone else's page.
+      {
+        source: "/((?!embed).*)",
+        headers: [{ key: "Content-Security-Policy", value: "frame-ancestors 'self'" }],
+      },
+      {
+        source: "/embed/:path*",
+        headers: [{ key: "Content-Security-Policy", value: "frame-ancestors *" }],
+      },
     ];
   },
 };
