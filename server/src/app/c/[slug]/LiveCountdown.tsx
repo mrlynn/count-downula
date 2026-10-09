@@ -3,6 +3,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import type { PublicCountdown } from "@/lib/countdowns.ts";
+import { recapText, type Recap } from "@/lib/recapText.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
 import PoolPanel from "./PoolPanel.tsx";
@@ -54,6 +55,7 @@ export function LiveCountdown({
   memberCount,
   sealed = 0,
   walletURL = null,
+  recap = null,
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
@@ -63,6 +65,8 @@ export function LiveCountdown({
   sealed?: number;
   /** Where to get the Apple Wallet pass, once passes are set up. */
   walletURL?: string | null;
+  /** After zero: how long it was counted, who counted, what the coffin held, who guessed closest. */
+  recap?: Recap | null;
 }) {
   // Start from the server's clock so the first client render matches the HTML, then tick locally.
   const [now, setNow] = useState(() => new Date(serverNow));
@@ -79,6 +83,10 @@ export function LiveCountdown({
   const created = new Date(countdown.createdAt);
   const countsUp = countdown.kind === "countUp";
   const p = timeParts(now, target, countsUp);
+  // Floating times pass at each viewer's own midnight, so the recap waits for this viewer's zero too.
+  const words = recap && p.isPast ? recapText(recap, !!countdown.isPublic) : null;
+  // Kept counting up after zero: still say how many counted down to it.
+  const together = recap && countsUp ? recapText(recap, !!countdown.isPublic).together : null;
   const style = webStyle(countdown.style, !!photoURL);
   const dateLine = mounted
     ? target.toLocaleString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })
@@ -131,23 +139,44 @@ export function LiveCountdown({
           </Typography>
           <Typography sx={{ opacity: 0.85, minHeight: "1.5em", mb: 3 }} suppressHydrationWarning>
             {p.isPast
-              ? `It's here! ${dateLine}`
+              ? words ? dateLine : `It's here! ${dateLine}`
               : countsUp
                 ? `Since ${dateLine}`
                 : countdown.pool && !countdown.pool.answer
                   ? `Expected ${dateLine}`
                   : dateLine}
           </Typography>
-          <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
-            <Unit value={p.days} label="days" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-            <Unit value={p.hours} label="hours" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-            <Unit value={p.minutes} label="min" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-            <Unit value={p.seconds} label="sec" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-          </Stack>
+          {words ? (
+            <Box>
+              <Typography
+                component="div"
+                sx={{ fontFamily: style.fontFamily, fontWeight: style.fontWeight, fontSize: { xs: 52, sm: 84 }, lineHeight: 1 }}
+              >
+                It happened.
+              </Typography>
+              {words.counted ? (
+                <Typography sx={{ fontSize: { xs: 22, sm: 28 }, fontWeight: 600, mt: 1.5 }}>{words.counted}</Typography>
+              ) : null}
+              {words.people ? <Typography sx={{ fontSize: { xs: 17, sm: 20 }, opacity: 0.85, mt: 1 }}>{words.people}</Typography> : null}
+              {recap && recap.notes > 0 ? (
+                <Typography sx={{ mt: 1, opacity: 0.75 }}>The coffin is open in the app for everyone who counted down.</Typography>
+              ) : null}
+            </Box>
+          ) : (
+            <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
+              <Unit value={p.days} label="days" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.hours} label="hours" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.minutes} label="min" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.seconds} label="sec" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+            </Stack>
+          )}
           {countdown.details ? (
             <Typography sx={{ mt: 3, maxWidth: 640, opacity: 0.9, whiteSpace: "pre-wrap" }}>{countdown.details}</Typography>
           ) : null}
-          {memberCount > 0 ? (
+          {together ? (
+            <Typography sx={{ mt: 2, opacity: 0.8, fontWeight: 600 }}>{together}</Typography>
+          ) : null}
+          {memberCount > 0 && !words && !together ? (
             <Typography sx={{ mt: 2, opacity: 0.8, fontWeight: 600 }}>
               {memberCount === 1 ? "1 person is counting down" : `${memberCount.toLocaleString()} people are counting down`}
             </Typography>
@@ -170,20 +199,24 @@ export function LiveCountdown({
           <Box>
             <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
             <Typography sx={{ opacity: 0.7 }}>
-              Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes.
+              {words
+                ? "Count down to your next big day together: it shows up on your Lock Screen, watch and menu bar."
+                : "Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes."}
             </Typography>
           </Box>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
             {/* Same-site links don't open the app, so this uses the app's own scheme. */}
-            <Button variant="contained" size="large" href={`countdownula://join/${countdown.slug}`}>
-              Count down with me
-            </Button>
-            {walletURL ? (
+            {words ? null : (
+              <Button variant="contained" size="large" href={`countdownula://join/${countdown.slug}`}>
+                Count down with me
+              </Button>
+            )}
+            {walletURL && !words ? (
               <Button variant="outlined" size="large" href={walletURL}>
                 Add to Apple Wallet
               </Button>
             ) : null}
-            <Button variant="outlined" size="large" href={DOWNLOAD}>
+            <Button variant={words ? "contained" : "outlined"} size="large" href={DOWNLOAD}>
               Get the app
             </Button>
           </Stack>

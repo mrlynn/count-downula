@@ -9,7 +9,7 @@ Built with Next.js (App Router), Material UI and MongoDB. See `docs/specs/viral-
 | Route | What |
 |---|---|
 | `POST /api/countdowns` | Publish. Body `{ countdown, photo? }`. Returns `{ slug, url, ownerToken, countdown }` |
-| `GET /api/countdowns/:slug` | Public JSON |
+| `GET /api/countdowns/:slug` | Public JSON. After zero it adds `recap: { counted?, people, notes, closest }`, and a countdown kept counting up from zero has `keptCounting: true` |
 | `PUT /api/countdowns/:slug` | Owner edit, `Authorization: Bearer <ownerToken>`. Leave `photo` out to keep it, `null` to remove it |
 | `DELETE /api/countdowns/:slug` | Owner unpublish. Deletes the countdown and its photo |
 | `GET /c/:slug` | The page |

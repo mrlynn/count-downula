@@ -31,6 +31,8 @@ export interface CountdownDoc {
   category?: string;
   /** A date pool: people guess when it happens (see pool.ts). */
   pool?: PoolState;
+  /** It reached zero and the owner kept it counting up from there ("Married 1 year"). */
+  keptCounting?: boolean;
 }
 
 export interface PoolState {
@@ -73,6 +75,7 @@ export interface PublicCountdown {
   isPublic?: boolean;
   category?: string;
   pool?: { closed: boolean; answer?: string };
+  keptCounting?: boolean;
 }
 
 let indexesReady: Promise<unknown> | undefined;
@@ -119,6 +122,7 @@ export function toPublic(doc: CountdownDoc): PublicCountdown {
     ...(doc.pool
       ? { pool: { closed: doc.pool.closed, ...(doc.pool.answer ? { answer: doc.pool.answer.toISOString() } : {}) } }
       : {}),
+    ...(doc.keptCounting ? { keptCounting: true } : {}),
   };
 }
 
@@ -202,9 +206,11 @@ export async function updateCountdown(
   const { countdowns, photos } = await collections();
   const hasPhoto = await writePhoto(photos, slug, photo);
   const current = await getCountdown(slug);
+  const kept = current ? keptCountingAfter(current, input) : undefined;
   const update: Record<string, object> = {
     $set: {
       ...input,
+      ...(kept ? { keptCounting: true } : {}),
       updatedAt: new Date(),
       ...(hasPhoto === undefined ? {} : { hasPhoto }),
       ...(pool === true && !current?.pool ? { pool: { closed: false } } : {}),
@@ -212,8 +218,25 @@ export async function updateCountdown(
   };
   // A settled pool stays: its result is history now.
   if (pool === false && current?.pool && !current.pool.answer) update.$unset = { pool: "" };
+  if (kept === false) update.$unset = { ...(update.$unset ?? {}), keptCounting: "" };
   const doc = await countdowns.findOneAndUpdate({ slug }, update, { returnDocument: "after" });
   return { result, doc: doc ?? undefined };
+}
+
+/**
+ * Whether an edit keeps a finished countdown counting up from its zero: true when a countdown that
+ * has passed turns into a count-up from the same moment, false when a kept one turns back, and
+ * undefined when nothing about that changes. Pure, for tests.
+ */
+export function keptCountingAfter(
+  current: Pick<CountdownDoc, "kind" | "targetDate" | "keptCounting">,
+  input: Pick<CountdownInput, "kind" | "targetDate">,
+  now = new Date(),
+): boolean | undefined {
+  if (current.keptCounting) return input.kind === "countUp" ? undefined : false;
+  const finished = current.kind !== "countUp" && current.targetDate.getTime() <= now.getTime();
+  if (finished && input.kind === "countUp" && input.targetDate.getTime() === current.targetDate.getTime()) return true;
+  return undefined;
 }
 
 export async function deleteCountdown(slug: string, token: string | null): Promise<OwnerResult> {

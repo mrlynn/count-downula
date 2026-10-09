@@ -47,12 +47,15 @@ enum SharedCountdowns {
         var countdown = local
         countdown.title = remote.title
         countdown.details = remote.details
-        countdown.kind = remote.kind
+        // The owner kept counting up from zero; a member who'd rather not stays at "It's here".
+        let staysFinished = remote.keptCounting && local.extras.subscription?.staysFinished == true
+        countdown.kind = staysFinished ? .event : remote.kind
         countdown.targetDate = remote.targetDate
         countdown.createdAt = remote.createdAt
         countdown.style = remote.style
+        countdown.extras.keptCountingAt = remote.keptCounting ? (local.extras.keptCountingAt ?? remote.updatedAt) : nil
         let celebrated = Dictionary(local.milestones.map { ($0.id, $0.celebratedAt) }, uniquingKeysWith: { a, _ in a })
-        countdown.milestones = remote.milestones.map { milestone in
+        countdown.milestones = staysFinished ? local.milestones.filter { !$0.isElapsedTrigger } : remote.milestones.map { milestone in
             var milestone = milestone
             milestone.celebratedAt = celebrated[milestone.id] ?? nil
             return milestone
@@ -144,6 +147,10 @@ struct RemoteCountdown: Equatable {
     var floating: String? = nil
     var isPublic = false
     var pool: DatePool? = nil
+    /// The owner kept counting up from zero (`keptCounting` on the server).
+    var keptCounting = false
+    /// After zero: who counted, what the coffin held, who guessed closest.
+    var recap: Recap? = nil
 }
 
 extension RemoteCountdown {
@@ -151,6 +158,7 @@ extension RemoteCountdown {
         let url: URL?
         let countdown: Body
         let memberCount: Int?
+        let recap: Recap?
     }
 
     private struct Body: Decodable {
@@ -166,6 +174,7 @@ extension RemoteCountdown {
         let floating: String?
         let isPublic: Bool?
         let pool: Lenient<DatePool>?
+        let keptCounting: Bool?
     }
 
     /// A style or milestone list written by a newer app can fail to decode here; fall back rather
@@ -187,7 +196,8 @@ extension RemoteCountdown {
             updatedAt: body.updatedAt, kind: Countdown.Kind(rawValue: body.kind) ?? .event,
             style: body.style?.value ?? .default, milestones: body.milestones?.value ?? [],
             hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url,
-            floating: body.floating, isPublic: body.isPublic ?? false, pool: body.pool?.value
+            floating: body.floating, isPublic: body.isPublic ?? false, pool: body.pool?.value,
+            keptCounting: body.keptCounting ?? false, recap: envelope.recap
         )
     }
 

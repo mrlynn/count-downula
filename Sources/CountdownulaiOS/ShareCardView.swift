@@ -3,11 +3,14 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// A portrait card for Messages or Instagram: the countdown's backdrop, its title, the big number
-/// and the latest milestone reached.
+/// and the latest milestone reached. After zero it's the recap: how long it was counted, and for a
+/// shared countdown, who counted with you.
 struct ShareCardView: View {
     let countdown: Countdown
     var photo: UIImage?
     let now: Date
+    /// The shared countdown's people, from the server, once it reached zero.
+    var recap: Recap?
 
     var body: some View {
         let style = countdown.style
@@ -38,6 +41,12 @@ struct ShareCardView: View {
                 Text(headline.caption)
                     .font(.system(size: 17, weight: .medium))
                     .opacity(0.85)
+                if countdown.isPast(at: now), let line = recap?.peopleLine(isPublic: countdown.extras.subscription?.isPublic == true) {
+                    Text(line)
+                        .font(.system(size: 15, weight: .semibold))
+                        .opacity(0.85)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 HStack(spacing: 6) {
                     FangMark()
                         .foregroundStyle(style.accentColor)
@@ -63,7 +72,12 @@ struct ShareCardView: View {
                 ? ("\(days) \(days == 1 ? "day" : "days")", "since \(countdown.targetDate.formatted(.dateTime.month(.wide).day().year()))")
                 : (CountdownFormat.compact(countdown, at: now), "and counting")
         }
-        if parts.isPast { return ("It's here!", countdown.targetDate.formatted(.dateTime.month(.wide).day().year())) }
+        if parts.isPast {
+            let date = countdown.targetDate.formatted(.dateTime.month(.wide).day().year())
+            // The recap: "142 days", counted.
+            if countdown.kind == .event, let counted = Recap.counted(countdown) { return (counted, "counted · \(date)") }
+            return ("It's here!", date)
+        }
         if parts.days > 0 {
             return ("\(parts.days) \(parts.days == 1 ? "day" : "days")",
                     "to go · \(countdown.targetDate.formatted(.dateTime.month(.wide).day()))")
@@ -77,12 +91,14 @@ struct ShareCard: Transferable {
     let countdown: Countdown
     let photo: UIImage?
     let now: Date
+    var recap: Recap?
 
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(exportedContentType: .png) { card in
             try await MainActor.run {
                 guard let data = card.renderPNG() else { throw CocoaError(.fileWriteUnknown) }
-                Analytics.log(.imageExported, slug: card.countdown.extras.link?.slug ?? card.countdown.extras.subscription?.slug)
+                Analytics.log(.imageExported, slug: card.countdown.extras.link?.slug ?? card.countdown.extras.subscription?.slug,
+                              source: card.countdown.hasReachedZero(at: card.now) ? "recap" : nil)
                 return data
             }
         }
@@ -91,7 +107,7 @@ struct ShareCard: Transferable {
 
     @MainActor
     func renderPNG() -> Data? {
-        let renderer = ImageRenderer(content: ShareCardView(countdown: countdown, photo: photo, now: now))
+        let renderer = ImageRenderer(content: ShareCardView(countdown: countdown, photo: photo, now: now, recap: recap))
         renderer.scale = 3  // 1080 × 1350
         return renderer.uiImage?.pngData()
     }

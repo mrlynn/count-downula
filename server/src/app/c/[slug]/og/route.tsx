@@ -3,6 +3,7 @@ import path from "node:path";
 import { ImageResponse } from "next/og";
 import { getCountdown, getPhoto } from "@/lib/countdowns.ts";
 import { backdropSrc } from "@/lib/backdrop.ts";
+import { loadRecap, recapText } from "@/lib/recap.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, headline } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -29,7 +30,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const style = webStyle(doc.style, !!photo);
   const backdrop = await backdropSrc(style, photo);
   const now = new Date();
-  const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone);
+  const live = headline(now, doc.targetDate, doc.kind, doc.timeZone);
+  // After zero: "It happened." and who was there, instead of a date that's passed.
+  const recap = doc.kind === "countUp" ? null : await loadRecap(doc, now);
+  const words = recap ? recapText(recap, doc.visibility === "public") : null;
+  const value = words ? "It happened." : live.value;
+  const caption = words ? (words.together ?? words.counted ?? live.caption) : live.caption;
   const remaining = dialRemaining(now, doc.createdAt, doc.targetDate, doc.kind);
   const serifNumbers = (doc.style as { font?: string }).font === "serif";
 

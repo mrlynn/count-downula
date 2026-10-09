@@ -42,6 +42,7 @@ enum NotificationPlan {
             for scheduled in countdown.scheduledMilestones where scheduled.date > now {
                 items.append(milestone(scheduled, of: countdown))
             }
+            if let anniversary = anniversary(for: countdown, now: now) { items.append(anniversary) }
         }
         return Array(items.sorted { $0.date < $1.date }.prefix(limit))
     }
@@ -78,6 +79,24 @@ enum NotificationPlan {
             title: "\(scheduled.milestone.displayEmoji) \(countdown.title)",
             body: speaks ? CountLines.milestone(scheduled, of: countdown) : scheduled.milestone.title
         )
+    }
+
+    /// A year after a countdown reached zero (and every year after), a nudge to look back and
+    /// reshare its recap. Tapping it opens the countdown.
+    static func anniversary(for countdown: Countdown, now: Date, calendar: Calendar = .current) -> Item? {
+        guard countdown.hasReachedZero(at: now) else { return nil }
+        for years in 1...50 {
+            guard let date = calendar.date(byAdding: .year, value: years, to: countdown.targetDate) else { return nil }
+            guard date > now else { continue }
+            return Item(
+                identifier: "\(countdown.id.uuidString)#anniversary",
+                countdownID: countdown.id,
+                date: date,
+                title: "🦇 \(countdown.title)",
+                body: years == 1 ? "A year ago today. Look back, and share how it went." : "\(years) years ago today. Look back, and share how it went."
+            )
+        }
+        return nil
     }
 
     private static func completionEmoji(for countdown: Countdown) -> String {

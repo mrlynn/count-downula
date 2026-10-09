@@ -188,14 +188,17 @@ struct SharedMemberSection: View {
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            ShareLink(item: subscription.url, subject: Text(countdown.title), message: Text(countdown.title)) {
-                Label("Invite Others", systemImage: "person.badge.plus")
-                    .frame(maxWidth: .infinity)
+            // After zero there's nothing left to invite anyone to; the recap card is the thing to share.
+            if !countdown.hasReachedZero(at: Date()) {
+                ShareLink(item: subscription.url, subject: Text(countdown.title), message: Text(countdown.title)) {
+                    Label("Invite Others", systemImage: "person.badge.plus")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .simultaneousGesture(TapGesture().onEnded {
+                    Analytics.log(.shareSheetOpened, slug: subscription.slug, source: "member_invite")
+                })
             }
-            .buttonStyle(.borderedProminent)
-            .simultaneousGesture(TapGesture().onEnded {
-                Analytics.log(.shareSheetOpened, slug: subscription.slug, source: "member_invite")
-            })
 
             Button(role: .destructive) {
                 confirmingLeave = true
@@ -217,7 +220,8 @@ struct SharedMemberSection: View {
 
     private var summary: String {
         let others = max(0, (subscription.memberCount ?? 1) - 1)
-        let who = others == 0 ? "Shared with you" : "You and \(others) other\(others == 1 ? "" : "s") are counting down"
+        let verb = countdown.hasReachedZero(at: Date()) ? "counted down" : "are counting down"
+        let who = others == 0 ? "Shared with you" : "You and \(others) other\(others == 1 ? "" : "s") \(verb)"
         return "\(who). Only the owner can change it."
     }
 }

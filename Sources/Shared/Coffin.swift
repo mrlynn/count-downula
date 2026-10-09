@@ -36,7 +36,8 @@ enum Coffin {
 
     /// The slug and owner or member key for any shared countdown, public ones included.
     static func sharedAccess(for countdown: Countdown) -> (slug: String, token: String)? {
-        guard !countdown.countsUp else { return nil }
+        // Count-ups have no coffin, except a countdown kept counting up after its zero.
+        guard !countdown.countsUp || countdown.extras.keptCountingAt != nil else { return nil }
         if let link = countdown.extras.link, let token = OwnerTokens.token(for: countdown.id) {
             return (link.slug, token)
         }

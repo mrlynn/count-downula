@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { deleteCountdown, getCountdown, memberCount, pushTargets, toPublic, updateCountdown } from "@/lib/countdowns.ts";
 import { logEvent } from "@/lib/events.ts";
+import { loadRecap } from "@/lib/recap.ts";
 import { notifyMembers } from "@/lib/notify.ts";
 import { purgeCoffin } from "@/lib/coffin.ts";
 import { purgePool } from "@/lib/pool.ts";
@@ -17,8 +18,9 @@ export async function GET(_request: Request, { params }: Context) {
   if (!isSlug(slug)) return errorResponse(404, "Not found.");
   const doc = await getCountdown(slug);
   if (!doc) return errorResponse(404, "Not found.");
+  const [members, recap] = await Promise.all([memberCount(slug), loadRecap(doc)]);
   return NextResponse.json(
-    { url: shareURL(slug), countdown: toPublic(doc), memberCount: await memberCount(slug) },
+    { url: shareURL(slug), countdown: toPublic(doc), memberCount: members, ...(recap ? { recap } : {}) },
     { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
   );
 }

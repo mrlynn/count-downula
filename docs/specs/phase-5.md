@@ -82,6 +82,15 @@ Depends on: 5.1 to measure it. Nothing new for the build.
 
 Measure: recap shares per finished countdown, Keep Counting rate, and countdowns still present 30 days after zero.
 
+Built (October 9, 2026):
+- **Recap card:** after zero, the share card and video become the recap. "Sonoma", "142 days", "counted · October 24, 2026". A shared countdown adds "23 of us · 41 notes in the coffin · Dana guessed closest". The server works out the people, and `GET /api/countdowns/<slug>` returns them as `recap`.
+- **Recap page:** after zero, `/c/<slug>` reads "It happened." and shows the counted days and the people line. Its preview image and description become "It happened. 23 counted down together." The "Count down with me" and Wallet buttons give way to Get the App. Floating holidays wait for each viewer's own zero.
+- **The coffin on the web:** the page only says the coffin is open in the app. Opening it on the web waits for 5.3.
+- **Keep Counting:** a button on a finished countdown's detail screen turns it into a count-up from its zero, with the count-up milestones. When the owner does it, the server marks the countdown `keptCounting`, and members follow. Each member has a "Keep counting with everyone" switch to stay at zero instead (`staysFinished` on their subscription). Kept countdowns keep their recap and their coffin.
+- **Past countdowns:** finished countdowns stay in Past, as before. They lose Wallet and Invite Others and gain Share the Recap. Each one comes back on its anniversary with a notification.
+- **Not built:** I didn't add a Graveyard name, and Mac has no Keep Counting button yet. A Mac still shows a kept countdown as a count-up.
+- **Events:** `countdown_finished` (iPhone, once per countdown, only within a week of zero), `keep_counting` (solo, shared, member_follows, member_stays) and `countdown_deleted` (before_zero, after_zero_30d, after_zero_later, count_up or timer). Recap shares are `image_exported` and `video_exported` with source `recap`. The dashboard has an After Zero section.
+
 ### 5.3 The web loop (size M, web create is L)
 
 What it is: let people without an iPhone take part, and put countdowns on other people's websites.
