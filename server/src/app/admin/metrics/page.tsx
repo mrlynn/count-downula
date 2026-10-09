@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { metricsAuthorized } from "@/lib/adminAuth.ts";
 import type { EventName } from "@/lib/events.ts";
-import { cohorts, monthly, newInstalls, sources, sum, totals } from "@/lib/metrics.ts";
+import { cohorts, monthly, newInstalls, sourceCounts, sources, sum, totals } from "@/lib/metrics.ts";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Metrics · Count Downcula", robots: { index: false } };
@@ -52,7 +52,7 @@ export default async function MetricsPage() {
   // The proxy asks for the password; this makes sure nothing renders without it.
   if (!metricsAuthorized((await headers()).get("authorization"))) notFound();
 
-  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy] = await Promise.all([
+  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy, afterZero] = await Promise.all([
     monthly(),
     totals(30),
     newInstalls(30),
@@ -60,7 +60,10 @@ export default async function MetricsPage() {
     sources("page_view"),
     sources("countdown_created"),
     sources("paywall_shown"),
+    sourceCounts(["countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported"]),
   ]);
+  const finished = afterZero("countdown_finished");
+  const deletedSoon = afterZero("countdown_deleted", "after_zero_30d");
   const thisMonth = months[0];
   const count = (name: EventName) => sum(last30.get(name));
   const paywalls = count("paywall_shown");
@@ -144,6 +147,30 @@ export default async function MetricsPage() {
                 <TableRow key={name}>
                   <TableCell>{label}</TableCell>
                   {PLATFORMS.map((p) => <TableCell key={p} align="right">{last30.get(name)?.get(p) ?? 0}</TableCell>)}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Section>
+
+        <Section
+          title="After zero"
+          note="Countdowns reaching zero on an iPhone, and what happens next. Kept 30 days is a rough rate: finished in the window, less deleted within 30 days of zero."
+        >
+          <Table size="small">
+            <TableBody>
+              {[
+                ["Reached zero", finished, ""],
+                ["Kept counting up", afterZero("keep_counting"), pct(ratio(afterZero("keep_counting"), finished))],
+                ["Recap cards shared", afterZero("image_exported", "recap"), pct(ratio(afterZero("image_exported", "recap"), finished))],
+                ["Recap videos made", afterZero("video_exported", "recap"), pct(ratio(afterZero("video_exported", "recap"), finished))],
+                ["Deleted within 30 days of zero", deletedSoon, pct(ratio(deletedSoon, finished))],
+                ["Kept 30 days after zero", Math.max(finished - deletedSoon, 0), pct(ratio(Math.max(finished - deletedSoon, 0), finished))],
+              ].map(([label, n, share]) => (
+                <TableRow key={label as string}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell align="right">{n}</TableCell>
+                  <TableCell align="right" sx={{ opacity: 0.7 }}>{share}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

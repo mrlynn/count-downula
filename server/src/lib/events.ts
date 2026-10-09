@@ -18,6 +18,9 @@ export const SERVER_EVENTS = [
 export const CLIENT_EVENTS = [
   "active", "countdown_created", "share_sheet_opened", "video_exported", "image_exported",
   "paywall_shown", "purchase_completed", "install_from_link", "clip_launch", "clip_keep_it",
+  // After zero (5.2). A deletion's source says when: "before_zero", "after_zero_30d" (within 30 days
+  // of zero) or "after_zero_later".
+  "countdown_finished", "keep_counting", "countdown_deleted",
 ] as const;
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];

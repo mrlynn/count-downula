@@ -69,6 +69,20 @@ export async function sources(name: EventName, days = 30, now = new Date(), limi
   ]).toArray();
 }
 
+/** How many of each event had each source in the last `days`: `{ countdown_deleted: { after_zero_30d: 4 } }`. */
+export async function sourceCounts(names: EventName[], days = 30, now = new Date()) {
+  const rows = await (await events()).aggregate<{ _id: { name: EventName; source: string | null }; n: number }>([
+    { $match: { name: { $in: names }, at: { $gte: daysAgo(days, now) } } },
+    { $group: { _id: { name: "$name", source: "$source" }, n: { $sum: 1 } } },
+  ]).toArray();
+  const out = new Map<string, number>();
+  for (const r of rows) out.set(`${r._id.name}:${r._id.source ?? ""}`, r.n);
+  return (name: EventName, source?: string) =>
+    source === undefined
+      ? [...out.entries()].filter(([k]) => k.startsWith(`${name}:`)).reduce((a, [, n]) => a + n, 0)
+      : out.get(`${name}:${source}`) ?? 0;
+}
+
 export interface NewInstalls {
   total: number;
   fromLink: number;

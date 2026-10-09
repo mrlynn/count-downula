@@ -223,6 +223,7 @@ targets:
       - path: Sources/Shared/ImageUpdate.swift
       - path: Sources/Shared/ClipHandoff.swift
       - path: Sources/Shared/Analytics.swift
+      - path: Sources/Shared/Recap.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.Clip

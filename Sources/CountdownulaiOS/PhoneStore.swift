@@ -101,6 +101,7 @@ final class PhoneStore {
     }
 
     func delete(_ countdown: Countdown) {
+        Analytics.log(.countdownDeleted, source: Analytics.deletionSource(for: countdown))
         // Deleting someone else's shared countdown means leaving it.
         if countdown.extras.subscription != nil {
             leave(countdown)
@@ -185,6 +186,7 @@ final class PhoneStore {
         // A published page follows its countdown on to next year or the next sunrise.
         for countdown in rolled { pushLinkUpdate(for: countdown) }
         publishToWidgets()
+        Analytics.noteFinished(countdowns)
         SpotlightIndex.update(countdowns)
         scheduleNotifications()
         LiveActivities.sync(with: countdowns)

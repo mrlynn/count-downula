@@ -23,10 +23,13 @@ struct CountdownExtras: Codable, Hashable {
     var auto: AutoDate?
     /// A date pool: friends guess when it happens. Set by the owner; members get it with the copy.
     var pool: DatePool?
+    /// When a finished countdown became a count-up from its zero (Keep Counting). Members get it
+    /// from the owner's copy, so it marks a count-up that still has a recap and a coffin.
+    var keptCountingAt: Date?
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool }
+    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool, keptCountingAt }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -39,6 +42,7 @@ struct CountdownExtras: Codable, Hashable {
         voice = (try? c.decodeIfPresent(NotificationVoice.self, forKey: .voice)) ?? .standard
         auto = try? c.decodeIfPresent(AutoDate.self, forKey: .auto)
         pool = try? c.decodeIfPresent(DatePool.self, forKey: .pool)
+        keptCountingAt = try? c.decodeIfPresent(Date.self, forKey: .keptCountingAt)
     }
 }
 
@@ -123,6 +127,8 @@ struct SharedSubscription: Codable, Hashable {
     var memberCount: Int?
     /// A public crypt countdown (no coffin; anyone can join).
     var isPublic: Bool?
+    /// This member stays at zero when the owner keeps counting up from it.
+    var staysFinished: Bool?
 }
 
 /// A countdown's public page on the Count Downcula server.

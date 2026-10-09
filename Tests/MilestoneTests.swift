@@ -62,7 +62,8 @@ final class MilestoneTests: XCTestCase {
         let past = Countdown(title: "Old", details: "", targetDate: now - day, createdAt: now - 9 * day)
 
         let items = NotificationPlan.items(for: [a, b, past], now: now, limit: 60)
-        XCTAssertEqual(items.map(\.title), ["🎉 Soon", "🥳 Trip", "🎉 Trip"])  // halfway already passed
+        // Halfway already passed; the finished one comes back on its anniversary, last.
+        XCTAssertEqual(items.map(\.title), ["🎉 Soon", "🥳 Trip", "🎉 Trip", "🦇 Old"])
         XCTAssertEqual(items.map(\.date), items.map(\.date).sorted())
         XCTAssertEqual(items[1].identifier, "\(a.id.uuidString)#\(a.milestones[0].id.uuidString)")
 

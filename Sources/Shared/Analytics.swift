@@ -20,6 +20,9 @@ enum Analytics {
         case installFromLink = "install_from_link"
         case clipLaunch = "clip_launch"
         case clipKeepIt = "clip_keep_it"
+        case countdownFinished = "countdown_finished"
+        case keepCounting = "keep_counting"
+        case countdownDeleted = "countdown_deleted"
     }
 
     struct Queued: Codable, Equatable {
@@ -133,6 +136,33 @@ enum Analytics {
             log(.active, at: now)
         }
         flush()
+    }
+
+    // MARK: - After zero
+
+    private static let finishedKey = "Analytics.finishedIDs"
+
+    /// Logs `countdown_finished` once per countdown that reached zero in the last week. Older ones
+    /// finished before this build, so counting them would skew the after-zero numbers.
+    static func noteFinished(_ countdowns: [Countdown], at now: Date = Date()) {
+        guard isEnabled else { return }
+        let fresh = countdowns.filter { $0.hasReachedZero(at: now) && now.timeIntervalSince($0.targetDate) < 7 * 86_400 }
+        guard !fresh.isEmpty else { return }
+        var seen = Set(defaults.stringArray(forKey: finishedKey) ?? [])
+        for countdown in fresh where !seen.contains(countdown.id.uuidString) {
+            seen.insert(countdown.id.uuidString)
+            log(.countdownFinished, slug: countdown.extras.link?.slug ?? countdown.extras.subscription?.slug,
+                source: countdown.extras.subscription != nil ? "member" : countdown.extras.link != nil ? "owner" : "solo", at: now)
+        }
+        defaults.set(Array(seen.suffix(500)), forKey: finishedKey)
+    }
+
+    /// When a deleted countdown went: before its zero, within 30 days after, or later.
+    static func deletionSource(for countdown: Countdown, at now: Date = Date()) -> String {
+        if countdown.kind == .timer { return "timer" }
+        if countdown.countsUp, countdown.extras.keptCountingAt == nil { return "count_up" }
+        guard countdown.targetDate <= now else { return "before_zero" }
+        return now.timeIntervalSince(countdown.targetDate) <= 30 * 86_400 ? "after_zero_30d" : "after_zero_later"
     }
 
     /// The source to record for a countdown nobody said how it was made.

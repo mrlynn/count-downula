@@ -9,6 +9,8 @@ struct CountdownDetailView: View {
     @State private var confirmingReset = false
     /// Bumped after starting or ending a Live Activity, since ActivityKit state isn't observable.
     @State private var activityRevision = 0
+    /// After zero, a shared countdown's people, for the recap section and card.
+    @State private var recap: Recap?
     /// Lives in the store: saving the celebration reloads the store, which can rebuild this view.
     private var celebration: Celebration? {
         store.celebration?.countdownID == id ? store.celebration : nil
@@ -47,6 +49,9 @@ struct CountdownDetailView: View {
                                 }
                             }
                         }
+
+                        // Zero came: the recap, and Keep Counting.
+                        AfterZeroSection(countdown: countdown, now: now, recap: $recap)
 
                         if !countdown.details.isEmpty {
                             Text(countdown.details)
@@ -163,17 +168,19 @@ struct CountdownDetailView: View {
                 .buttonStyle(.bordered)
             }
 
-            if let slug = (countdown.extras.link?.slug ?? countdown.extras.subscription?.slug), !countdown.countsUp {
+            // A pass is for the day itself; after zero it has nothing left to bring to the Lock Screen.
+            if let slug = (countdown.extras.link?.slug ?? countdown.extras.subscription?.slug), !countdown.countsUp,
+               !countdown.isPast(at: now) {
                 WalletPassButton(slug: slug)
             }
 
             if let subscription = countdown.extras.subscription {
                 SharedMemberSection(countdown: countdown, subscription: subscription)
-                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
+                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now, recap: recap)
             } else {
                 LiveLinkSection(countdown: countdown)
 
-                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now)
+                ShareCardMenu(countdown: countdown, photo: store.image(for: countdown), now: now, recap: recap)
 
                 Button(role: .destructive) {
                     confirmingDelete = true

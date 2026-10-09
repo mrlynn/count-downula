@@ -13,6 +13,7 @@ struct ShareVideoFrame: View {
     let dial: Double
     /// 0 while counting, rising to 1 as the closing title card fades in.
     let outro: Double
+    var recap: Recap?
 
     static let size = CGSize(width: 360, height: 640)
 
@@ -50,6 +51,12 @@ struct ShareVideoFrame: View {
                 Text(headline.caption)
                     .font(.system(size: 17, weight: .medium))
                     .opacity(0.85)
+                if countdown.isPast(at: now), let line = recap?.peopleLine(isPublic: countdown.extras.subscription?.isPublic == true) {
+                    Text(line)
+                        .font(.system(size: 15, weight: .semibold))
+                        .opacity(0.85)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 if !countdown.isPast(at: now) {
                     Text(Self.clock(countdown.timeParts(at: now)))
                         .font(.system(size: 22, weight: .semibold, design: .monospaced))
@@ -115,7 +122,7 @@ enum ShareVideo {
 
     /// What frame `index` shows: the countdown at `start` plus the elapsed time, with the ring
     /// easing from full (empty for a count-up) to where it really is.
-    static func frame(_ index: Int, of countdown: Countdown, photo: UIImage?, start: Date) -> ShareVideoFrame {
+    static func frame(_ index: Int, of countdown: Countdown, photo: UIImage?, start: Date, recap: Recap? = nil) -> ShareVideoFrame {
         let t = Double(index) / Double(fps)
         let now = start + t
         let target = countdown.dialRemaining(at: now)
@@ -124,10 +131,10 @@ enum ShareVideo {
         let eased = 1 - pow(1 - sweep, 3)
         let outro = min(max((t - outroStart) / outroFade, 0), 1)
         return ShareVideoFrame(countdown: countdown, photo: photo, now: now,
-                               dial: from + (target - from) * eased, outro: outro)
+                               dial: from + (target - from) * eased, outro: outro, recap: recap)
     }
 
-    static func render(_ countdown: Countdown, photo: UIImage?, start: Date = Date(),
+    static func render(_ countdown: Countdown, photo: UIImage?, recap: Recap? = nil, start: Date = Date(),
                        progress: (Double) -> Void) async throws -> URL {
         let width = Int(ShareVideoFrame.size.width * 3), height = Int(ShareVideoFrame.size.height * 3)
         let name = countdown.title.components(separatedBy: CharacterSet.alphanumerics.inverted)
@@ -153,12 +160,12 @@ enum ShareVideo {
         guard writer.startWriting() else { throw writer.error ?? Failure.couldNotWrite }
         writer.startSession(atSourceTime: .zero)
 
-        let renderer = ImageRenderer(content: frame(0, of: countdown, photo: photo, start: start))
+        let renderer = ImageRenderer(content: frame(0, of: countdown, photo: photo, start: start, recap: recap))
         renderer.scale = 3
         let frameCount = Int(duration) * fps
         for index in 0..<frameCount {
             try Task.checkCancellation()
-            renderer.content = frame(index, of: countdown, photo: photo, start: start)
+            renderer.content = frame(index, of: countdown, photo: photo, start: start, recap: recap)
             guard let image = renderer.cgImage, let buffer = pixelBuffer(from: image, pool: adaptor.pixelBufferPool)
             else { writer.cancelWriting(); throw Failure.couldNotWrite }
             while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(5)) }
@@ -227,6 +234,8 @@ struct ShareCardMenu: View {
     let countdown: Countdown
     let photo: UIImage?
     let now: Date
+    /// After zero, the shared countdown's people for the recap.
+    var recap: Recap?
 
     private enum Destination { case sheet, instagram }
 
@@ -236,7 +245,7 @@ struct ShareCardMenu: View {
 
     var body: some View {
         Menu {
-            ShareLink(item: ShareCard(countdown: countdown, photo: photo, now: now),
+            ShareLink(item: ShareCard(countdown: countdown, photo: photo, now: now, recap: recap),
                       preview: SharePreview(countdown.title)) {
                 Label("Image", systemImage: "photo")
             }
@@ -245,7 +254,7 @@ struct ShareCardMenu: View {
                 Button("Instagram Stories", systemImage: "camera") { Task { await makeVideo(for: .instagram) } }
             }
         } label: {
-            Label(progress.map { "Making Video… \(Int($0 * 100))%" } ?? "Share Card",
+            Label(progress.map { "Making Video… \(Int($0 * 100))%" } ?? (countdown.hasReachedZero(at: now) ? "Share the Recap" : "Share Card"),
                   systemImage: "square.and.arrow.up")
                 .monospacedDigit()
                 .frame(maxWidth: .infinity)
@@ -267,8 +276,9 @@ struct ShareCardMenu: View {
         progress = 0
         defer { progress = nil }
         do {
-            let url = try await ShareVideo.render(countdown, photo: photo) { progress = $0 }
-            Analytics.log(.videoExported, source: destination == .instagram ? "instagram" : "share_sheet")
+            let url = try await ShareVideo.render(countdown, photo: photo, recap: recap) { progress = $0 }
+            Analytics.log(.videoExported, source: countdown.hasReachedZero(at: now) ? "recap"
+                          : destination == .instagram ? "instagram" : "share_sheet")
             switch destination {
             case .sheet: videoURL = url
             case .instagram: InstagramStories.share(video: url)

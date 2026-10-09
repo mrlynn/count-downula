@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { after } from "next/server";
 import { logEvent, referrerSource } from "@/lib/events.ts";
+import { loadRecap, recapText } from "@/lib/recap.ts";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
 import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
@@ -25,8 +26,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!doc) return { title: "Count Downcula" };
   const now = new Date();
   const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone);
-  const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind)}`;
-  const description = `${value} ${caption}`;
+  const recap = await loadRecap(doc, now);
+  // After zero the preview tells the story instead of the date: "It happened. 23 counted down together."
+  const words = recap ? recapText(recap, doc.visibility === "public") : null;
+  const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind)}${recap ? `&p=${recap.people}` : ""}`;
+  const description = words && doc.kind !== "countUp"
+    ? ["It happened.", words.together ?? words.counted].filter(Boolean).join(" ")
+    : `${value} ${caption}`;
   return {
     title: `${doc.title} · Count Downcula`,
     description,
@@ -66,6 +72,7 @@ export default async function CountdownPage({ params, searchParams }: Props) {
       serverNow={Date.now()}
       memberCount={await memberCount(slug)}
       sealed={isOpen(doc) ? 0 : await sealedCount(slug)}
+      recap={await loadRecap(doc)}
       walletURL={walletConfigured() && doc.kind !== "countUp" ? `/c/${slug}/pass` : null}
     />
   );

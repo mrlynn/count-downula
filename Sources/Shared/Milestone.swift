@@ -21,6 +21,12 @@ struct Milestone: Codable, Hashable, Identifiable {
     /// When the in-app celebration played. Synced, so it plays once across devices.
     var celebratedAt: Date?
 
+    /// A count-up's kind of milestone ("30 days"), meaningless on a countdown.
+    var isElapsedTrigger: Bool {
+        if case .elapsed = trigger { return true }
+        return false
+    }
+
     func date(for countdown: Countdown) -> Date {
         switch trigger {
         case let .date(date):
