@@ -382,7 +382,11 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
   - App events `present_started` (source `mac` or `tv`) and `present_zero`.
   - Joins from the room are live page views with source `present`.
   - `/admin/metrics` has a "The big screen" table.
-- **Next:** the screensaver spike (sandbox data access, `legacyScreenSaver` on Sonoma and later, distribution outside the Mac App Store), then Apple TV if present mode shows demand.
+- **Screensaver spike:** in [screensaver-spike.md](screensaver-spike.md), with a working prototype (`CountdownculaSaver`).
+  - Data comes from a snapshot the GitHub build mirrors into the `legacyScreenSaver` container.
+  - The prototype includes workarounds for the host's lifecycle bugs.
+  - Tested in the real host on macOS 26.6: it reads the mirror, real starts and stops behave, and the host quits cleanly. The recommendation is a go for the GitHub build.
+- **Next:** Apple TV, if present mode shows demand.
 
 ### Considered, not planned
 

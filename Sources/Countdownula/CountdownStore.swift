@@ -151,6 +151,10 @@ final class CountdownStore {
             photo: { repository.imageData(for: $0) }
         )
         if changed { WidgetCenter.shared.reloadAllTimelines() }
+        #if DIRECT_DISTRIBUTION
+        // The screensaver's copy, in its host's container. Only the GitHub build can write there.
+        SaverSnapshot.mirror()
+        #endif
     }
 
     #if DEBUG

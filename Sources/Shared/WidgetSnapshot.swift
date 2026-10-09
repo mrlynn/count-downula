@@ -5,7 +5,12 @@ import Foundation
 /// which keeps them away from the CloudKit-backed SwiftData store. The iPhone app also copies the
 /// display-size photos, which Home Screen widgets need at more than thumbnail resolution.
 enum WidgetSnapshot {
-    private static var directory: URL {
+    /// Where the snapshot lives. The screensaver can't see the App Group, so it reads a copy in its
+    /// own container instead (see `SaverSnapshot`).
+    nonisolated(unsafe) static var directoryOverride: URL?
+
+    static var directory: URL {
+        if let directoryOverride { return directoryOverride }
         let base = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedConfig.appGroup)
             ?? FileManager.default.temporaryDirectory
         return base.appending(path: "WidgetSnapshot", directoryHint: .isDirectory)
