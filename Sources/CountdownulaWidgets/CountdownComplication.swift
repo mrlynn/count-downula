@@ -87,7 +87,7 @@ struct CountdownProvider: AppIntentTimelineProvider {
             return context.isPreview ? .sample : CountdownEntry(date: now, countdown: nil)
         }
         return CountdownEntry(date: now, countdown: countdown, thumbnail: WidgetSnapshot.thumbnail(for: countdown.id),
-                              photo: WidgetSnapshot.photo(for: countdown))
+                              photo: WidgetSnapshot.photo(for: countdown), isNextUp: configuration.countdown == nil)
     }
 
     func timeline(for configuration: SelectCountdownIntent, in context: Context) async -> Timeline<CountdownEntry> {
@@ -101,8 +101,9 @@ struct CountdownProvider: AppIntentTimelineProvider {
         let dates = countdown.countsUp
             ? Self.countUpEntryDates(since: countdown.targetDate, from: now, also: milestoneDates)
             : Self.entryDates(for: countdown.targetDate, from: now, also: milestoneDates)
+        let isNextUp = configuration.countdown == nil
         let entries = dates.map {
-            CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail, photo: photo)
+            CountdownEntry(date: $0, countdown: countdown, thumbnail: thumbnail, photo: photo, isNextUp: isNextUp)
         }
         return Timeline(entries: entries, policy: .atEnd)
     }
@@ -128,7 +129,7 @@ struct CountdownProvider: AppIntentTimelineProvider {
            chosen.countsUp || chosen.targetDate > now - 86_400 {
             return chosen
         }
-        return all.featured(at: now)
+        return all.featured(at: now, offset: WidgetCycle.offset)
     }
 
     /// A count-up's text changes on each hour since it began ("47d 3h"); the dial moves with

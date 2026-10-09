@@ -1,6 +1,7 @@
 import AppKit
 import Observation
 import UserNotifications
+import WidgetKit
 
 @MainActor
 @Observable
@@ -134,7 +135,19 @@ final class CountdownStore {
         repository.rollOverRepeatingCountdowns()
         let fresh = repository.fetchAll()
         if fresh != countdowns { countdowns = fresh }
+        publishToWidgets()
         onUpdate?()
+    }
+
+    /// Desktop widgets read a copy of the countdowns from the App Group, never the store itself.
+    private func publishToWidgets() {
+        let repository = repository
+        let changed = WidgetSnapshot.write(
+            countdowns,
+            thumbnail: { repository.thumbnailData(for: $0) },
+            photo: { repository.imageData(for: $0) }
+        )
+        if changed { WidgetCenter.shared.reloadAllTimelines() }
     }
 
     #if DEBUG

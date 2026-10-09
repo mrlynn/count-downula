@@ -34,15 +34,20 @@ targets:
         buildPhase: resources
       - path: Resources/Mac/en.lproj
         buildPhase: resources
+    dependencies:
+      - target: CountdownulaMacWidgets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
         # The Mac App Store build: sandboxed, with the free tier and the Unlimited purchase.
         # scripts/release-mac.sh builds the GitHub download instead, overriding these two settings with
         # DIRECT_DISTRIBUTION (always unlocked, no StoreKit) and Resources/CountdownulaDirect.entitlements.
+        # The override goes through MAC_APP_ENTITLEMENTS so it reaches only this target: the widget
+        # extension must stay sandboxed in both builds.
         INFOPLIST_FILE: Resources/Info.plist
         ENABLE_HARDENED_RUNTIME: YES
-        CODE_SIGN_ENTITLEMENTS: Resources/Countdownula.entitlements
+        MAC_APP_ENTITLEMENTS: Resources/Countdownula.entitlements
+        CODE_SIGN_ENTITLEMENTS: $(MAC_APP_ENTITLEMENTS)
         ARCHS: "$(ARCHS_STANDARD)"
     entitlements:
       path: Resources/Countdownula.entitlements
@@ -55,6 +60,48 @@ targets:
         com.apple.developer.icloud-container-identifiers: [iCloud.com.countdownula.app]
         com.apple.developer.icloud-services: [CloudKit]
         com.apple.developer.aps-environment: development
+        # Shares the countdown snapshot with the desktop widgets (SharedConfig.appGroup).
+        com.apple.security.application-groups: [$(TeamIdentifierPrefix)com.countdownula.app]
+
+  # Desktop and Notification Center widgets for the Mac app.
+  CountdownulaMacWidgets:
+    type: app-extension
+    platform: macOS
+    sources:
+      - Sources/CountdownulaMacWidgets
+      - Sources/CountdownulaWidgets
+      - path: Sources/CountdownulaiOSWidgets/HomeWidgetViews.swift
+      - path: Sources/CountdownulaiOSWidgets/UpNextWidget.swift
+      - path: Sources/PhoneShared/WidgetIntents.swift
+      - path: Sources/Shared/Countdown.swift
+      - path: Sources/Shared/SharedConfig.swift
+      - path: Sources/Shared/WidgetSnapshot.swift
+      - path: Sources/Shared/FangMark.swift
+      - path: Sources/Shared/CountdownStyle.swift
+      - path: Sources/Shared/Scenes.swift
+      - path: Sources/Shared/StyleViews.swift
+      - path: Sources/Shared/Milestone.swift
+      - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/Astronomy.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app.macwidgets
+        CODE_SIGN_ENTITLEMENTS: Resources/Mac/CountdownulaMacWidgets.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+    info:
+      path: Resources/Mac/Widgets-Info.plist
+      properties:
+        CFBundleDisplayName: Count Downcula
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Resources/Mac/CountdownulaMacWidgets.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups: [$(TeamIdentifierPrefix)com.countdownula.app]
 
   # watchOS app. Ships inside the iPhone app but runs on its own (no iPhone needed at runtime).
   CountdownulaWatch:

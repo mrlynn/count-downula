@@ -94,3 +94,18 @@ enum WidgetSnapshot {
         return true
     }
 }
+
+/// How many times a Next Up widget's cycle button has been pressed, kept in the App Group so the
+/// widget extension (which presses it) and its timeline (which reads it) agree. Shared by every
+/// Next Up widget on the device.
+enum WidgetCycle {
+    private static let key = "WidgetCycle.offset"
+    private static var defaults: UserDefaults? { UserDefaults(suiteName: SharedConfig.appGroup) }
+
+    static var offset: Int { defaults?.integer(forKey: key) ?? 0 }
+
+    static func advance() { defaults?.set(offset + 1, forKey: key) }
+
+    /// Back to the featured countdown, when the list it steps through changes.
+    static func reset() { defaults?.removeObject(forKey: key) }
+}

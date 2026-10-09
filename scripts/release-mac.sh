@@ -22,7 +22,7 @@ rm -rf "$ARCHIVE" "$EXPORT"
 xcodebuild -project Countdownula.xcodeproj -scheme Countdownula -configuration Release \
   -archivePath "$ARCHIVE" \
   SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DIRECT_DISTRIBUTION' \
-  CODE_SIGN_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements \
+  MAC_APP_ENTITLEMENTS=Resources/CountdownulaDirect.entitlements \
   MARKETING_VERSION="$VERSION" \
   -allowProvisioningUpdates -quiet archive
 

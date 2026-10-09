@@ -113,10 +113,38 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
         NotificationActions.register()
+        registerWidgetActions()
         SharedRefreshTask.register { [weak self] in await self?.store?.refreshShared() }
         // CloudKit pushes wake the app so widgets and alerts stay current while it's closed.
         application.registerForRemoteNotifications()
         return true
+    }
+
+    /// What widget buttons and Control Center controls do. iOS runs them in the app (in the
+    /// background when they don't need to open it), so they go through the same store as everything else.
+    private func registerWidgetActions() {
+        WidgetActions.handler = { [weak self] action in
+            let store = PhoneStore.shared
+            switch action {
+            case let .togglePin(id):
+                guard let countdown = store.countdown(id: id) else { return }
+                store.togglePin(countdown)
+                // A newly pinned countdown should be the one Next Up widgets show.
+                WidgetCycle.reset()
+                Analytics.log(.widgetAction, source: "pin")
+            case let .startLiveActivity(id):
+                guard let countdown = store.countdown(id: id) else { return }
+                LiveActivities.start(countdown)
+                Analytics.log(.widgetAction, source: "lockscreen")
+            case let .quickTimer(minutes):
+                guard store.entitlements.canAdd(to: store.countdowns) else { throw WidgetActionError.freeLimit }
+                store.startQuickTimer(minutes: minutes)
+                Analytics.log(.widgetAction, source: "quick_timer")
+            case let .open(id):
+                if let id { self?.router.show(id) }
+                Analytics.log(.widgetAction, source: "open")
+            }
+        }
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -162,5 +190,13 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
                 Analytics.log(.notificationAction, source: action.rawValue)
             }
         }
+    }
+}
+
+enum WidgetActionError: LocalizedError {
+    case freeLimit
+
+    var errorDescription: String? {
+        "You're at the free limit of \(SharedConfig.freeActiveLimit) countdowns. Open Count Downcula to unlock more."
     }
 }

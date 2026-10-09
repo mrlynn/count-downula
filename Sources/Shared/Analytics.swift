@@ -24,6 +24,7 @@ enum Analytics {
         case keepCounting = "keep_counting"
         case countdownDeleted = "countdown_deleted"
         case notificationAction = "notification_action"
+        case widgetAction = "widget_action"
     }
 
     struct Queued: Codable, Equatable {

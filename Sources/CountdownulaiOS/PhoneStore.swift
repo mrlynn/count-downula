@@ -199,7 +199,10 @@ final class PhoneStore {
             thumbnail: { repository.thumbnailData(for: $0) },
             photo: { repository.imageData(for: $0) }
         )
-        if changed { WidgetCenter.shared.reloadAllTimelines() }
+        if changed {
+            WidgetCenter.shared.reloadAllTimelines()
+            if #available(iOS 18.0, *) { ControlCenter.shared.reloadControls(ofKind: NextUpControlKind.value) }
+        }
     }
 
     /// The phone can't rely on the Mac being awake, so it schedules its own completion and milestone alerts.

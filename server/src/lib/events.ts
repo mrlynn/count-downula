@@ -25,6 +25,8 @@ export const CLIENT_EVENTS = [
   "countdown_finished", "keep_counting", "countdown_deleted",
   // A button under an alert (5.5): source is lockscreen, share, recap or coffin.
   "notification_action",
+  // A widget button or Control Center control (5.5): source is pin, lockscreen, quick_timer or open.
+  "widget_action",
 ] as const;
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];

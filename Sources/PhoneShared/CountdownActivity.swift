@@ -33,17 +33,3 @@ extension CountdownActivityAttributes.ContentState {
         celebrating = try c.decodeIfPresent(Bool.self, forKey: .celebrating) ?? false
     }
 }
-
-/// `countdownula://countdown/<uuid>` opens a countdown's detail screen (widgets, Live Activities, notifications).
-enum CountdownLink {
-    static let scheme = "countdownula"
-
-    static func url(for id: UUID) -> URL {
-        URL(string: "\(scheme)://countdown/\(id.uuidString)")!
-    }
-
-    static func id(from url: URL) -> UUID? {
-        guard url.scheme == scheme, url.host() == "countdown" else { return nil }
-        return UUID(uuidString: url.lastPathComponent)
-    }
-}
