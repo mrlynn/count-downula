@@ -7,9 +7,13 @@ struct CountdownExtras: Codable, Hashable {
     var streak = StreakHistory()
     /// Money not spent, for "smoke-free" style count-ups.
     var savings: Savings?
-    /// Birthdays and anniversaries roll over to next year once the day has passed.
+    /// Birthdays and anniversaries roll over to next year once the day has passed. Still written for
+    /// yearly repeats so builds that predate `repeatRule` keep rolling them; read `repetition` instead.
     var repeatsYearly = false
-    /// The original date of a yearly countdown, so Feb 29 comes back in leap years.
+    /// How a date repeats: weekly, monthly, every N days, weekdays or yearly. Builds that predate it
+    /// drop it when they edit the countdown, which leaves a one-off (or a yearly one, via `repeatsYearly`).
+    var repeatRule: Repetition?
+    /// The original date of a repeating countdown, so Feb 29 and the 31st come back when they exist.
     var yearlyAnchor: Date?
     /// Set once the countdown is published as a live link. Synced, so every device shows the link;
     /// only devices holding the owner token (iCloud Keychain) can edit or unpublish it.
@@ -26,16 +30,33 @@ struct CountdownExtras: Codable, Hashable {
     /// When a finished countdown became a count-up from its zero (Keep Counting). Members get it
     /// from the owner's copy, so it marks a count-up that still has a recap and a coffin.
     var keptCountingAt: Date?
+    /// The calendar event it was imported from (its external identifier), so a later version can
+    /// offer to update it from Calendar.
+    var calendarEventID: String?
 
     init() {}
 
-    private enum CodingKeys: String, CodingKey { case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool, keptCountingAt }
+    private enum CodingKeys: String, CodingKey {
+        case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool, keptCountingAt
+        case repeatRule = "repeat"
+        case calendarEventID = "calendarEvent"
+    }
+
+    /// How this date repeats, if it does. Setting it keeps `repeatsYearly` in step for older builds.
+    var repetition: Repetition? {
+        get { repeatRule ?? (repeatsYearly ? .yearly : nil) }
+        set {
+            repeatRule = newValue
+            repeatsYearly = newValue == .yearly
+        }
+    }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         streak = (try? c.decodeIfPresent(StreakHistory.self, forKey: .streak)) ?? StreakHistory()
         savings = try? c.decodeIfPresent(Savings.self, forKey: .savings)
         repeatsYearly = (try? c.decodeIfPresent(Bool.self, forKey: .repeatsYearly)) ?? false
+        repeatRule = try? c.decodeIfPresent(Repetition.self, forKey: .repeatRule)
         yearlyAnchor = try? c.decodeIfPresent(Date.self, forKey: .yearlyAnchor)
         link = try? c.decodeIfPresent(PublishedLink.self, forKey: .link)
         subscription = try? c.decodeIfPresent(SharedSubscription.self, forKey: .subscription)
@@ -43,6 +64,52 @@ struct CountdownExtras: Codable, Hashable {
         auto = try? c.decodeIfPresent(AutoDate.self, forKey: .auto)
         pool = try? c.decodeIfPresent(DatePool.self, forKey: .pool)
         keptCountingAt = try? c.decodeIfPresent(Date.self, forKey: .keptCountingAt)
+        calendarEventID = try? c.decodeIfPresent(String.self, forKey: .calendarEventID)
+    }
+}
+
+/// How a countdown's date comes around again.
+enum Repetition: Codable, Hashable {
+    case weekly
+    case monthly
+    case yearly
+    /// Monday to Friday, at the countdown's time.
+    case weekdays
+    /// Every so many days: 1 for daily, 14 for a fortnight.
+    case everyDays(Int)
+
+    /// "Every week", "Every 3 days".
+    var label: String {
+        switch self {
+        case .weekly: "Every week"
+        case .monthly: "Every month"
+        case .yearly: "Every year"
+        case .weekdays: "Every weekday"
+        case let .everyDays(n): n == 1 ? "Every day" : "Every \(n) days"
+        }
+    }
+
+    /// How long a passed date stays "done" before moving on, so its alert and confetti get their
+    /// moment. Shorter for dates that come around often.
+    var gracePeriod: TimeInterval {
+        switch self {
+        case .yearly, .monthly: 86_400
+        case .weekly: 6 * 3_600
+        case let .everyDays(n): n >= 3 ? 6 * 3_600 : 3_600
+        case .weekdays: 3_600
+        }
+    }
+
+    /// The `index`th date after `anchor` (index 1 is the first repeat), or nil for weekdays, which
+    /// don't step evenly.
+    func step(_ index: Int, from anchor: Date, calendar: Calendar) -> Date? {
+        switch self {
+        case .weekly: calendar.date(byAdding: .day, value: 7 * index, to: anchor)
+        case .monthly: calendar.date(byAdding: .month, value: index, to: anchor)
+        case .yearly: calendar.date(byAdding: .year, value: index, to: anchor)
+        case let .everyDays(n): calendar.date(byAdding: .day, value: max(1, n) * index, to: anchor)
+        case .weekdays: nil
+        }
     }
 }
 
@@ -183,28 +250,40 @@ extension Countdown {
 // MARK: - Yearly repeat
 
 extension Countdown {
-    /// A repeating date stays "done" for a day so its notification and confetti get their moment.
+    /// A yearly date stays "done" for a day so its notification and confetti get their moment.
     static let yearlyGracePeriod: TimeInterval = 86_400
 
-    /// The next occurrence once this year's has passed (plus the grace day), or nil if nothing to do.
-    func nextYearlyOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
-        guard extras.repeatsYearly, kind == .event, targetDate + Self.yearlyGracePeriod <= now else { return nil }
-        let anchor = extras.yearlyAnchor ?? targetDate
-        var years = 1
-        while years < 500 {
-            // Adding years to the anchor (not the last occurrence) keeps Feb 29 on Feb 29 when it exists.
-            if let next = calendar.date(byAdding: .year, value: years, to: anchor), next + Self.yearlyGracePeriod > now {
-                return next
+    /// The next occurrence once this one has passed (plus its grace period), or nil if nothing to do.
+    func nextRepeatOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+        guard let rule = extras.repetition, kind == .event, targetDate + rule.gracePeriod <= now else { return nil }
+        if rule == .weekdays {
+            // Day by day from this one, skipping Saturdays and Sundays.
+            var next = targetDate
+            for _ in 0..<20_000 {
+                guard let day = calendar.date(byAdding: .day, value: 1, to: next) else { return nil }
+                next = day
+                if !calendar.isDateInWeekend(next), next + rule.gracePeriod > now { return next }
             }
-            years += 1
+            return nil
+        }
+        // Counting from the anchor (not the last occurrence) keeps Feb 29 and the 31st when they exist.
+        let anchor = extras.yearlyAnchor ?? targetDate
+        for index in 1..<20_000 {
+            guard let next = rule.step(index, from: anchor, calendar: calendar) else { return nil }
+            if next + rule.gracePeriod > now { return next }
         }
         return nil
     }
 
-    /// Moves a past yearly countdown to its next occurrence. The year-long wait becomes the new
-    /// progress range, and the alert and milestone celebrations are armed again.
+    /// The next yearly occurrence, for callers that only deal in yearly dates.
+    func nextYearlyOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+        extras.repetition == .yearly ? nextRepeatOccurrence(after: now, calendar: calendar) : nil
+    }
+
+    /// Moves a past repeating countdown to its next occurrence. The wait since the last one becomes
+    /// the new progress range, and the alert and milestone celebrations are armed again.
     mutating func rollToNextYear(at now: Date, calendar: Calendar = .current) -> Bool {
-        guard let next = nextYearlyOccurrence(after: now, calendar: calendar) else { return false }
+        guard let next = nextRepeatOccurrence(after: now, calendar: calendar) else { return false }
         if extras.yearlyAnchor == nil { extras.yearlyAnchor = targetDate }
         createdAt = targetDate
         targetDate = next
@@ -225,7 +304,7 @@ extension Countdown {
 
     /// The date a repeating countdown is about to move on to, if it's due to.
     func nextOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
-        nextYearlyOccurrence(after: now, calendar: calendar) ?? nextAutoOccurrence(after: now)
+        nextRepeatOccurrence(after: now, calendar: calendar) ?? nextAutoOccurrence(after: now)
     }
 
     /// Moves a passed yearly or sunrise-style countdown on to its next date. Returns true if it moved.
