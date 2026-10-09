@@ -103,17 +103,23 @@ final class JoinCoordinator {
     var isJoining = false
     var errorMessage: String?
 
-    func join(_ text: String, store: PhoneStore, router: Router) async {
+    /// Returns whether it joined (or already had it).
+    @discardableResult
+    func join(_ text: String, store: PhoneStore, router: Router) async -> Bool {
+        // One tap can arrive both as a URL and as a web browsing activity; join it once.
+        guard !isJoining else { return false }
         guard let slug = SharedCountdowns.slug(from: text) else {
             errorMessage = "That doesn't look like a Count Downcula link. Shared links look like go.countdowncula.com/c/…"
-            return
+            return false
         }
         isJoining = true
         defer { isJoining = false }
         do {
             router.show(try await store.join(slug: slug))
+            return true
         } catch {
             errorMessage = error.localizedDescription
+            return false
         }
     }
 }

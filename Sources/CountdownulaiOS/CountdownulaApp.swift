@@ -9,6 +9,15 @@ struct CountdownulaApp: App {
     @State private var joiner = JoinCoordinator()
     @Environment(\.scenePhase) private var scenePhase
 
+    /// Widgets, Live Activities and notifications open a countdown; a shared link counts you in.
+    private func open(_ url: URL) {
+        if let id = CountdownLink.id(from: url) {
+            appDelegate.router.show(id)
+        } else if SharedCountdowns.slug(from: url.absoluteString) != nil {
+            Task { await joiner.join(url.absoluteString, store: store, router: appDelegate.router) }
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             CountdownListView()
@@ -16,13 +25,11 @@ struct CountdownulaApp: App {
                 .environment(appDelegate.router)
                 .environment(joiner)
                 .tint(.countdownulaBlood)
-                .onOpenURL { url in
-                    if let id = CountdownLink.id(from: url) {
-                        appDelegate.router.show(id)
-                    } else if SharedCountdowns.slug(from: url.absoluteString) != nil {
-                        // A shared link (universal link or countdownula://join/<slug>) counts you in.
-                        Task { await joiner.join(url.absoluteString, store: store, router: appDelegate.router) }
-                    }
+                .onOpenURL { url in open(url) }
+                // A tapped go.countdowncula.com link arrives as a web browsing activity. SwiftUI doesn't
+                // reliably pass it to onOpenURL once the view handles other activities (Spotlight below).
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    if let url = activity.webpageURL { open(url) }
                 }
                 .overlay {
                     if joiner.isJoining {
@@ -64,8 +71,7 @@ struct CountdownulaApp: App {
                 Task {
                     // Countdowns kept in the App Clip before the app was installed.
                     for slug in ClipHandoff.pending {
-                        await joiner.join(slug, store: store, router: appDelegate.router)
-                        if joiner.errorMessage == nil { ClipHandoff.done(slug) }
+                        if await joiner.join(slug, store: store, router: appDelegate.router) { ClipHandoff.done(slug) }
                     }
                     await store.refreshShared(force: true)
                     await store.registerPushForShared()
