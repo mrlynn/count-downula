@@ -48,6 +48,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Count Downcula shows your upcoming events so you can pick the ones to count down to. Events stay on your iPhone; only the countdowns you add sync.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Count Downcula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.</string>
 	<key>NSSupportsLiveActivities</key>

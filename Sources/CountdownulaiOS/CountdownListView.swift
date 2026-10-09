@@ -21,6 +21,13 @@ struct CountdownListView: View {
     @State private var showingPaywall = false
     /// Why the paywall is up, for the metrics dashboard.
     @State private var paywallReason = "free_limit"
+    @State private var showingCalendarImport = false
+    @State private var showingContactPicker = false
+    /// Picked in the calendar sheet, added once it has closed.
+    @State private var pendingImport: (countdowns: [Countdown], source: String)?
+    /// Picked past the free limit, added if Unlimited is bought while the paywall is up.
+    @State private var heldBack: (countdowns: [Countdown], source: String)?
+    @State private var importNotice: String?
     @State private var showingJoin = false
     @State private var showingCrypt = false
 
@@ -78,7 +85,9 @@ struct CountdownListView: View {
                 .listStyle(.insetGrouped)
                 .overlay {
                     if store.countdowns.isEmpty {
-                        EmptyState { addCountdown() }
+                        EmptyState(onAdd: { addCountdown() },
+                                   onCalendar: { showingCalendarImport = true },
+                                   onContacts: { showingContactPicker = true })
                     }
                 }
             }
@@ -92,6 +101,10 @@ struct CountdownListView: View {
                         Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
                         Button("Join Shared Countdown…", systemImage: "person.2.badge.plus") { showingJoin = true }
                         Button("Browse the Crypt", systemImage: "moon.stars") { showingCrypt = true }
+                        Section("Add From") {
+                            Button("Calendar…", systemImage: "calendar") { showingCalendarImport = true }
+                            Button("Birthdays from Contacts…", systemImage: "gift") { showingContactPicker = true }
+                        }
                         Section("Quick Timer") {
                             ForEach(quickTimers, id: \.self) { minutes in
                                 Button(PhoneStore.durationLabel(minutes), systemImage: "timer") {
@@ -118,7 +131,33 @@ struct CountdownListView: View {
                 case let .edit(countdown): CountdownEditorView(original: countdown)
                 }
             }
-            .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
+            .sheet(isPresented: $showingPaywall, onDismiss: finishHeldBackImport) { PaywallView(reason: paywallReason) }
+            .sheet(isPresented: $showingCalendarImport, onDismiss: {
+                if let pending = pendingImport { importCountdowns(pending.countdowns, source: pending.source) }
+                pendingImport = nil
+            }) {
+                CalendarImportSheet { pendingImport = ($0, "calendar") }
+            }
+            #if DEBUG
+            // Screenshots and testing: -openImport calendar (or contacts) opens a picker at launch.
+            .task {
+                switch UserDefaults.standard.string(forKey: "openImport") {
+                case "calendar": showingCalendarImport = true
+                case "contacts": showingContactPicker = true
+                default: break
+                }
+            }
+            #endif
+            .background(ContactBirthdayPicker(isPresented: $showingContactPicker) { picked in
+                // Let the picker finish closing before anything else (the paywall) comes up.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { importCountdowns(picked, source: "contacts") }
+            })
+            .alert("Some Didn’t Fit",
+                   isPresented: Binding(get: { importNotice != nil }, set: { if !$0 { importNotice = nil } })) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(importNotice ?? "")
+            }
             .onChange(of: store.draftsWaitingForUnlock, initial: true) { _, waiting in
                 // Something was shared in while at the free limit; it's waiting for Unlimited.
                 if waiting { paywallReason = "screenshot_limit"; showingPaywall = true; store.draftsWaitingForUnlock = false }
@@ -134,6 +173,27 @@ struct CountdownListView: View {
                 }
             }
         }
+    }
+
+    /// Adds what fits the free tier; the rest wait on the Unlimited offer.
+    private func importCountdowns(_ countdowns: [Countdown], source: String) {
+        guard !countdowns.isEmpty else { return }
+        let waiting = store.addImported(countdowns, source: source)
+        guard !waiting.isEmpty else { return }
+        heldBack = (waiting, source)
+        paywallReason = "import_limit"
+        showingPaywall = true
+    }
+
+    private func finishHeldBackImport() {
+        guard let held = heldBack else { return }
+        if store.entitlements.isUnlocked {
+            store.addImported(held.countdowns, source: held.source)
+        } else {
+            let count = held.countdowns.count
+            importNotice = "\(count) more \(count == 1 ? "countdown didn't" : "countdowns didn't") fit the free tier: \(held.countdowns.map(\.title).prefix(3).formatted(.list(type: .and)))\(count > 3 ? " and more" : ""). Unlock Unlimited and add \(count == 1 ? "it" : "them") again any time."
+        }
+        heldBack = nil
     }
 
     /// Opens the editor, or the paywall once a free user has reached the limit.
@@ -307,6 +367,8 @@ private struct FreeTierFooter: View {
 
 private struct EmptyState: View {
     let onAdd: () -> Void
+    let onCalendar: () -> Void
+    let onContacts: () -> Void
 
     var body: some View {
         VStack(spacing: 14) {
@@ -322,6 +384,12 @@ private struct EmptyState: View {
             Button("Add Countdown", action: onAdd)
                 .buttonStyle(.borderedProminent)
                 .padding(.top, 4)
+            // The quickest start: the dates people already have.
+            HStack(spacing: 10) {
+                Button("From Calendar", systemImage: "calendar", action: onCalendar)
+                Button("Birthdays", systemImage: "gift", action: onContacts)
+            }
+            .buttonStyle(.bordered)
         }
         .padding(32)
     }

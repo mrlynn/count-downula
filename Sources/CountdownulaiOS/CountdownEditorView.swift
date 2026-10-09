@@ -73,11 +73,11 @@ struct CountdownEditorView: View {
         extras.savings = kind == .countUp && tracksSavings && savingsPerDay > 0
             ? Savings(amountPerDay: savingsPerDay, currencyCode: currencyCode) : nil
         if kind != .event {
-            extras.repeatsYearly = false
+            extras.repetition = nil
             extras.auto = nil
         }
-        // A new or moved date becomes the anchor the next years are counted from.
-        if !extras.repeatsYearly || targetDate != original?.targetDate { extras.yearlyAnchor = nil }
+        // A new or moved date becomes the anchor the next repeats are counted from.
+        if extras.repetition == nil || targetDate != original?.targetDate { extras.yearlyAnchor = nil }
         return extras
     }
 
@@ -139,7 +139,7 @@ struct CountdownEditorView: View {
                             DatePicker(extras.pool.map { $0.isSettled ? "Happened" : "Best estimate" } ?? "Counts down to",
                                        selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
                             if extras.pool == nil {
-                                Toggle("Repeats every year", isOn: $extras.repeatsYearly)
+                                repeatPicker
                             }
                         }
                     case .countUp:
@@ -157,8 +157,8 @@ struct CountdownEditorView: View {
                         Text("Moves on to the next \(extras.auto!.kind.name.lowercased()) by itself, worked out for your rough location when you added it.")
                     case .event where extras.auto != nil:
                         Text("Moves on to the next full moon by itself.")
-                    case .event where extras.repeatsYearly:
-                        Text("After the day passes it rolls over to next year. Good for birthdays and anniversaries.")
+                    case .event where extras.repetition != nil:
+                        Text(repeatFooter)
                     default:
                         EmptyView()
                     }
@@ -170,7 +170,7 @@ struct CountdownEditorView: View {
                             get: { extras.pool != nil },
                             set: { on in
                                 extras.pool = on ? (extras.pool ?? DatePool()) : nil
-                                if on { extras.repeatsYearly = false }
+                                if on { extras.repetition = nil }
                             }))
                     } footer: {
                         Text("Not sure when it'll happen? Friends guess the date from the live link, and the closest guess wins once you set the real one. Bragging rights only.")
@@ -266,6 +266,69 @@ struct CountdownEditorView: View {
         }
     }
 
+    // MARK: - Repeats
+
+    private enum RepeatChoice: Hashable {
+        case never, daily, weekdays, weekly, everyFewDays, monthly, yearly
+    }
+
+    private var repeatChoice: Binding<RepeatChoice> {
+        Binding(
+            get: {
+                switch extras.repetition {
+                case nil: .never
+                case .everyDays(1): .daily
+                case .everyDays: .everyFewDays
+                case .weekdays: .weekdays
+                case .weekly: .weekly
+                case .monthly: .monthly
+                case .yearly: .yearly
+                }
+            },
+            set: { choice in
+                switch choice {
+                case .never: extras.repetition = nil
+                case .daily: extras.repetition = .everyDays(1)
+                case .everyFewDays: extras.repetition = .everyDays(14)
+                case .weekdays: extras.repetition = .weekdays
+                case .weekly: extras.repetition = .weekly
+                case .monthly: extras.repetition = .monthly
+                case .yearly: extras.repetition = .yearly
+                }
+            }
+        )
+    }
+
+    @ViewBuilder
+    private var repeatPicker: some View {
+        Picker("Repeats", selection: repeatChoice) {
+            Text("Never").tag(RepeatChoice.never)
+            Text("Every day").tag(RepeatChoice.daily)
+            Text("Every weekday").tag(RepeatChoice.weekdays)
+            Text("Every week").tag(RepeatChoice.weekly)
+            Text("Every few days").tag(RepeatChoice.everyFewDays)
+            Text("Every month").tag(RepeatChoice.monthly)
+            Text("Every year").tag(RepeatChoice.yearly)
+        }
+        if case let .everyDays(days) = extras.repetition, days > 1 {
+            Stepper("Every \(days) days", value: Binding(
+                get: { days },
+                set: { extras.repetition = .everyDays($0) }
+            ), in: 2...365)
+        }
+    }
+
+    private var repeatFooter: String {
+        switch extras.repetition {
+        case .yearly: "After the day passes it rolls over to next year. Good for birthdays and anniversaries."
+        case .monthly: "Rolls over to the same day next month. Good for payday and rent."
+        case .weekly: "Rolls over to the same time next week. Good for Friday at 5."
+        case .weekdays: "Rolls over to the next weekday at the same time, skipping Saturday and Sunday."
+        case let .everyDays(n): n == 1 ? "Rolls over to the same time tomorrow." : "Rolls over every \(n) days at the same time."
+        case nil: ""
+        }
+    }
+
     // MARK: - Templates
 
     private var templatesMenu: some View {
@@ -315,7 +378,7 @@ struct CountdownEditorView: View {
             details = filled.details
             targetDate = filled.targetDate
             style = filled.style
-            extras.repeatsYearly = false
+            extras.repetition = nil
             extras.auto = filled.auto
             extras.voice = .count
         } catch {

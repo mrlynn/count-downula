@@ -173,7 +173,12 @@ enum Analytics {
         switch countdown.kind {
         case .timer: return "timer"
         case .countUp: return "count_up"
-        case .event: return countdown.extras.repeatsYearly ? "typed_yearly" : "typed"
+        case .event:
+            switch countdown.extras.repetition {
+            case nil: return "typed"
+            case .yearly: return "typed_yearly"
+            case .some: return "typed_repeating"
+            }
         }
     }
 

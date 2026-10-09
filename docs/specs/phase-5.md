@@ -146,6 +146,20 @@ Depends on: nothing new.
 
 Measure: countdowns created in the first session, and weekly active users among people with a weekly repeat.
 
+Built (October 9, 2026), on iPhone. Decision: imports count toward the free limit.
+- **From Calendar:** in the + menu and the empty state. The sheet lists the next 90 days of events, with each repeating event shown once.
+  - Each pick becomes a countdown with a scene chosen from its title and place, and the event's identifier saved in extras as `calendarEvent`.
+  - Repeats on a fixed date (yearly, monthly, weekly, daily, every N weeks, weekdays) come with it. Rules like "the fourth Thursday" import as one-offs.
+  - Full calendar access is asked for when the sheet opens.
+- **Birthdays from Contacts:** this uses the system contact picker, which runs outside the app, so there's no Contacts permission prompt at all. Only people with a birthday can be picked. Each becomes a yearly countdown to the start of the day. A Feb 29 birthday lands on Feb 28 in common years.
+- **The free limit:** what fits the free tier is added, soonest first. The rest wait on the Unlimited offer (paywall reason `import_limit`) and are added if Unlimited is bought. Otherwise a notice names what didn't fit.
+- **More repeats:** the editor's yearly switch is now a Repeats picker: every day, every weekday, every week, every few days (2 to 365), every month, every year.
+  - Stored as `repeat` in extras. `repeatsYearly` is still written for yearly repeats, so older builds keep rolling birthdays.
+  - Monthly and yearly count from the original date, so the 31st and Feb 29 come back when they exist.
+  - Grace periods shrink for frequent repeats: a day for yearly and monthly, 6 hours for weekly and every 3 or more days, and an hour for weekdays and daily.
+- **Debug launch argument:** `-openImport calendar` (or `contacts`) opens a picker at launch, for screenshots.
+- **Not built yet:** the Mac. It needs the calendar entitlement in the sandboxed build and its own picker. Countdowns imported on the iPhone sync to it as usual.
+
 ### 5.5 System surfaces (size M)
 
 What it is: put Count Downcula in the places iOS and macOS added that the app hasn't claimed yet. No competitor lists interactive widgets or Control Center controls, so this is cheap ground to take first.

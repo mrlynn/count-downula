@@ -187,6 +187,7 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         NSLocationWhenInUseUsageDescription: Count Downcula uses your rough location to work out when the sun rises and sets for your sunrise and sunset countdowns.
+        NSCalendarsFullAccessUsageDescription: Count Downcula shows your upcoming events so you can pick the ones to count down to. Events stay on your iPhone; only the countdowns you add sync.
         LSApplicationQueriesSchemes: [instagram-stories]
         # Meta requires a Facebook app ID for Instagram Stories sharing. Empty hides the option.
         FacebookAppID: ""

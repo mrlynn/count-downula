@@ -47,7 +47,7 @@ extension Countdown {
     /// A date that came and went: the countdowns that get a recap and the Keep Counting offer.
     /// Timers, count-ups and dates that roll on by themselves (birthdays, sunrises) don't.
     func hasReachedZero(at now: Date) -> Bool {
-        kind == .event && isPast(at: now) && !extras.repeatsYearly && extras.auto == nil
+        kind == .event && isPast(at: now) && extras.repetition == nil && extras.auto == nil
     }
 
     /// Turns a finished countdown into a count-up from its zero: "Days until the wedding" becomes
@@ -56,7 +56,7 @@ extension Countdown {
         kind = .countUp
         milestones = MilestonePreset.countUpDefaults()
         extras.keptCountingAt = now
-        extras.repeatsYearly = false
+        extras.repetition = nil
         // A count-up never finishes; builds that predate count-ups would otherwise alert again.
         hasNotified = true
     }

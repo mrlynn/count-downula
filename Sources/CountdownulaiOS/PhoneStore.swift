@@ -253,7 +253,7 @@ final class PhoneStore {
             MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone, MilestonePreset.oneDay.milestone,
         ]
         samples[2].milestones = [MilestonePreset.halfway.milestone, MilestonePreset.oneWeek.milestone]
-        samples[2].extras.repeatsYearly = true
+        samples[2].extras.repetition = .yearly
 
         var smokeFree = Countdown(title: "Smoke-Free", details: "Every day without one counts.",
                                   targetDate: now - 47 * day - 5 * 3_600, kind: .countUp, createdAt: now - 47 * day)

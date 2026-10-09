@@ -121,7 +121,7 @@ enum NotificationPlan {
     /// Zero on a date that comes and goes gets the recap; a shared one with a coffin opens it too.
     /// Timers, birthdays and sunrises roll on, so there's nothing to look back on.
     static func completionCategory(for countdown: Countdown) -> Category? {
-        guard countdown.kind == .event, !countdown.extras.repeatsYearly, countdown.extras.auto == nil else { return nil }
+        guard countdown.kind == .event, countdown.extras.repetition == nil, countdown.extras.auto == nil else { return nil }
         let hasCoffin = countdown.extras.link != nil
             || (countdown.extras.subscription != nil && countdown.extras.subscription?.isPublic != true)
         return hasCoffin ? .doneCoffin : .done

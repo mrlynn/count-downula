@@ -38,7 +38,7 @@ struct CountdownDetailView: View {
                             } icon: {
                                 Image(systemName: parts.isPast ? "checkmark.circle.fill"
                                     : countdown.extras.auto?.kind.symbolName
-                                    ?? (countdown.extras.repeatsYearly ? "repeat" : "calendar"))
+                                    ?? (countdown.extras.repetition != nil ? "repeat" : "calendar"))
                             }
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
