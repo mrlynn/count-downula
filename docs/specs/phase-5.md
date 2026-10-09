@@ -232,6 +232,27 @@ Depends on: 5.1, App Store Server API keys, a product decision on the model.
 
 Measure: Host Pass conversion among shared countdowns with 10 or more members, and revenue per shared countdown against server cost.
 
+Built (October 9, 2026). Decisions: a Host Pass per event, with all four features in the first version.
+- **The pass:** a consumable in-app purchase, `com.countdownula.app.hostpass`, priced at $9.99 in the local StoreKit file as a placeholder. The real price is set in App Store Connect.
+  - The app sends StoreKit 2's signed transaction to `POST /api/countdowns/<slug>/host`. The server checks the certificate chain against Apple Root CA - G3's pinned fingerprint and Apple's marker extensions, plus the bundle ID, product, type and refund state. That needs no App Store Server API key.
+  - A transaction hosts one countdown (`hostPasses` keeps the record). The app finishes the transaction only once the server has it, and delivers unfinished ones at the next launch.
+  - The Unlimited listener now finishes only Unlimited transactions, so it can't swallow a pass.
+  - `HOST_PASS_ALLOW_XCODE=true` accepts Xcode's local StoreKit testing, locally only.
+- **Custom link:** `PUT /api/countdowns/<slug>/alias`. The proxy rewrites `/c/<alias>`, `/embed/<alias>` and `/api/countdowns/<alias>/…` to the real slug, so every route and the app's universal links work with either. Earlier links keep working.
+  - Rules: 3 to 40 lowercase letters, numbers and single hyphens, with reserved words refused.
+  - Members who join through a custom link keep the real slug.
+- **No branding:** hosted pages drop the Count Downcula pitch and Get the App, hosted link previews drop the mark, and hosted embeds drop "Made with".
+  - Embed redirects at zero: the embed posts a message, and embed.js sends the host page to its own `data-redirect` (https only). The destination is always the site owner's choice.
+- **Bigger coffin:** hosted countdowns take up to 4 photos per note (`photos`; older apps' single `photo` still works) and one video per note.
+  - Videos go to `POST …/coffin/<id>/video` as a raw MP4 under 4.3 MB. The app trims them to 15 seconds and steps down in quality until they fit.
+  - Photos are fetched with `?i=`.
+  - The web panel takes several photos and plays videos. Video upload is from the app only.
+- **Keepsake:** made on the phone after zero. A PDF guestbook (cover, then each note with its photos) and a ZIP (the PDF, Notes.txt, every photo and video), shared from the host section.
+- **Not checked at runtime:**
+  - the purchase (StoreKit products load only when Xcode launches the app)
+  - photo and video storage (local runs have no Blob token)
+  - the keepsake
+
 ### 5.7 Localization (size M, ongoing)
 
 What it is: the app, the pages and the App Store listing in more languages.

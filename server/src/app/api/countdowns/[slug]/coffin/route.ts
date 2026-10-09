@@ -59,13 +59,15 @@ export async function POST(request: Request, { params }: Context) {
   const verdict = await checkLimits(checks);
   if (!verdict.ok) return tooManyRequests(verdict, "notes");
 
+  // A hosted countdown's notes can carry several photos, so it takes a bigger body.
+  const maxPhotos = doc.host ? COFFIN_LIMITS.hostPhotos : COFFIN_LIMITS.photos;
   let body: unknown;
   try {
-    body = await readJSON(request);
+    body = await readJSON(request, doc.host ? 4 * 1024 * 1024 : 1024 * 1024);
   } catch {
-    return errorResponse(400, "Send a JSON body under 1 MB.");
+    return errorResponse(400, doc.host ? "Send a JSON body under 4 MB." : "Send a JSON body under 1 MB.");
   }
-  const input = validateContribution(body);
+  const input = validateContribution(body, maxPhotos);
   if (!input.ok) return errorResponse(422, input.error);
 
   const collection = await contributions();
@@ -76,14 +78,13 @@ export async function POST(request: Request, { params }: Context) {
   const issued = role === null ? await addGuest(slug) : null;
   const token = issued?.token ?? sent!;
   const _id = new ObjectId();
-  let photoPath: string | undefined;
-  if (input.value.photo) {
-    photoPath = `coffin/${slug}/${_id.toHexString()}.jpg`;
-    await put(photoPath, input.value.photo, { access: "private", contentType: "image/jpeg", addRandomSuffix: false });
-  }
+  const photoPaths = input.value.photos.map((_, i) => `coffin/${slug}/${_id.toHexString()}${i ? `-${i}` : ""}.jpg`);
+  await Promise.all(input.value.photos.map((photo, i) =>
+    put(photoPaths[i], photo, { access: "private", contentType: "image/jpeg", addRandomSuffix: false })));
+  const photoPath = photoPaths[0];
   const doc2 = {
     _id, slug, authorTokenHash: issued?.tokenHash ?? hashToken(token), name: input.value.name, text: input.value.text,
-    ...(photoPath ? { photoPath } : {}), createdAt: new Date(), reports: 0,
+    ...(photoPath ? { photoPath } : {}), ...(photoPaths.length > 1 ? { photoPaths } : {}), createdAt: new Date(), reports: 0,
   };
   await collection.insertOne(doc2);
   after(() => logEvent("coffin_drop", request, { slug, source: photoPath ? "photo" : "note" }));

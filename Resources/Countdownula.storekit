@@ -1,33 +1,44 @@
 {
-  "identifier" : "C0A1D0F1-55E1-4C2B-9D3E-0C0A11D0F1A1",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
+  "identifier": "C0A1D0F1-55E1-4C2B-9D3E-0C0A11D0F1A1",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "2.99",
-      "familyShareable" : false,
-      "internalID" : "6740000001",
-      "localizations" : [
+      "displayPrice": "2.99",
+      "familyShareable": false,
+      "internalID": "6740000001",
+      "localizations": [
         {
-          "description" : "Unlimited countdowns, count-ups and timers on all your devices.",
-          "displayName" : "Count Downcula Unlimited",
-          "locale" : "en_US"
+          "description": "Unlimited countdowns, count-ups and timers on all your devices.",
+          "displayName": "Count Downcula Unlimited",
+          "locale": "en_US"
         }
       ],
-      "productID" : "com.countdownula.app.unlimited",
-      "referenceName" : "Count Downcula Unlimited",
-      "type" : "NonConsumable"
+      "productID": "com.countdownula.app.unlimited",
+      "referenceName": "Count Downcula Unlimited",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "9.99",
+      "familyShareable": false,
+      "internalID": "6740000002",
+      "localizations": [
+        {
+          "description": "Hosts one shared countdown: a custom link, no branding, a bigger coffin and a keepsake of every note.",
+          "displayName": "Host Pass",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.countdownula.app.hostpass",
+      "referenceName": "Host Pass",
+      "type": "Consumable"
     }
   ],
-  "settings" : {
-    "_failTransactionsEnabled" : false
+  "settings": {
+    "_failTransactionsEnabled": false
   },
-  "subscriptionGroups" : [
-
-  ],
-  "version" : {
-    "major" : 3,
-    "minor" : 0
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
   }
 }

@@ -1,3 +1,5 @@
+import AVKit
+import CoreTransferable
 import PhotosUI
 import SwiftUI
 
@@ -130,14 +132,21 @@ struct CoffinComposeSheet: View {
     /// Remembered so people only type their name once.
     @AppStorage("Coffin.name") private var name = ""
     @State private var text = ""
-    @State private var photoItem: PhotosPickerItem?
-    @State private var photo: UIImage?
+    @State private var photoItems: [PhotosPickerItem] = []
+    @State private var photos: [UIImage] = []
+    @State private var videoItem: PhotosPickerItem?
+    @State private var video: URL?
+    @State private var preparingVideo = false
     @State private var sending = false
     @State private var errorMessage: String?
 
+    /// A Host Pass lets each note carry several photos and a short video.
+    private var hosted: Bool { Coffin.isHosted(countdown) }
+    private var maxPhotos: Int { Coffin.maxPhotos(hosted: hosted) }
+
     private var canSend: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
-            && (!text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || photo != nil) && !sending
+            && (!text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !photos.isEmpty) && !sending && !preparingVideo
     }
 
     var body: some View {
@@ -154,15 +163,34 @@ struct CoffinComposeSheet: View {
                     TextField("A note for when it's here", text: $text, axis: .vertical)
                         .lineLimit(4...10)
                         .onChange(of: text) { _, new in if new.count > Coffin.maxText { text = String(new.prefix(Coffin.maxText)) } }
-                    if let photo {
-                        Image(uiImage: photo)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 220)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    if !photos.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(Array(photos.enumerated()), id: \.offset) { _, photo in
+                                    Image(uiImage: photo)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: photos.count == 1 ? 260 : 140, height: photos.count == 1 ? 200 : 140)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                }
+                            }
+                        }
                     }
-                    PhotosPicker(selection: $photoItem, matching: .images) {
-                        Label(photo == nil ? "Add a Photo" : "Change Photo", systemImage: "photo")
+                    PhotosPicker(selection: $photoItems, maxSelectionCount: maxPhotos, matching: .images) {
+                        Label(photos.isEmpty ? (maxPhotos > 1 ? "Add Photos" : "Add a Photo")
+                                             : (maxPhotos > 1 ? "Change Photos" : "Change Photo"), systemImage: "photo")
+                    }
+                    if hosted {
+                        PhotosPicker(selection: $videoItem, matching: .videos) {
+                            Label(preparingVideo ? "Preparing Video…" : video == nil ? "Add a Short Video" : "Change Video",
+                                  systemImage: "video")
+                        }
+                        .disabled(preparingVideo)
+                        if video != nil {
+                            Text("Video added. The first \(Int(Coffin.maxVideoSeconds)) seconds are kept.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 } footer: {
                     Text("Sealed until \(countdown.targetDate.formatted(.dateTime.month(.wide).day().hour().minute())). Nobody sees it before then, not even the owner. \(text.count)/\(Coffin.maxText)")
@@ -179,11 +207,28 @@ struct CoffinComposeSheet: View {
                         .disabled(!canSend)
                 }
             }
-            .onChange(of: photoItem) { _, item in
+            .onChange(of: photoItems) { _, items in
+                Task {
+                    var loaded: [UIImage] = []
+                    for item in items.prefix(maxPhotos) {
+                        if let data = try? await item.loadTransferable(type: Data.self),
+                           let image = PhoneStore.prepareImage(data)?.preview {
+                            loaded.append(image)
+                        }
+                    }
+                    photos = loaded
+                }
+            }
+            .onChange(of: videoItem) { _, item in
                 guard let item else { return }
                 Task {
-                    if let data = try? await item.loadTransferable(type: Data.self) {
-                        photo = PhoneStore.prepareImage(data)?.preview
+                    preparingVideo = true
+                    defer { preparingVideo = false }
+                    do {
+                        guard let movie = try await item.loadTransferable(type: PickedMovie.self) else { return }
+                        video = try await CoffinVideo.prepare(movie.url)
+                    } catch {
+                        errorMessage = error.localizedDescription
                     }
                 }
             }
@@ -200,10 +245,13 @@ struct CoffinComposeSheet: View {
         sending = true
         defer { sending = false }
         do {
-            let jpeg = photo.flatMap { LinkBackdrop.jpeg($0, maxDimension: 1080) }
-            try await LiveLinkAPI.addToCoffin(slug: access.slug, token: access.token,
-                                              name: name.trimmingCharacters(in: .whitespaces),
-                                              text: text.trimmingCharacters(in: .whitespacesAndNewlines), photo: jpeg)
+            let jpegs = photos.compactMap { LinkBackdrop.jpeg($0, maxDimension: 1080) }
+            let added = try await LiveLinkAPI.addToCoffin(slug: access.slug, token: access.token,
+                                                          name: name.trimmingCharacters(in: .whitespaces),
+                                                          text: text.trimmingCharacters(in: .whitespacesAndNewlines), photos: jpegs)
+            if let video, let data = try? Data(contentsOf: video) {
+                try await LiveLinkAPI.addCoffinVideo(slug: access.slug, token: access.token, id: added.id, video: data)
+            }
             await onAdded()
             dismiss()
         } catch {
@@ -295,20 +343,39 @@ struct CoffinRevealView: View {
     }
 }
 
-/// One opened note: who it's from, what they wrote, their photo.
+/// One opened note: who it's from, what they wrote, its photos and video.
 struct CoffinCard: View {
     let contribution: Coffin.Contribution
     let access: (slug: String, token: String)
     let accent: Color
-    @State private var photo: UIImage?
+    @State private var photos: [Int: UIImage] = [:]
+    @State private var video: AVPlayer?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            if contribution.hasPhoto {
+            if contribution.photos > 0 {
+                TabView {
+                    ForEach(0..<contribution.photos, id: \.self) { index in
+                        ZStack {
+                            Color.primary.opacity(0.06)
+                            if let photo = photos[index] {
+                                Image(uiImage: photo).resizable().scaledToFill()
+                            } else {
+                                ProgressView()
+                            }
+                        }
+                        .clipped()
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: contribution.photos > 1 ? .automatic : .never))
+                .frame(height: 240)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            if contribution.hasVideo == true {
                 ZStack {
                     Color.primary.opacity(0.06)
-                    if let photo {
-                        Image(uiImage: photo).resizable().scaledToFill()
+                    if let video {
+                        VideoPlayer(player: video)
                     } else {
                         ProgressView()
                     }
@@ -328,10 +395,69 @@ struct CoffinCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .task(id: contribution.id) {
-            guard contribution.hasPhoto, photo == nil,
-                  let data = try? await LiveLinkAPI.coffinPhoto(slug: access.slug, token: access.token, id: contribution.id)
-            else { return }
-            photo = UIImage(data: data)
+            for index in 0..<contribution.photos where photos[index] == nil {
+                if let data = try? await LiveLinkAPI.coffinPhoto(slug: access.slug, token: access.token, id: contribution.id, index: index) {
+                    photos[index] = UIImage(data: data)
+                }
+            }
+            // Videos are private, so they're downloaded with the key and played from a file.
+            if contribution.hasVideo == true, video == nil,
+               let data = try? await LiveLinkAPI.coffinVideo(slug: access.slug, token: access.token, id: contribution.id) {
+                let file = URL.temporaryDirectory.appending(path: "coffin-\(contribution.id).mp4")
+                try? data.write(to: file)
+                video = AVPlayer(url: file)
+            }
         }
+    }
+}
+
+// MARK: - Videos
+
+/// A video picked from Photos, copied out of the picker's temporary location.
+struct PickedMovie: Transferable {
+    let url: URL
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(contentType: .movie) { movie in
+            SentTransferredFile(movie.url)
+        } importing: { received in
+            let copy = URL.temporaryDirectory.appending(path: "picked-\(UUID().uuidString).\(received.file.pathExtension)")
+            try FileManager.default.copyItem(at: received.file, to: copy)
+            return PickedMovie(url: copy)
+        }
+    }
+}
+
+/// Fits a picked video into a coffin note: the first 15 seconds, as an MP4 small enough to send in
+/// one request, stepping down in quality until it is.
+enum CoffinVideo {
+    enum Failure: LocalizedError {
+        case tooLarge, couldNotExport
+        var errorDescription: String? {
+            switch self {
+            case .tooLarge: "That video is too large even at a lower quality. Try a shorter one."
+            case .couldNotExport: "Couldn't prepare that video. Try another."
+            }
+        }
+    }
+
+    static func prepare(_ source: URL) async throws -> URL {
+        let asset = AVURLAsset(url: source)
+        let duration = try await asset.load(.duration)
+        let range = CMTimeRange(start: .zero, duration: CMTimeMinimum(duration, CMTime(seconds: Coffin.maxVideoSeconds, preferredTimescale: 600)))
+        for preset in [AVAssetExportPreset1280x720, AVAssetExportPreset960x540, AVAssetExportPreset640x480] {
+            guard let session = AVAssetExportSession(asset: asset, presetName: preset) else { continue }
+            let output = URL.temporaryDirectory.appending(path: "coffin-upload-\(UUID().uuidString).mp4")
+            session.outputURL = output
+            session.outputFileType = .mp4
+            session.timeRange = range
+            session.shouldOptimizeForNetworkUse = true
+            await session.export()
+            guard session.status == .completed else { continue }
+            let size = (try? FileManager.default.attributesOfItem(atPath: output.path)[.size] as? Int) ?? .max
+            if size <= Coffin.maxVideoBytes { return output }
+            try? FileManager.default.removeItem(at: output)
+        }
+        throw Failure.tooLarge
     }
 }

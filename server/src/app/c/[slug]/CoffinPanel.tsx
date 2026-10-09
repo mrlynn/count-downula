@@ -8,6 +8,8 @@ interface Contribution {
   name: string;
   text: string;
   hasPhoto: boolean;
+  photoCount?: number;
+  hasVideo?: boolean;
   createdAt: string;
   mine: boolean;
 }
@@ -54,12 +56,12 @@ async function jpegBase64(file: File): Promise<string> {
   throw new Error("That photo is too large.");
 }
 
-/** A contribution's photo, fetched with the guest key since photos are private. */
-function Photo({ slug, id, token }: { slug: string; id: string; token: string }) {
+/** A contribution's photo or video, fetched with the guest key since they're private. */
+function useMedia(path: string, token: string): string | null {
   const [url, setURL] = useState<string | null>(null);
   useEffect(() => {
     let objectURL: string | null = null;
-    fetch(`/api/countdowns/${slug}/coffin/${id}/photo`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(path, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => (res.ok ? res.blob() : null))
       .then((blob) => {
         if (!blob) return;
@@ -70,23 +72,50 @@ function Photo({ slug, id, token }: { slug: string; id: string; token: string })
     return () => {
       if (objectURL) URL.revokeObjectURL(objectURL);
     };
-  }, [slug, id, token]);
+  }, [path, token]);
+  return url;
+}
+
+function Photo({ slug, id, index = 0, token }: { slug: string; id: string; index?: number; token: string }) {
+  const url = useMedia(`/api/countdowns/${slug}/coffin/${id}/photo?i=${index}`, token);
   return url ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt="" style={{ width: "100%", borderRadius: 12, display: "block", marginTop: 8 }} />
   ) : null;
 }
 
+function Video({ slug, id, token }: { slug: string; id: string; token: string }) {
+  const url = useMedia(`/api/countdowns/${slug}/coffin/${id}/video`, token);
+  return url ? <video src={url} controls playsInline style={{ width: "100%", borderRadius: 12, display: "block", marginTop: 8 }} /> : null;
+}
+
+/** Every photo a note has, then its video. */
+function Media({ slug, c, token }: { slug: string; c: Contribution; token: string }) {
+  const count = c.photoCount ?? (c.hasPhoto ? 1 : 0);
+  return (
+    <>
+      {Array.from({ length: count }, (_, i) => <Photo key={i} slug={slug} id={c.id} index={i} token={token} />)}
+      {c.hasVideo ? <Video slug={slug} id={c.id} token={token} /> : null}
+    </>
+  );
+}
+
 /**
  * The sealed coffin on the live page. Before zero anyone with the link can leave a note and a
  * photo; it stays sealed until zero, when everyone who left something sees what's inside.
  */
-export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: string; opensAt: string; initialSealed: number }) {
+export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 1 }: {
+  slug: string;
+  opensAt: string;
+  initialSealed: number;
+  /** One, or several on a hosted countdown. */
+  maxPhotos?: number;
+}) {
   const [state, setState] = useState<CoffinState | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [text, setText] = useState("");
-  const [photo, setPhoto] = useState<File | null>(null);
+  const [photos, setPhotos] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [reported, setReported] = useState<string[]>([]);
@@ -118,11 +147,12 @@ export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: st
     setSaving(true);
     try {
       const body: Record<string, string> = { name: name.trim(), text: text.trim() };
-      if (photo) body.photo = await jpegBase64(photo);
+      const encoded = await Promise.all(photos.map(jpegBase64));
+      const payload: Record<string, string | string[]> = { ...body, ...(encoded.length ? { photos: encoded } : {}) };
       const res = await fetch(`/api/countdowns/${slug}/coffin`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),
       });
       const reply = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -132,7 +162,7 @@ export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: st
       if (reply.token) storage()?.setItem(tokenKey(slug), reply.token);
       storage()?.setItem(nameKey, name.trim());
       setText("");
-      setPhoto(null);
+      setPhotos([]);
       if (fileInput.current) fileInput.current.value = "";
       await load();
     } catch (err) {
@@ -188,13 +218,18 @@ export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: st
             />
             <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
               <Button component="label" variant="outlined">
-                {photo ? "Change photo" : "Add a photo"}
-                <input ref={fileInput} hidden type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
+                {photos.length ? (maxPhotos > 1 ? "Change photos" : "Change photo") : maxPhotos > 1 ? `Add up to ${maxPhotos} photos` : "Add a photo"}
+                <input ref={fileInput} hidden type="file" accept="image/*" multiple={maxPhotos > 1}
+                       onChange={(e) => setPhotos(Array.from(e.target.files ?? []).slice(0, maxPhotos))} />
               </Button>
-              {photo ? <Typography sx={{ opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis" }}>{photo.name}</Typography> : null}
+              {photos.length ? (
+                <Typography sx={{ opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {photos.length === 1 ? photos[0].name : `${photos.length} photos`}
+                </Typography>
+              ) : null}
             </Stack>
             <Box>
-              <Button type="submit" variant="contained" disabled={saving || !name.trim() || (!text.trim() && !photo)}>
+              <Button type="submit" variant="contained" disabled={saving || !name.trim() || (!text.trim() && photos.length === 0)}>
                 {saving ? "Sealing…" : "Seal it"}
               </Button>
             </Box>
@@ -208,7 +243,7 @@ export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: st
             {mine.map((c) => (
               <Box key={c.id} sx={{ px: 2, py: 1.5, borderRadius: 2, bgcolor: "rgba(127,127,127,0.08)" }}>
                 {c.text ? <Typography sx={{ whiteSpace: "pre-wrap" }}>{c.text}</Typography> : null}
-                {c.hasPhoto ? <Photo slug={slug} id={c.id} token={token} /> : null}
+                <Media slug={slug} c={c} token={token} />
                 <Button size="small" color="inherit" sx={{ mt: 1, opacity: 0.7 }} onClick={() => remove(c.id)}>
                   Remove
                 </Button>
@@ -226,7 +261,7 @@ export default function CoffinPanel({ slug, opensAt, initialSealed }: { slug: st
                   {c.mine ? " (you)" : ""}
                 </Typography>
                 {c.text ? <Typography sx={{ whiteSpace: "pre-wrap", mt: 0.5 }}>{c.text}</Typography> : null}
-                {c.hasPhoto ? <Photo slug={slug} id={c.id} token={token} /> : null}
+                <Media slug={slug} c={c} token={token} />
                 {!c.mine ? (
                   <Button size="small" color="inherit" sx={{ mt: 1, opacity: 0.6 }} disabled={reported.includes(c.id)} onClick={() => report(c.id)}>
                     {reported.includes(c.id) ? "Reported" : "Report"}

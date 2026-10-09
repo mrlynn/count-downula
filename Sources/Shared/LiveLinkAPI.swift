@@ -184,8 +184,30 @@ enum LiveLinkAPI {
 
     // MARK: - Transport
 
+    /// The server URL for an API path. A query (`?i=1`) stays a query rather than being escaped into the path.
+    static func endpoint(_ path: String) -> URL {
+        guard path.contains("?"), let url = URL(string: path, relativeTo: baseURL) else { return baseURL.appending(path: path) }
+        return url.absoluteURL
+    }
+
+    /// Sends a raw body (a video) rather than JSON.
+    static func upload(_ method: String, path: String, token: String?, body: Data, contentType: String) async throws -> (Data, Int) {
+        var request = URLRequest(url: endpoint(path))
+        request.httpMethod = method
+        request.timeoutInterval = 120
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        if let client = Analytics.clientHeader { request.setValue(client, forHTTPHeaderField: "X-Countdowncula-Client") }
+        do {
+            let (data, response) = try await URLSession.shared.upload(for: request, from: body)
+            return (data, (response as? HTTPURLResponse)?.statusCode ?? 0)
+        } catch {
+            throw Failure.unreachable
+        }
+    }
+
     static func raw(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> (Data, Int) {
-        var request = URLRequest(url: baseURL.appending(path: path))
+        var request = URLRequest(url: endpoint(path))
         request.httpMethod = method
         request.timeoutInterval = 30
         // Members should see the owner's edit as soon as it lands, not a cached copy.
@@ -211,7 +233,7 @@ enum LiveLinkAPI {
 
     @discardableResult
     private static func send(_ method: String, path: String, token: String? = nil, body: Data?) async throws -> Response {
-        var request = URLRequest(url: baseURL.appending(path: path))
+        var request = URLRequest(url: endpoint(path))
         request.httpMethod = method
         request.timeoutInterval = 30
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

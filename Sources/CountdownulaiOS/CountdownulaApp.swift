@@ -114,6 +114,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         UNUserNotificationCenter.current().delegate = self
         NotificationActions.register()
         registerWidgetActions()
+        // Delivers any Host Pass bought but not yet attached to its countdown (the app quit, or the network dropped).
+        Task { @MainActor in _ = HostPassStore.shared }
         SharedRefreshTask.register { [weak self] in await self?.store?.refreshShared() }
         // CloudKit pushes wake the app so widgets and alerts stay current while it's closed.
         application.registerForRemoteNotifications()

@@ -95,11 +95,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
               {value}
             </div>
             <div style={{ display: "flex", fontSize: 34, fontWeight: 500, opacity: 0.85, marginTop: 14 }}>{caption}</div>
-            <div style={{ display: "flex", alignItems: "center", marginTop: 48, fontSize: 26, fontWeight: 700, opacity: 0.85 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`data:image/png;base64,${icon.toString("base64")}`} width={44} height={44} style={{ borderRadius: 10, marginRight: 14 }} />
-              Count Downcula
-            </div>
+            {/* Hosted countdowns carry no Count Downcula mark. */}
+            {doc.host ? null : (
+              <div style={{ display: "flex", alignItems: "center", marginTop: 48, fontSize: 26, fontWeight: 700, opacity: 0.85 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`data:image/png;base64,${icon.toString("base64")}`} width={44} height={44} style={{ borderRadius: 10, marginRight: 14 }} />
+                Count Downcula
+              </div>
+            )}
           </div>
           <svg width={ring} height={ring} viewBox={`0 0 ${ring} ${ring}`}>
             <circle cx={ring / 2} cy={ring / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={stroke} />

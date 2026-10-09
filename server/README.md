@@ -18,6 +18,9 @@ Built with Next.js (App Router), Material UI and MongoDB. See `docs/specs/viral-
 | `GET /c/:slug/calendar.ics` | The countdown as an iCalendar feed. The page's Add to Calendar offers it as a `webcal://` subscription, a Google Calendar subscription, or a download |
 | `GET /embed/:slug` | A small live countdown for an iframe, `noindex`, canonical to the live page. Query options: `theme` (style, dark, light), `end` (message, recap, countup, hide), `message`. Only embeds may be framed by other sites (`frame-ancestors`); everything else is `'self'` |
 | `GET /embed.js` | The one-line embed: `<script async src="https://go.countdowncula.com/embed.js" data-countdown="<slug>"></script>`, with optional `data-theme`, `data-end`, `data-message`, `data-width`, `data-height` |
+| `POST /api/countdowns/:slug/host` | Applies a Host Pass, `{ transaction }` (StoreKit 2's signed JWS), checked against Apple's certificate chain. Owner only |
+| `PUT /api/countdowns/:slug/alias` | Sets a hosted countdown's custom link, `{ alias }`. The proxy maps `/c/<alias>`, `/embed/<alias>` and `/api/countdowns/<alias>/…` to the real slug |
+| `POST /api/countdowns/:slug/coffin/:id/video` | Adds a short video (raw MP4 under 4.3 MB) to your own note on a hosted countdown. `GET` returns it with the same rules as photos, which take `?i=` for a note's second, third or fourth photo |
 | `POST /api/events` | A batch of app-side events, `{ installId, platform, appVersion, events: [{ name, at, slug?, source? }] }`. See Metrics below |
 | `GET /admin/metrics` | The metrics dashboard, behind HTTP Basic auth with `METRICS_PASSWORD` |
 

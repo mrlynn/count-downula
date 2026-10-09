@@ -196,13 +196,18 @@ struct SharedSubscription: Codable, Hashable {
     var isPublic: Bool?
     /// This member stays at zero when the owner keeps counting up from it.
     var staysFinished: Bool?
+    /// The owner bought a Host Pass for it: bigger coffin notes, custom link.
+    var isHosted: Bool?
 }
 
 /// A countdown's public page on the Count Downcula server.
 struct PublishedLink: Codable, Hashable {
     var slug: String
+    /// The link to share: the random one, or the custom one once a host sets it.
     var url: URL
     var publishedAt: Date
+    /// A Host Pass is applied to it.
+    var isHosted: Bool?
 }
 
 struct StreakHistory: Codable, Hashable {

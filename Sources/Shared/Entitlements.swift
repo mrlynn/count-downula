@@ -39,7 +39,11 @@ final class Entitlements {
         // Purchases from other devices, Ask to Buy approvals and refunds all arrive here.
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
-                if case .verified(let transaction) = update { await transaction.finish() }
+                // Host Passes are finished by HostPassStore once the server has them; finishing one
+                // here would lose a purchase that never reached its countdown.
+                if case .verified(let transaction) = update, transaction.productID == SharedConfig.unlimitedProductID {
+                    await transaction.finish()
+                }
                 await self?.refresh()
             }
         }
