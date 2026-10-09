@@ -129,7 +129,7 @@ struct HostSection: View {
 
     private func saveAlias() async {
         guard let token = OwnerTokens.token(for: countdown.id) else {
-            errorMessage = "Only the device that shared this link, or one signed in to the same iCloud Keychain, can change it."
+            errorMessage = L("Only the device that shared this link, or one signed in to the same iCloud Keychain, can change it.")
             return
         }
         savingAlias = true
@@ -170,7 +170,7 @@ enum Keepsake {
 
     enum Failure: LocalizedError {
         case empty
-        var errorDescription: String? { "The coffin is empty, so there's nothing to keep yet." }
+        var errorDescription: String? { L("The coffin is empty, so there's nothing to keep yet.") }
     }
 
     @MainActor
@@ -243,8 +243,8 @@ enum Keepsake {
             y = 220
             draw(countdown.title, .systemFont(ofSize: 34, weight: .bold), after: 10)
             draw(countdown.targetDate.formatted(.dateTime.weekday(.wide).month(.wide).day().year()), .systemFont(ofSize: 16), .darkGray, after: 24)
-            if let counted = Recap.counted(countdown) { draw("\(counted) counted", .systemFont(ofSize: 18, weight: .semibold), accent) }
-            draw("\(notes.count) \(notes.count == 1 ? "note" : "notes") from everyone who counted down", .systemFont(ofSize: 16), .darkGray)
+            if let counted = Recap.counted(countdown) { draw(L("\(counted) counted"), .systemFont(ofSize: 18, weight: .semibold), accent) }
+            draw(L("\(notes.count) notes from everyone who counted down"), .systemFont(ofSize: 16), .darkGray)
 
             // The notes.
             newPage()
@@ -253,7 +253,7 @@ enum Keepsake {
                 draw(note.contribution.createdAt.formatted(.dateTime.month(.wide).day().year()), .systemFont(ofSize: 11), .gray, after: 8)
                 if !note.contribution.text.isEmpty { draw(note.contribution.text, .systemFont(ofSize: 14), after: 10) }
                 note.photos.forEach(draw)
-                if note.video != nil { draw("A video came with this note. It's in the ZIP.", .italicSystemFont(ofSize: 12), .gray) }
+                if note.video != nil { draw(L("A video came with this note. It's in the ZIP."), .italicSystemFont(ofSize: 12), .gray) }
                 y += 18
             }
         }
@@ -262,11 +262,11 @@ enum Keepsake {
     static func text(_ countdown: Countdown, notes: [Note]) -> String {
         let header = "\(countdown.title)\n\(countdown.targetDate.formatted(.dateTime.month(.wide).day().year()))\n\n"
         return header + notes.map { note in
-            let extras = [note.photos.isEmpty ? nil : "\(note.photos.count) photo\(note.photos.count == 1 ? "" : "s")",
-                          note.video == nil ? nil : "a video"].compactMap { $0 }
+            let extras = [note.photos.isEmpty ? nil : L("\(note.photos.count) photos"),
+                          note.video == nil ? nil : L("a video")].compactMap { $0 }
             return "\(note.contribution.name), \(note.contribution.createdAt.formatted(.dateTime.month(.wide).day().year()))\n"
                 + (note.contribution.text.isEmpty ? "" : "\(note.contribution.text)\n")
-                + (extras.isEmpty ? "" : "(\(extras.joined(separator: " and ")))\n")
+                + (extras.isEmpty ? "" : "(\(extras.formatted(.list(type: .and))))\n")
         }.joined(separator: "\n")
     }
 

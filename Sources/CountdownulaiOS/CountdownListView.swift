@@ -191,7 +191,12 @@ struct CountdownListView: View {
             store.addImported(held.countdowns, source: held.source)
         } else {
             let count = held.countdowns.count
-            importNotice = "\(count) more \(count == 1 ? "countdown didn't" : "countdowns didn't") fit the free tier: \(held.countdowns.map(\.title).prefix(3).formatted(.list(type: .and)))\(count > 3 ? " and more" : ""). Unlock Unlimited and add \(count == 1 ? "it" : "them") again any time."
+            let names = Array(held.countdowns.map(\.title).prefix(3)).formatted(.list(type: .and))
+            importNotice = count == 1
+                ? L("1 countdown didn't fit the free tier: \(names). Unlock Unlimited and add it again any time.")
+                : count > 3
+                ? L("\(count) countdowns didn't fit the free tier, including \(names). Unlock Unlimited and add them again any time.")
+                : L("\(count) countdowns didn't fit the free tier: \(names). Unlock Unlimited and add them again any time.")
         }
         heldBack = nil
     }
@@ -254,7 +259,7 @@ private struct HeroCard: View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
             StyledCountdownCard(
                 countdown: countdown, now: context.date,
-                badge: countdown.isPinned ? "PINNED" : "UP NEXT",
+                badge: countdown.isPinned ? L("PINNED") : L("UP NEXT"),
                 subtitle: countdown.countsUp
                     ? Text("Since \(countdown.targetDate.formatted(.dateTime.month().day().year()))")
                     : Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())

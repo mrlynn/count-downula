@@ -20,9 +20,9 @@ struct QuickTimerControl: ControlWidget {
 
     /// "10 min", "1 hr", "1.5 hr".
     static func length(_ minutes: Int) -> String {
-        if minutes < 60 { return "\(minutes) min" }
+        if minutes < 60 { return L("\(minutes) min") }
         let hours = Double(minutes) / 60
-        return hours == hours.rounded() ? "\(Int(hours)) hr" : String(format: "%.1f hr", hours)
+        return hours == hours.rounded() ? L("\(Int(hours)) hr") : L("\(String(format: "%.1f", hours)) hr")
     }
 }
 
@@ -70,7 +70,7 @@ struct NextUpValueProvider: ControlValueProvider {
     func currentValue() async throws -> NextUpValue {
         let now = Date()
         guard let countdown = WidgetSnapshot.read().featured(at: now) else {
-            return NextUpValue(id: nil, title: "Count Downcula", timeLeft: "Nothing coming up")
+            return NextUpValue(id: nil, title: "Count Downcula", timeLeft: L("Nothing coming up"))
         }
         return NextUpValue(id: countdown.id, title: countdown.title, timeLeft: CountdownFormat.compact(countdown, at: now))
     }

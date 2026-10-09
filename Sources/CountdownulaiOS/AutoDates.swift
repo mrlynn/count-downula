@@ -15,7 +15,7 @@ enum AutoDateTemplate {
         case noSunEvent
 
         var errorDescription: String? {
-            "The sun doesn't rise or set where you are for the next year. Impressive, but there's nothing to count."
+            L("The sun doesn't rise or set where you are for the next year. Impressive, but there's nothing to count.")
         }
     }
 
@@ -51,8 +51,8 @@ final class RoughLocation: NSObject, CLLocationManagerDelegate {
 
         var errorDescription: String? {
             switch self {
-            case .denied: "Count Downcula needs your rough location to know when the sun rises and sets. You can allow it in Settings."
-            case .unavailable: "Couldn't find your location just now. Try again in a moment."
+            case .denied: L("Count Downcula needs your rough location to know when the sun rises and sets. You can allow it in Settings.")
+            case .unavailable: L("Couldn't find your location just now. Try again in a moment.")
             }
         }
     }

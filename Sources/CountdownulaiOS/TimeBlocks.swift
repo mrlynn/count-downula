@@ -9,16 +9,16 @@ struct TimeBlocks: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            block(parts.days, "Days")
-            block(parts.hours, "Hours")
-            block(parts.minutes, "Min")
-            block(parts.seconds, "Sec")
+            block(parts.days, L("Days"))
+            block(parts.hours, L("Hours"))
+            block(parts.minutes, L("Min"))
+            block(parts.seconds, L("Sec"))
         }
         .opacity(parts.isPast ? 0.5 : 1)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(parts.isPast
             ? "Finished"
-            : "\(parts.days) days, \(parts.hours) hours, \(parts.minutes) minutes, \(parts.seconds) seconds \(parts.countsUp ? "so far" : "left")")
+            : "\(parts.days) days, \(parts.hours) hours, \(parts.minutes) minutes, \(parts.seconds) seconds \(parts.countsUp ? L("so far") : L("left"))")
     }
 
     private func block(_ value: Int, _ label: String) -> some View {

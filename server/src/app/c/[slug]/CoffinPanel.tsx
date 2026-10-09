@@ -2,6 +2,7 @@
 
 import { Alert, Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { t, type Locale } from "@/lib/i18n.ts";
 
 interface Contribution {
   id: string;
@@ -104,12 +105,13 @@ function Media({ slug, c, token }: { slug: string; c: Contribution; token: strin
  * The sealed coffin on the live page. Before zero anyone with the link can leave a note and a
  * photo; it stays sealed until zero, when everyone who left something sees what's inside.
  */
-export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 1 }: {
+export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 1, locale = "en" }: {
   slug: string;
   opensAt: string;
   initialSealed: number;
   /** One, or several on a hosted countdown. */
   maxPhotos?: number;
+  locale?: Locale;
 }) {
   const [state, setState] = useState<CoffinState | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -156,7 +158,7 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
       });
       const reply = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(reply.error ?? "Couldn't seal that. Try again.");
+        setError(reply.error ?? t(locale, "couldntSeal"));
         return;
       }
       if (reply.token) storage()?.setItem(tokenKey(slug), reply.token);
@@ -166,7 +168,8 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
       if (fileInput.current) fileInput.current.value = "";
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't read that photo.");
+      setError(err instanceof Error && err.message !== "That photo is too large." ? err.message
+        : err instanceof Error ? t(locale, "photoTooLarge") : t(locale, "couldntReadPhoto"));
     } finally {
       setSaving(false);
     }
@@ -193,23 +196,23 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
     <Box sx={{ bgcolor: "background.paper", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 }, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <Box sx={{ maxWidth: 960, mx: "auto" }}>
         <Typography variant="h2" sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: { xs: 26, sm: 32 }, mb: 1 }}>
-          {open ? "🦇 The coffin is open" : "🦇 The sealed coffin"}
+          {t(locale, open ? "coffinOpen" : "coffinSealed")}
         </Typography>
         <Typography sx={{ opacity: 0.75, mb: 3 }}>
           {open
             ? canSee
               ? sealed === 0
-                ? "Nobody left anything this time."
-                : `${sealed.toLocaleString()} ${sealed === 1 ? "note" : "notes"} from everyone who counted down.`
-              : `${sealed.toLocaleString()} ${sealed === 1 ? "note was" : "notes were"} sealed inside. Everyone who left one, or counted down in the app, can open it.`
-            : `${sealed === 0 ? "Nothing sealed yet." : `${sealed.toLocaleString()} sealed so far.`} Leave a note or a photo. Nobody sees it until zero, then everyone does.`}
+                ? t(locale, "coffinNothingLeft")
+                : t(locale, "coffinFromEveryone", { n: sealed })
+              : t(locale, "coffinWasSealed", { n: sealed })
+            : `${sealed === 0 ? t(locale, "coffinNothingYet") : t(locale, "coffinSoFar", { n: sealed })} ${t(locale, "coffinInvite")}`}
         </Typography>
 
         {!open ? (
           <Stack component="form" onSubmit={submit} spacing={1.5} sx={{ mb: 3, maxWidth: 560 }}>
-            <TextField label="Your name" value={name} onChange={(e) => setName(e.target.value.slice(0, 40))} required size="small" />
+            <TextField label={t(locale, "yourName")} value={name} onChange={(e) => setName(e.target.value.slice(0, 40))} required size="small" />
             <TextField
-              label="Your note"
+              label={t(locale, "yourNote")}
               value={text}
               onChange={(e) => setText(e.target.value.slice(0, NOTE_LIMIT))}
               multiline
@@ -218,19 +221,20 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
             />
             <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
               <Button component="label" variant="outlined">
-                {photos.length ? (maxPhotos > 1 ? "Change photos" : "Change photo") : maxPhotos > 1 ? `Add up to ${maxPhotos} photos` : "Add a photo"}
+                {photos.length ? t(locale, maxPhotos > 1 ? "changePhotos" : "changePhoto")
+                  : maxPhotos > 1 ? t(locale, "addPhotos", { n: maxPhotos }) : t(locale, "addPhoto")}
                 <input ref={fileInput} hidden type="file" accept="image/*" multiple={maxPhotos > 1}
                        onChange={(e) => setPhotos(Array.from(e.target.files ?? []).slice(0, maxPhotos))} />
               </Button>
               {photos.length ? (
                 <Typography sx={{ opacity: 0.7, overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {photos.length === 1 ? photos[0].name : `${photos.length} photos`}
+                  {photos.length === 1 ? photos[0].name : t(locale, "photos", { n: photos.length })}
                 </Typography>
               ) : null}
             </Stack>
             <Box>
               <Button type="submit" variant="contained" disabled={saving || !name.trim() || (!text.trim() && photos.length === 0)}>
-                {saving ? "Sealing…" : "Seal it"}
+                {t(locale, saving ? "sealing" : "sealIt")}
               </Button>
             </Box>
             {error ? <Alert severity="error">{error}</Alert> : null}
@@ -239,13 +243,13 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
 
         {!open && mine.length > 0 && token ? (
           <Stack spacing={1}>
-            <Typography sx={{ fontWeight: 600, opacity: 0.8 }}>What you sealed</Typography>
+            <Typography sx={{ fontWeight: 600, opacity: 0.8 }}>{t(locale, "whatYouSealed")}</Typography>
             {mine.map((c) => (
               <Box key={c.id} sx={{ px: 2, py: 1.5, borderRadius: 2, bgcolor: "rgba(127,127,127,0.08)" }}>
                 {c.text ? <Typography sx={{ whiteSpace: "pre-wrap" }}>{c.text}</Typography> : null}
                 <Media slug={slug} c={c} token={token} />
                 <Button size="small" color="inherit" sx={{ mt: 1, opacity: 0.7 }} onClick={() => remove(c.id)}>
-                  Remove
+                  {t(locale, "remove")}
                 </Button>
               </Box>
             ))}
@@ -258,13 +262,13 @@ export default function CoffinPanel({ slug, opensAt, initialSealed, maxPhotos = 
               <Box key={c.id} sx={{ px: 2, py: 1.5, borderRadius: 2, bgcolor: "rgba(127,127,127,0.08)" }}>
                 <Typography sx={{ fontWeight: 600 }}>
                   {c.name}
-                  {c.mine ? " (you)" : ""}
+                  {c.mine ? ` ${t(locale, "you")}` : ""}
                 </Typography>
                 {c.text ? <Typography sx={{ whiteSpace: "pre-wrap", mt: 0.5 }}>{c.text}</Typography> : null}
                 <Media slug={slug} c={c} token={token} />
                 {!c.mine ? (
                   <Button size="small" color="inherit" sx={{ mt: 1, opacity: 0.6 }} disabled={reported.includes(c.id)} onClick={() => report(c.id)}>
-                    {reported.includes(c.id) ? "Reported" : "Report"}
+                    {t(locale, reported.includes(c.id) ? "reported" : "report")}
                   </Button>
                 ) : null}
               </Box>

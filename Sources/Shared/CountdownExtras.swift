@@ -81,11 +81,11 @@ enum Repetition: Codable, Hashable {
     /// "Every week", "Every 3 days".
     var label: String {
         switch self {
-        case .weekly: "Every week"
-        case .monthly: "Every month"
-        case .yearly: "Every year"
-        case .weekdays: "Every weekday"
-        case let .everyDays(n): n == 1 ? "Every day" : "Every \(n) days"
+        case .weekly: L("Every week")
+        case .monthly: L("Every month")
+        case .yearly: L("Every year")
+        case .weekdays: L("Every weekday")
+        case let .everyDays(n): n == 1 ? L("Every day") : L("Every \(n) days")
         }
     }
 

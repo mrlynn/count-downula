@@ -199,12 +199,12 @@ private struct TimeGrid: View {
     var body: some View {
         Grid(horizontalSpacing: 6, verticalSpacing: 6) {
             GridRow {
-                block(parts.days, "DAYS")
-                block(parts.hours, "HRS")
+                block(parts.days, L("DAYS"))
+                block(parts.hours, L("HRS"))
             }
             GridRow {
-                block(parts.minutes, "MIN")
-                block(parts.seconds, "SEC")
+                block(parts.minutes, L("MIN"))
+                block(parts.seconds, L("SEC"))
             }
         }
         .opacity(parts.isPast ? 0.5 : 1)

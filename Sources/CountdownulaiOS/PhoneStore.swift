@@ -164,7 +164,7 @@ final class PhoneStore {
     func startQuickTimer(minutes: Int) {
         let now = Date()
         let countdown = Countdown(
-            title: "\(Self.durationLabel(minutes)) timer", details: "",
+            title: L("\(Self.durationLabel(minutes)) timer"), details: "",
             targetDate: now.addingTimeInterval(TimeInterval(minutes * 60)), kind: .timer, createdAt: now
         )
         upsert(countdown, source: "quick_timer")
@@ -172,9 +172,9 @@ final class PhoneStore {
     }
 
     static func durationLabel(_ minutes: Int) -> String {
-        if minutes < 60 { return "\(minutes) min" }
+        if minutes < 60 { return L("\(minutes) min") }
         let hours = Double(minutes) / 60
-        return hours == hours.rounded() ? "\(Int(hours)) hr" : String(format: "%.1f hr", hours)
+        return hours == hours.rounded() ? L("\(Int(hours)) hr") : L("\(String(format: "%.1f", hours)) hr")
     }
 
     // MARK: - Sync side effects

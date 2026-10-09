@@ -1,0 +1,5 @@
+/* Draft, needs review. */
+"Privacy" = "プライバシー";
+"Share Analytics" = "分析を共有";
+"Reset Analytics ID" = "分析IDをリセット";
+"Anonymous counts, like how many countdowns get made and how many people open a shared link. No titles, dates, names or contacts. Turn on Reset Analytics ID to start over as a new, unconnected install next time Count Downcula opens." = "作成されたカウントダウンの数や、共有リンクを開いた人数などの匿名の集計です。タイトル、日付、名前、連絡先は含みません。「分析IDをリセット」をオンにすると、次にCount Downculaを開いた時に、無関係な新しいインストールとして記録し直します。";

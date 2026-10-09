@@ -117,7 +117,7 @@ enum ShareVideo {
     enum Failure: LocalizedError {
         case couldNotWrite
 
-        var errorDescription: String? { "Couldn't make the video. Try again." }
+        var errorDescription: String? { L("Couldn't make the video. Try again.") }
     }
 
     /// What frame `index` shows: the countdown at `start` plus the elapsed time, with the ring

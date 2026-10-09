@@ -13,7 +13,7 @@ enum CountdownImport {
                       eventID: String?, now: Date = Date()) -> Countdown {
         let name = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let place = location?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        var countdown = Countdown(title: name.isEmpty ? "Untitled Event" : String(name.prefix(120)),
+        var countdown = Countdown(title: name.isEmpty ? L("Untitled Event") : String(name.prefix(120)),
                                   details: String(place.prefix(1_000)), targetDate: start, createdAt: now)
         countdown.style = CountdownStyle(background: .scene(DraftExtractor.scene(for: "\(name) \(place)")), font: .rounded)
         countdown.extras.repetition = repetition
@@ -35,7 +35,7 @@ enum CountdownImport {
             if date >= today { break }
         }
         let who = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        var countdown = Countdown(title: who.isEmpty ? "Birthday" : "\(who)\u{2019}s Birthday", details: "",
+        var countdown = Countdown(title: who.isEmpty ? L("Birthday") : L("\(who)\u{2019}s Birthday"), details: "",
                                   targetDate: next, createdAt: now)
         countdown.style = CountdownStyle(background: .scene(.birthday), font: .rounded)
         countdown.extras.repetition = .yearly

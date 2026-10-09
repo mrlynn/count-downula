@@ -68,9 +68,9 @@ struct EditorView: View {
                     } else if kind == .countUp {
                         DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
                     } else {
-                        Stepper("\(days) day\(days == 1 ? "" : "s")", value: $days, in: 0...365)
-                        Stepper("\(hours) hour\(hours == 1 ? "" : "s")", value: $hours, in: 0...23)
-                        Stepper("\(minutes) minute\(minutes == 1 ? "" : "s")", value: $minutes, in: 0...59)
+                        Stepper("\(days) days", value: $days, in: 0...365)
+                        Stepper("\(hours) hours", value: $hours, in: 0...23)
+                        Stepper("\(minutes) minutes", value: $minutes, in: 0...59)
                         if original?.kind == .timer {
                             Text("Saving restarts the timer from now.")
                                 .font(.caption)

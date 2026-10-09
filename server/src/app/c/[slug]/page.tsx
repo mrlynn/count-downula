@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { after } from "next/server";
 import { logEvent, referrerSource } from "@/lib/events.ts";
 import { loadRecap, recapText } from "@/lib/recap.ts";
+import { pickLocale, t } from "@/lib/i18n.ts";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
 import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
@@ -25,13 +26,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const doc = await load(slug);
   if (!doc) return { title: "Count Downcula" };
   const now = new Date();
-  const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone);
+  const locale = pickLocale((await headers()).get("accept-language"));
+  const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale);
   const recap = await loadRecap(doc, now);
   // After zero the preview tells the story instead of the date: "It happened. 23 counted down together."
-  const words = recap ? recapText(recap, doc.visibility === "public") : null;
+  const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;
   const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind)}${recap ? `&p=${recap.people}` : ""}`;
   const description = words && doc.kind !== "countUp"
-    ? ["It happened.", words.together ?? words.counted].filter(Boolean).join(" ")
+    ? [t(locale, "itHappened"), words.together ?? words.counted].filter(Boolean).join(" ")
     : `${value} ${caption}`;
   return {
     title: `${doc.title} · Count Downcula`,
@@ -67,6 +69,7 @@ export default async function CountdownPage({ params, searchParams }: Props) {
   const photoURL = doc.hasPhoto ? `/c/${slug}/photo?v=${doc.updatedAt.getTime()}` : null;
   return (
     <LiveCountdown
+      locale={pickLocale(h.get("accept-language"))}
       countdown={toPublic(doc)}
       photoURL={photoURL}
       serverNow={Date.now()}

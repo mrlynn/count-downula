@@ -134,10 +134,11 @@ struct PoolSection: View {
         if let answer {
             let names = state?.winners.map(\.name) ?? []
             let when = answer.formatted(.dateTime.month(.abbreviated).day().hour().minute())
-            return names.isEmpty ? "It happened \(when)." : "\(ListFormatter.localizedString(byJoining: names)) called it closest. It happened \(when)."
+            let winners = ListFormatter.localizedString(byJoining: names)
+            return names.isEmpty ? L("It happened \(when).") : L("\(winners) called it closest. It happened \(when).")
         }
-        let guesses = count == 0 ? "No guesses yet" : "\(count) \(count == 1 ? "guess" : "guesses")"
-        return closed ? "\(guesses). Guessing is closed." : "\(guesses). Closest to the real date wins."
+        if count == 0 { return closed ? L("No guesses yet. Guessing is closed.") : L("No guesses yet. Closest to the real date wins.") }
+        return closed ? L("\(count) guesses. Guessing is closed.") : L("\(count) guesses. Closest to the real date wins.")
     }
 
     private func load(_ access: (slug: String, token: String)) async {

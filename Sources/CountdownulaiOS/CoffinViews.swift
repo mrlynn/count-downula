@@ -101,10 +101,9 @@ struct CoffinSection: View {
 
     private func summary(open: Bool, count: Int) -> String {
         if open {
-            return count == 0 ? "Nobody left anything this time." : "\(count) \(count == 1 ? "note is" : "notes are") waiting."
+            return count == 0 ? L("Nobody left anything this time.") : L("\(count) notes are waiting.")
         }
-        let sealed = count == 0 ? "Leave a note or photo" : "\(count) sealed"
-        return "\(sealed). Opens for everyone at zero."
+        return count == 0 ? L("Leave a note or photo. Opens for everyone at zero.") : L("\(count) sealed. Opens for everyone at zero.")
     }
 
     private func load(_ access: (slug: String, token: String)) async {
@@ -435,8 +434,8 @@ enum CoffinVideo {
         case tooLarge, couldNotExport
         var errorDescription: String? {
             switch self {
-            case .tooLarge: "That video is too large even at a lower quality. Try a shorter one."
-            case .couldNotExport: "Couldn't prepare that video. Try another."
+            case .tooLarge: L("That video is too large even at a lower quality. Try a shorter one.")
+            case .couldNotExport: L("Couldn't prepare that video. Try another.")
             }
         }
     }

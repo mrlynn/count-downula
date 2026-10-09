@@ -3,11 +3,12 @@
 import { Box, Button, Card, CardActionArea, Chip, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import type { CryptEntry } from "@/lib/crypt.ts";
+import { t, type Locale } from "@/lib/i18n.ts";
 import { webStyle } from "@/lib/style.ts";
 import { compact, viewerTarget } from "@/lib/time.ts";
 
 /** The crypt's cards, each ticking on the viewer's own clock. */
-export function CryptList({ entries, serverNow }: { entries: CryptEntry[]; serverNow: number }) {
+export function CryptList({ entries, serverNow, locale = "en" }: { entries: CryptEntry[]; serverNow: number; locale?: Locale }) {
   const [now, setNow] = useState(() => new Date(serverNow));
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -18,7 +19,7 @@ export function CryptList({ entries, serverNow }: { entries: CryptEntry[]; serve
   }, []);
 
   if (entries.length === 0) {
-    return <Typography sx={{ opacity: 0.7 }}>Nothing here right now. Check back soon.</Typography>;
+    return <Typography sx={{ opacity: 0.7 }}>{t(locale, "cryptEmpty")}</Typography>;
   }
   return (
     <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" } }}>
@@ -45,7 +46,7 @@ export function CryptList({ entries, serverNow }: { entries: CryptEntry[]; serve
                 {countdown.floating ? " · your time" : ""}
               </Typography>
               {memberCount > 0 ? (
-                <Chip size="small" label={memberCount === 1 ? "1 counting" : `${memberCount.toLocaleString()} counting`}
+                <Chip size="small" label={t(locale, "counting", { n: memberCount })}
                       sx={{ mt: 1, bgcolor: "rgba(0,0,0,0.35)", color: "inherit" }} />
               ) : null}
             </CardActionArea>
@@ -56,10 +57,14 @@ export function CryptList({ entries, serverNow }: { entries: CryptEntry[]; serve
   );
 }
 
-export function CategoryTabs({ categories, current }: { categories: readonly { slug: string; name: string }[]; current?: string }) {
+export function CategoryTabs({ categories, current, allLabel = "All" }: {
+  categories: readonly { slug: string; name: string }[];
+  current?: string;
+  allLabel?: string;
+}) {
   return (
     <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", rowGap: 1, mb: 3 }}>
-      <Button size="small" variant={current ? "outlined" : "contained"} href="/crypt">All</Button>
+      <Button size="small" variant={current ? "outlined" : "contained"} href="/crypt">{allLabel}</Button>
       {categories.map((c) => (
         <Button key={c.slug} size="small" variant={current === c.slug ? "contained" : "outlined"} href={`/crypt/${c.slug}`}>
           {c.name}

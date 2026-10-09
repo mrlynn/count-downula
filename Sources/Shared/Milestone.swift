@@ -94,12 +94,12 @@ enum MilestonePreset: CaseIterable, Identifiable {
 
     var milestone: Milestone {
         switch self {
-        case .halfway: Milestone(title: "Halfway there", emoji: "🌓", trigger: .fraction(0.5))
-        case .hundredDays: Milestone(title: "100 days to go", emoji: "💯", trigger: .remaining(100 * 86_400))
-        case .thirtyDays: Milestone(title: "30 days to go", emoji: "🗓️", trigger: .remaining(30 * 86_400))
-        case .oneWeek: Milestone(title: "1 week to go", emoji: "✨", trigger: .remaining(7 * 86_400))
-        case .oneDay: Milestone(title: "Tomorrow!", emoji: "🥳", trigger: .remaining(86_400))
-        case .oneHour: Milestone(title: "1 hour to go", emoji: "⏳", trigger: .remaining(3_600))
+        case .halfway: Milestone(title: L("Halfway there"), emoji: "🌓", trigger: .fraction(0.5))
+        case .hundredDays: Milestone(title: L("100 days to go"), emoji: "💯", trigger: .remaining(100 * 86_400))
+        case .thirtyDays: Milestone(title: L("30 days to go"), emoji: "🗓️", trigger: .remaining(30 * 86_400))
+        case .oneWeek: Milestone(title: L("1 week to go"), emoji: "✨", trigger: .remaining(7 * 86_400))
+        case .oneDay: Milestone(title: L("Tomorrow!"), emoji: "🥳", trigger: .remaining(86_400))
+        case .oneHour: Milestone(title: L("1 hour to go"), emoji: "⏳", trigger: .remaining(3_600))
         }
     }
 
@@ -107,16 +107,16 @@ enum MilestonePreset: CaseIterable, Identifiable {
     static func countUpDefaults() -> [Milestone] {
         let day: TimeInterval = 86_400
         var milestones = [
-            Milestone(title: "24 hours", emoji: "🌱", trigger: .elapsed(day)),
-            Milestone(title: "1 week", emoji: "✨", trigger: .elapsed(7 * day)),
-            Milestone(title: "30 days", emoji: "🗓️", trigger: .elapsed(30 * day)),
-            Milestone(title: "60 days", emoji: "💪", trigger: .elapsed(60 * day)),
-            Milestone(title: "90 days", emoji: "🏅", trigger: .elapsed(90 * day)),
-            Milestone(title: "6 months", emoji: "🌟", trigger: .elapsed(182 * day)),
-            Milestone(title: "1 year", emoji: "🏆", trigger: .elapsed(365 * day)),
+            Milestone(title: L("24 hours"), emoji: "🌱", trigger: .elapsed(day)),
+            Milestone(title: L("1 week"), emoji: "✨", trigger: .elapsed(7 * day)),
+            Milestone(title: L("30 days"), emoji: "🗓️", trigger: .elapsed(30 * day)),
+            Milestone(title: L("60 days"), emoji: "💪", trigger: .elapsed(60 * day)),
+            Milestone(title: L("90 days"), emoji: "🏅", trigger: .elapsed(90 * day)),
+            Milestone(title: L("6 months"), emoji: "🌟", trigger: .elapsed(182 * day)),
+            Milestone(title: L("1 year"), emoji: "🏆", trigger: .elapsed(365 * day)),
         ]
         for year in 2...10 {
-            milestones.append(Milestone(title: "\(year) years", emoji: "🏆", trigger: .elapsed(Double(year) * 365 * day)))
+            milestones.append(Milestone(title: L("\(year) years"), emoji: "🏆", trigger: .elapsed(Double(year) * 365 * day)))
         }
         return milestones
     }

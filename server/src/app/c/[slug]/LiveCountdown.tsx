@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { calendarLinks } from "@/lib/calendar.ts";
 import type { PublicCountdown } from "@/lib/countdowns.ts";
 import { embeddable, embedSnippet } from "@/lib/embed.ts";
+import { t, type Locale } from "@/lib/i18n.ts";
 import { recapText, type Recap } from "@/lib/recapText.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
@@ -37,14 +38,14 @@ function Dial({ remaining, accent }: { remaining: number; accent: string }) {
   );
 }
 
-function Unit({ value, label, fontFamily, fontWeight }: { value: number; label: string; fontFamily: string; fontWeight: number }) {
+function Unit({ value, label, pad = 2, fontFamily, fontWeight }: { value: number; label: string; pad?: number; fontFamily: string; fontWeight: number }) {
   return (
     <Box sx={{ minWidth: { xs: 64, sm: 96 }, textAlign: "center" }}>
       <Typography
         component="div"
         sx={{ fontFamily, fontWeight, fontSize: { xs: 44, sm: 72 }, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
       >
-        {String(value).padStart(label === "days" ? 1 : 2, "0")}
+        {String(value).padStart(pad, "0")}
       </Typography>
       <Typography sx={{ fontSize: { xs: 13, sm: 15 }, opacity: 0.75, mt: 0.75, letterSpacing: 0.5 }}>{label}</Typography>
     </Box>
@@ -60,6 +61,7 @@ export function LiveCountdown({
   walletURL = null,
   recap = null,
   calendarURL = null,
+  locale = "en",
 }: {
   countdown: PublicCountdown;
   photoURL: string | null;
@@ -73,6 +75,8 @@ export function LiveCountdown({
   recap?: Recap | null;
   /** The countdown's calendar feed, for Add to Calendar. */
   calendarURL?: string | null;
+  /** The viewer's language, from Accept-Language. */
+  locale?: Locale;
 }) {
   const [calendarMenu, setCalendarMenu] = useState<HTMLElement | null>(null);
   const [embedOpen, setEmbedOpen] = useState(false);
@@ -95,9 +99,9 @@ export function LiveCountdown({
   const countsUp = countdown.kind === "countUp";
   const p = timeParts(now, target, countsUp);
   // Floating times pass at each viewer's own midnight, so the recap waits for this viewer's zero too.
-  const words = recap && p.isPast ? recapText(recap, !!countdown.isPublic) : null;
+  const words = recap && p.isPast ? recapText(recap, !!countdown.isPublic, locale) : null;
   // Kept counting up after zero: still say how many counted down to it.
-  const together = recap && countsUp ? recapText(recap, !!countdown.isPublic).together : null;
+  const together = recap && countsUp ? recapText(recap, !!countdown.isPublic, locale).together : null;
   const style = webStyle(countdown.style, !!photoURL);
   const dateLine = mounted
     ? target.toLocaleString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })
@@ -150,11 +154,11 @@ export function LiveCountdown({
           </Typography>
           <Typography sx={{ opacity: 0.85, minHeight: "1.5em", mb: 3 }} suppressHydrationWarning>
             {p.isPast
-              ? words ? dateLine : `It's here! ${dateLine}`
+              ? words ? dateLine : t(locale, "itsHereOn", { date: dateLine })
               : countsUp
-                ? `Since ${dateLine}`
+                ? t(locale, "since", { date: dateLine })
                 : countdown.pool && !countdown.pool.answer
-                  ? `Expected ${dateLine}`
+                  ? t(locale, "expected", { date: dateLine })
                   : dateLine}
           </Typography>
           {words ? (
@@ -163,7 +167,7 @@ export function LiveCountdown({
                 component="div"
                 sx={{ fontFamily: style.fontFamily, fontWeight: style.fontWeight, fontSize: { xs: 52, sm: 84 }, lineHeight: 1 }}
               >
-                It happened.
+                {t(locale, "itHappened")}
               </Typography>
               {words.counted ? (
                 <Typography sx={{ fontSize: { xs: 22, sm: 28 }, fontWeight: 600, mt: 1.5 }}>{words.counted}</Typography>
@@ -172,10 +176,10 @@ export function LiveCountdown({
             </Box>
           ) : (
             <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
-              <Unit value={p.days} label="days" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-              <Unit value={p.hours} label="hours" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-              <Unit value={p.minutes} label="min" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
-              <Unit value={p.seconds} label="sec" fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.days} label={t(locale, "days")} pad={1} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.hours} label={t(locale, "hours")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.minutes} label={t(locale, "min")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              <Unit value={p.seconds} label={t(locale, "sec")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
             </Stack>
           )}
           {countdown.details ? (
@@ -186,17 +190,17 @@ export function LiveCountdown({
           ) : null}
           {memberCount > 0 && !words && !together ? (
             <Typography sx={{ mt: 2, opacity: 0.8, fontWeight: 600 }}>
-              {memberCount === 1 ? "1 person is counting down" : `${memberCount.toLocaleString()} people are counting down`}
+              {t(locale, "countingDown", { n: memberCount })}
             </Typography>
           ) : null}
         </Box>
         </Box>
       </Box>
-      {countdown.pool ? <PoolPanel slug={countdown.slug} estimate={countdown.targetDate} /> : null}
+      {countdown.pool ? <PoolPanel slug={countdown.slug} estimate={countdown.targetDate} locale={locale} /> : null}
       {/* Link-shared countdowns only: public crypt entries and plain count-ups have no coffin. */}
       {!countdown.isPublic && (countdown.kind !== "countUp" || countdown.keptCounting) ? (
         <CoffinPanel slug={countdown.slug} opensAt={countdown.targetDate} initialSealed={sealed || recap?.notes || 0}
-                     maxPhotos={countdown.host ? 4 : 1} />
+                     maxPhotos={countdown.host ? 4 : 1} locale={locale} />
       ) : null}
       <Box sx={{ bgcolor: "background.default", px: { xs: 2, sm: 4 }, py: { xs: 4, sm: 5 } }}>
         <Stack
@@ -209,9 +213,7 @@ export function LiveCountdown({
             <Box>
               <Typography sx={{ fontFamily: `"Young Serif", Georgia, serif`, fontSize: 22 }}>Count Downcula</Typography>
               <Typography sx={{ opacity: 0.7 }}>
-                {words
-                  ? "Count down to your next big day together: it shows up on your Lock Screen, watch and menu bar."
-                  : "Count down together: it shows up on your Lock Screen, watch and menu bar, and stays in step when it changes."}
+                {t(locale, words ? "pitchAfter" : "pitchBefore")}
               </Typography>
             </Box>
           )}
@@ -219,36 +221,36 @@ export function LiveCountdown({
             {/* Same-site links don't open the app, so this uses the app's own scheme. */}
             {words ? null : (
               <Button variant="contained" size="large" href={`countdownula://join/${countdown.slug}`}>
-                Count down with me
+                {t(locale, "countDownWithMe")}
               </Button>
             )}
             {calendarURL && !words ? (
               <>
                 <Button variant="outlined" size="large" onClick={(e) => setCalendarMenu(e.currentTarget)}>
-                  Add to Calendar
+                  {t(locale, "addToCalendar")}
                 </Button>
                 <Menu anchorEl={calendarMenu} open={Boolean(calendarMenu)} onClose={() => setCalendarMenu(null)}>
                   {/* Subscriptions, so the event moves if the date does. */}
                   <MenuItem component="a" href={calendarLinks(calendarURL).webcal} onClick={() => setCalendarMenu(null)}>
-                    Apple or Outlook Calendar
+                    {t(locale, "appleOutlook")}
                   </MenuItem>
                   <MenuItem component="a" href={calendarLinks(calendarURL).google} target="_blank" rel="noopener" onClick={() => setCalendarMenu(null)}>
-                    Google Calendar
+                    {t(locale, "googleCalendar")}
                   </MenuItem>
                   <MenuItem component="a" href={calendarURL} download onClick={() => setCalendarMenu(null)}>
-                    Download .ics
+                    {t(locale, "downloadIcs")}
                   </MenuItem>
                 </Menu>
               </>
             ) : null}
             {walletURL && !words ? (
               <Button variant="outlined" size="large" href={walletURL}>
-                Add to Apple Wallet
+                {t(locale, "addToWallet")}
               </Button>
             ) : null}
             {countdown.host ? null : (
               <Button variant={words ? "contained" : "outlined"} size="large" href={DOWNLOAD}>
-                Get the app
+                {t(locale, "getTheApp")}
               </Button>
             )}
           </Stack>
@@ -256,21 +258,20 @@ export function LiveCountdown({
         {embeddable(countdown) ? (
           <Box sx={{ maxWidth: 960, mx: "auto", mt: 3 }}>
             <Button size="small" color="inherit" sx={{ opacity: 0.7 }} onClick={() => setEmbedOpen(true)}>
-              Embed on your site
+              {t(locale, "embedOnSite")}
             </Button>
           </Box>
         ) : null}
       </Box>
       <Dialog open={embedOpen} onClose={() => setEmbedOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Embed this countdown</DialogTitle>
+        <DialogTitle>{t(locale, "embedTitle")}</DialogTitle>
         <DialogContent>
           <Typography sx={{ opacity: 0.8, mb: 2 }}>
-            Paste this where the countdown should go. It ticks live and stays in step with the owner&apos;s edits.
+            {t(locale, "embedBody")}
           </Typography>
           <TextField value={snippet} fullWidth multiline slotProps={{ input: { readOnly: true, sx: { fontFamily: "ui-monospace, monospace", fontSize: 13 } } }} />
           <Typography variant="body2" sx={{ opacity: 0.7, mt: 2 }}>
-            Options: data-theme=&quot;dark&quot; or &quot;light&quot; instead of the countdown&apos;s own look, and data-end=&quot;recap&quot;,
-            &quot;countup&quot; or &quot;hide&quot; for what shows at zero (or data-message=&quot;Doors are open!&quot;).
+            {t(locale, "embedOptions")}
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -279,9 +280,9 @@ export function LiveCountdown({
               navigator.clipboard?.writeText(snippet).then(() => setCopied(true)).catch(() => {});
             }}
           >
-            {copied ? "Copied" : "Copy"}
+            {t(locale, copied ? "copied" : "copy")}
           </Button>
-          <Button onClick={() => setEmbedOpen(false)}>Done</Button>
+          <Button onClick={() => setEmbedOpen(false)}>{t(locale, "done")}</Button>
         </DialogActions>
       </Dialog>
     </Box>

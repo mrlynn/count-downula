@@ -265,6 +265,25 @@ Depends on: a translation vendor or reviewers for each language.
 
 Measure: installs and active users by storefront.
 
+Built (October 9, 2026). Decisions: the five languages above, drafted by Claude, with every string marked "needs review" for a native reviewer before release.
+- **Apps:** every app and extension shares one String Catalog, `Resources/Localizable.xcstrings`. It holds 451 translatable strings in Japanese, German, Spanish, Brazilian Portuguese and French.
+  - Plural variations follow each language's rules: one form in Japanese; French and Portuguese use the singular for zero.
+  - Text that used to be built as plain `String`s (formatting, recaps, notifications, milestone names, errors) now goes through `L("…")`. `L` looks up the bundle the code is built into, so tests read the catalog too.
+  - English-only plurals like `day\(n == 1 ? "" : "s")` became catalog plurals.
+  - `scripts/sync-strings.sh` builds every target and merges what the compiler extracted, so the catalog stays current from the command line.
+  - The permission prompts (`InfoPlist.xcstrings`) and the Settings app pane are localized too.
+- **Web:** the live page, coffin and pool panels, embeds, link previews, page descriptions, the Crypt and the 404 page follow the browser's `Accept-Language` (`server/src/lib/i18n.ts`).
+  - The language sets `<html lang>`.
+  - Preview images vary by language. Chat apps mostly fetch without one, so they get English.
+- **Store listing:** drafts of the subtitle, promotional text, keywords and description in `docs/app-store-listing-localized.md`, checked against Apple's limits by `scripts/check-listing-lengths.py`.
+- **Still English:**
+  - the Count's voice lines (for a transcreator)
+  - the Crypt entries' own titles (data)
+  - server API error messages
+  - milestone names saved before this change
+  - text the Mac app passes around as plain `String`s (most of its UI is `Text` and is covered)
+  - crypt entries for other markets (Diwali, Eid al-Fitr, Carnival, Golden Week), which still need verified dates
+
 ### 5.8 Ways to count (size S to M)
 
 What it is: let each countdown count in the unit that fits it, and in the right time zone. Today everything reads as days and hours.

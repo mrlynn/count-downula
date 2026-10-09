@@ -199,6 +199,6 @@ enum WidgetActionError: LocalizedError {
     case freeLimit
 
     var errorDescription: String? {
-        "You're at the free limit of \(SharedConfig.freeActiveLimit) countdowns. Open Count Downcula to unlock more."
+        L("You're at the free limit of \(SharedConfig.freeActiveLimit) countdowns. Open Count Downcula to unlock more.")
     }
 }

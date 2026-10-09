@@ -249,7 +249,7 @@ struct CountdownDetailView: View {
             if !pending.isEmpty { store.markCelebrated(pending, of: countdown) }
             store.celebration = Celebration(countdownID: countdown.id, emoji: countdown.kind == .timer ? "⏰" : "🎉",
                                             title: countdown.title,
-                                      subtitle: countdown.kind == .timer ? "Time's up!" : "The wait is over!")
+                                      subtitle: countdown.kind == .timer ? L("Time's up!") : L("The wait is over!"))
             return
         }
         let pending = countdown.uncelebratedMilestones(at: now)
@@ -309,23 +309,23 @@ struct CountdownDetailView: View {
     private func countUpStats(_ countdown: Countdown, now: Date) -> [(label: String, value: String)] {
         var stats: [(label: String, value: String)] = []
         if let savings = countdown.extras.savings {
-            stats.append(("saved", savings.formatted(since: countdown.targetDate, at: now)))
+            stats.append((L("saved"), savings.formatted(since: countdown.targetDate, at: now)))
         }
         let runs = countdown.extras.streak.runs
         if !runs.isEmpty {
             let best = countdown.bestStreak(at: now)
-            stats.append(("best run", CountdownFormat.elapsed(since: now - best, to: now)))
-            stats.append((runs.count == 1 ? "fresh start" : "fresh starts", "\(runs.count)"))
+            stats.append((L("best run"), CountdownFormat.elapsed(since: now - best, to: now)))
+            stats.append((runs.count == 1 ? L("fresh start") : L("fresh starts"), "\(runs.count)"))
         }
         return stats
     }
 
     private func footnote(for countdown: Countdown, now: Date) -> String {
-        if countdown.countsUp { return "Pinned count-ups are featured in widgets when no pinned countdown is coming up." }
-        if countdown.isPast(at: now) { return "Pinned countdowns are featured in widgets and at the top of the list." }
-        if !LiveActivities.isEnabled { return "Turn on Live Activities for Count Downcula in Settings to follow countdowns from the Lock Screen." }
+        if countdown.countsUp { return L("Pinned count-ups are featured in widgets when no pinned countdown is coming up.") }
+        if countdown.isPast(at: now) { return L("Pinned countdowns are featured in widgets and at the top of the list.") }
+        if !LiveActivities.isEnabled { return L("Turn on Live Activities for Count Downcula in Settings to follow countdowns from the Lock Screen.") }
         return countdown.isPinned
-            ? "Pinned: featured in widgets and shown live on the Lock Screen and in the Dynamic Island during its final 8 hours."
-            : "Pin to feature this in widgets and show it live on the Lock Screen during its final 8 hours."
+            ? L("Pinned: featured in widgets and shown live on the Lock Screen and in the Dynamic Island during its final 8 hours.")
+            : L("Pin to feature this in widgets and show it live on the Lock Screen during its final 8 hours.")
     }
 }

@@ -134,31 +134,33 @@ enum CountdownFormat {
         guard countdown.countsUp else { return compact(from: now, to: countdown.targetDate) }
         let p = countdown.timeParts(at: now)
         if p.days >= 365 { return years(between: countdown.targetDate, and: now) }
-        if p.days > 0 { return "\(p.days)d \(p.hours)h" }
-        if p.hours > 0 { return String(format: "%dh %02dm", p.hours, p.minutes) }
+        if p.days > 0 { return L("\(p.days)d \(p.hours)h") }
+        if p.hours > 0 { return L("\(p.hours)h \(String(format: "%02d", p.minutes))m") }
         return String(format: "%02d:%02d", p.minutes, p.seconds)
     }
 
     /// "47 days", "1 year, 3 months", "5 hours" since a count-up began, by the calendar.
     static func elapsed(since start: Date, to now: Date, calendar: Calendar = .current) -> String {
-        guard now > start else { return "Just started" }
+        guard now > start else { return L("Just started") }
         let c = calendar.dateComponents([.year, .month, .day, .hour], from: start, to: now)
-        func unit(_ n: Int, _ name: String) -> String { "\(n) \(name)\(n == 1 ? "" : "s")" }
         if let y = c.year, y > 0 {
-            return (c.month ?? 0) > 0 ? "\(unit(y, "year")), \(unit(c.month!, "month"))" : unit(y, "year")
+            let years = L("\(y) years")
+            guard let m = c.month, m > 0 else { return years }
+            let months = L("\(m) months")
+            return L("\(years), \(months)")
         }
         let days = calendar.dateComponents([.day], from: start, to: now).day ?? 0
-        if days > 0 { return unit(days, "day") }
-        return unit(c.hour ?? 0, "hour")
+        if days > 0 { return L("\(days) days") }
+        return L("\(c.hour ?? 0) hours")
     }
 
     /// Short form for the menu bar: "1y 2mo", "12d 4h", "3h 05m", "04:59".
     static func compact(from now: Date, to target: Date) -> String {
         let p = TimeParts(from: now, to: target)
-        if p.isPast { return "Done" }
+        if p.isPast { return L("Done") }
         if p.days >= 365 { return years(between: now, and: target) }
-        if p.days > 0 { return "\(p.days)d \(p.hours)h" }
-        if p.hours > 0 { return String(format: "%dh %02dm", p.hours, p.minutes) }
+        if p.days > 0 { return L("\(p.days)d \(p.hours)h") }
+        if p.hours > 0 { return L("\(p.hours)h \(String(format: "%02d", p.minutes))m") }
         return String(format: "%02d:%02d", p.minutes, p.seconds)
     }
 
@@ -167,7 +169,7 @@ enum CountdownFormat {
     static func years(between start: Date, and end: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.year, .month], from: min(start, end), to: max(start, end))
         let years = c.year ?? 0, months = c.month ?? 0
-        return months > 0 ? "\(years)y \(months)mo" : "\(years)y"
+        return months > 0 ? L("\(years)y \(months)mo") : L("\(years)y")
     }
 
     /// Readable form for list rows: "12 days, 4 hrs" / "3 hrs, 5 min" / "2 days ago".
@@ -175,12 +177,14 @@ enum CountdownFormat {
         let p = TimeParts(from: now, to: target)
         let body: String
         if p.days > 0 {
-            body = "\(p.days) \(p.days == 1 ? "day" : "days"), \(p.hours) \(p.hours == 1 ? "hr" : "hrs")"
+            let days = L("\(p.days) days"), hours = L("\(p.hours) hrs")
+            body = L("\(days), \(hours)")
         } else if p.hours > 0 {
-            body = "\(p.hours) \(p.hours == 1 ? "hr" : "hrs"), \(p.minutes) min"
+            let hours = L("\(p.hours) hrs"), minutes = L("\(p.minutes) min")
+            body = L("\(hours), \(minutes)")
         } else {
             body = String(format: "%d:%02d", p.minutes, p.seconds)
         }
-        return p.isPast ? "\(body) ago" : body
+        return p.isPast ? L("\(body) ago") : body
     }
 }
