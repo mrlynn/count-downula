@@ -47,3 +47,9 @@ test("edit links carry the token in the fragment", () => {
   assert.ok(looksLikeEmail("sam@example.com"));
   assert.ok(!looksLikeEmail("sam@example"));
 });
+
+test("replies go to EMAIL_REPLY_TO when it's set", async () => {
+  const { replyTo } = await import("../src/lib/email.ts");
+  assert.deepEqual(replyTo({ EMAIL_REPLY_TO: "countdowncula@gmail.com" }), { reply_to: "countdowncula@gmail.com" });
+  assert.deepEqual(replyTo({}), {});
+});
