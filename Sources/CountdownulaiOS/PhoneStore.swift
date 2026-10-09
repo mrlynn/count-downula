@@ -87,11 +87,17 @@ final class PhoneStore {
 
     // MARK: - Mutations
 
-    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
+    /// `source` says how a new countdown was made ("screenshot", "siri"), for the metrics dashboard.
+    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged, source: String? = nil) {
         var countdown = countdown
         if !countdown.isPast(at: Date()) { countdown.hasNotified = false }
+        let isNew = self.countdown(id: countdown.id) == nil
         repository.upsert(countdown, image: image)
         reload()
+        // Joined countdowns are counted by the server when they're joined.
+        if isNew, countdown.extras.subscription == nil {
+            Analytics.log(.countdownCreated, source: source ?? Analytics.source(for: countdown))
+        }
     }
 
     func delete(_ countdown: Countdown) {
@@ -160,7 +166,7 @@ final class PhoneStore {
             title: "\(Self.durationLabel(minutes)) timer", details: "",
             targetDate: now.addingTimeInterval(TimeInterval(minutes * 60)), kind: .timer, createdAt: now
         )
-        upsert(countdown)
+        upsert(countdown, source: "quick_timer")
         LiveActivities.start(countdown)
     }
 

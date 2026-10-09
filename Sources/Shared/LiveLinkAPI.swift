@@ -192,6 +192,8 @@ enum LiveLinkAPI {
         request.cachePolicy = .reloadIgnoringLocalCacheData
         if body != nil { request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        // Tells the server's event log which app this is ("ios/1.2.0"); left off with Share Analytics off.
+        if let client = Analytics.clientHeader { request.setValue(client, forHTTPHeaderField: "X-Countdowncula-Client") }
         request.httpBody = body
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -214,6 +216,8 @@ enum LiveLinkAPI {
         request.timeoutInterval = 30
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        // Tells the server's event log which app this is ("ios/1.2.0"); left off with Share Analytics off.
+        if let client = Analytics.clientHeader { request.setValue(client, forHTTPHeaderField: "X-Countdowncula-Client") }
         request.httpBody = body
 
         let data: Data

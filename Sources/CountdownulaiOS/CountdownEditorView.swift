@@ -25,6 +25,8 @@ struct CountdownEditorView: View {
     @State private var isLocating = false
     @State private var templateError: String?
     @State private var showingPaywall = false
+    /// "template" once a count-up template fills the editor, for the metrics dashboard.
+    @State private var createdFrom: String?
 
     init(original: Countdown?) {
         self.original = original
@@ -260,7 +262,7 @@ struct CountdownEditorView: View {
             } message: {
                 Text(templateError ?? "")
             }
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) { PaywallView(reason: "editor") }
         }
     }
 
@@ -293,6 +295,7 @@ struct CountdownEditorView: View {
     }
 
     private func apply(_ template: CountUpTemplate) {
+        createdFrom = "template"
         kind = .countUp
         title = template.name
         details = template.details
@@ -436,7 +439,7 @@ struct CountdownEditorView: View {
         // A photo hidden behind another background would only waste iCloud space.
         let image: ImageUpdate = style.background.usesPhoto ? imageUpdate
             : (original?.hasImage == true || previewImage != nil ? .remove : .unchanged)
-        store.upsert(countdown, image: image)
+        store.upsert(countdown, image: image, source: original == nil ? createdFrom : nil)
         // A published countdown's page follows the edit, photo and all.
         store.pushLinkUpdate(for: store.countdown(id: countdown.id) ?? countdown)
         // New timers go live on the Lock Screen right away (pinned countdowns are handled by the store).

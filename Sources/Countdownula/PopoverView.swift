@@ -119,6 +119,7 @@ private struct CountdownListView: View {
                         .foregroundStyle(Color.countdownulaBlood)
                 }
                 Spacer()
+                PrivacyMenu()
                 Button("Quit", action: actions.quit)
                     .buttonStyle(.borderless)
                     .font(.caption)
@@ -150,5 +151,27 @@ private struct EmptyStateView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+/// Share Analytics: anonymous counts for the metrics dashboard (see `Analytics`). On unless turned off.
+private struct PrivacyMenu: View {
+    @AppStorage(Analytics.enabledKey) private var shareAnalytics = true
+
+    var body: some View {
+        Menu {
+            Toggle("Share Analytics", isOn: $shareAnalytics)
+            Button("Reset Analytics ID") { Analytics.resetInstallID() }
+                .disabled(!shareAnalytics)
+            Divider()
+            Text("Anonymous counts, like how many countdowns get made. No titles, dates or names.")
+        } label: {
+            Image(systemName: "hand.raised")
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Privacy")
+        .onChange(of: shareAnalytics) { _, on in Analytics.setEnabled(on) }
     }
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { after } from "next/server";
+import { logEvent, referrerSource } from "@/lib/events.ts";
 import { isOpen, sealedCount } from "@/lib/coffin.ts";
 import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
@@ -11,7 +13,7 @@ import { LiveCountdown } from "./LiveCountdown.tsx";
 
 export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 async function load(slug: string) {
   return isSlug(slug) ? getCountdown(slug) : null;
@@ -44,11 +46,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CountdownPage({ params }: Props) {
+export default async function CountdownPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const doc = await load(slug);
   if (!doc) notFound();
   after(() => recordView(slug).catch(() => {}));
+  // Where the view came from: a `?src=` the link was made with (the Wallet pass's QR code), or else
+  // the referring site's host. Chat apps send no referrer, so most shared links show up as direct.
+  const h = await headers();
+  const src = (await searchParams).src;
+  const source = typeof src === "string" ? src : referrerSource(h.get("referer"), new URL(publicOrigin()).hostname);
+  after(() => logEvent("page_view", { headers: h }, { slug, source }));
 
   const photoURL = doc.hasPhoto ? `/c/${slug}/photo?v=${doc.updatedAt.getTime()}` : null;
   return (

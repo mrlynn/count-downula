@@ -268,6 +268,7 @@ struct ShareCardMenu: View {
         defer { progress = nil }
         do {
             let url = try await ShareVideo.render(countdown, photo: photo) { progress = $0 }
+            Analytics.log(.videoExported, source: destination == .instagram ? "instagram" : "share_sheet")
             switch destination {
             case .sheet: videoURL = url
             case .instagram: InstagramStories.share(video: url)

@@ -11,7 +11,7 @@ export async function buildPassForSlug(slug: string): Promise<{ bytes: Uint8Arra
   const doc = await getCountdown(slug);
   if (!doc || doc.kind === "countUp") return null;
   const [photo, members] = await Promise.all([doc.hasPhoto ? getPhoto(slug) : null, memberCount(slug)]);
-  const pass = passJSON(doc, { url: shareURL(slug), webServiceURL: `${publicOrigin()}/api/wallet`, memberCount: members });
+  const pass = passJSON(doc, { url: `${shareURL(slug)}?src=wallet`, webServiceURL: `${publicOrigin()}/api/wallet`, memberCount: members });
   return { bytes: buildPkpass(pass, await passImages(doc.style, photo)), updatedAt: doc.updatedAt };
 }
 

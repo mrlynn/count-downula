@@ -19,6 +19,8 @@ struct CountdownListView: View {
     @State private var editorTarget: EditorTarget?
     @State private var pendingDelete: Countdown?
     @State private var showingPaywall = false
+    /// Why the paywall is up, for the metrics dashboard.
+    @State private var paywallReason = "free_limit"
     @State private var showingJoin = false
     @State private var showingCrypt = false
 
@@ -67,6 +69,7 @@ struct CountdownListView: View {
                     }
                     if !store.entitlements.isUnlocked, !store.countdowns.isEmpty {
                         FreeTierFooter(active: Entitlements.activeCount(in: store.countdowns, at: now)) {
+                            paywallReason = "footer"
                             showingPaywall = true
                         }
                         .listRowBackground(Color.clear)
@@ -95,6 +98,7 @@ struct CountdownListView: View {
                                     if store.entitlements.canAdd(to: store.countdowns) {
                                         store.startQuickTimer(minutes: minutes)
                                     } else {
+                                        paywallReason = "quick_timer_limit"
                                         showingPaywall = true
                                     }
                                 }
@@ -114,10 +118,10 @@ struct CountdownListView: View {
                 case let .edit(countdown): CountdownEditorView(original: countdown)
                 }
             }
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) { PaywallView(reason: paywallReason) }
             .onChange(of: store.draftsWaitingForUnlock, initial: true) { _, waiting in
                 // Something was shared in while at the free limit; it's waiting for Unlimited.
-                if waiting { showingPaywall = true; store.draftsWaitingForUnlock = false }
+                if waiting { paywallReason = "screenshot_limit"; showingPaywall = true; store.draftsWaitingForUnlock = false }
             }
             .sheet(isPresented: $showingJoin) { JoinSharedSheet() }
             .sheet(isPresented: $showingCrypt) { CryptBrowser() }
@@ -137,6 +141,7 @@ struct CountdownListView: View {
         if store.entitlements.canAdd(to: store.countdowns) {
             editorTarget = .new
         } else {
+            paywallReason = "free_limit"
             showingPaywall = true
         }
     }

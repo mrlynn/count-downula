@@ -8,6 +8,12 @@ struct PaywallView: View {
     let onClose: () -> Void
 
     var body: some View {
+        content.onAppear {
+            if !entitlements.isUnlocked { Analytics.log(.paywallShown, source: "mac") }
+        }
+    }
+
+    private var content: some View {
         VStack(spacing: 0) {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
