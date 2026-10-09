@@ -408,10 +408,11 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
   - **Top Shelf:** Coming Up and Counting Up from the app's snapshot in the App Group. Selecting one opens it full screen (`countdownula://countdown/<id>`).
   - Joined countdowns follow their owners' edits on the TV too. With nothing synced yet, a QR code opens `/new?src=tv`.
   - Analytics platform `tvos`, accepted by the server, with `present_started`/`present_zero` source `appletv`.
-  - **Not yet:**
-    - an app icon and Top Shelf image (tvOS's layered brand assets)
-    - a run in the tvOS simulator, which isn't installed on the build Mac
-    - making or editing countdowns on the TV (by design: it shows)
+  - **Icon and Top Shelf image:** `scripts/render-tv-assets.swift` renders them from the approved Count artwork into `Resources/TV/Assets.xcassets`.
+    - The icon has three parallax layers: a burgundy night with stars, a red glow, and the Count with his dial.
+    - The Top Shelf images (standard and wide, at 1x and 2x) show the Count beside the wordmark. Apple TV shows them when the app has no countdowns for its own Top Shelf.
+  - **Checked in the tvOS 27 simulator:** the home screen, full screen and the Crypt, and the icon on the Apple TV Home Screen.
+  - **Not yet:** making or editing countdowns on the TV (by design: it shows), and a pass with a real remote.
 
 ### Considered, not planned
 

@@ -80,6 +80,8 @@ targets:
       - Resources/Localizable.xcstrings
       - Sources/CountdownculaTV
       - Sources/Shared
+      # The layered app icon and Top Shelf images (scripts/render-tv-assets.swift).
+      - Resources/TV/Assets.xcassets
     dependencies:
       - target: CountdownculaTVTopShelf
     settings:
@@ -87,6 +89,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.countdownula.app
         PRODUCT_NAME: Countdowncula
         PRODUCT_MODULE_NAME: CountdownculaTV
+        ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Count Downcula
         CODE_SIGN_ENTITLEMENTS: Resources/TV/CountdownculaTV.entitlements
