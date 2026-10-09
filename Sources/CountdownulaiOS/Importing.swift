@@ -1,6 +1,5 @@
 import Contacts
 import ContactsUI
-import EventKit
 import SwiftUI
 
 // MARK: - From Calendar
@@ -14,18 +13,7 @@ struct CalendarImportSheet: View {
     /// Hands back the countdowns to add; the list adds what fits the free tier.
     let onImport: ([Countdown]) -> Void
 
-    private enum Phase { case loading, denied, ready([Row]) }
-
-    struct Row: Identifiable {
-        let id: String
-        let title: String
-        let start: Date
-        let isAllDay: Bool
-        let location: String?
-        let calendarColor: Color
-        let repetition: Repetition?
-        let externalID: String?
-    }
+    private enum Phase { case loading, denied, ready([CalendarEventRow]) }
 
     @State private var phase = Phase.loading
     @State private var picked = Set<String>()
@@ -77,7 +65,7 @@ struct CalendarImportSheet: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                ForEach(months(rows), id: \.title) { month in
+                ForEach(CalendarEvents.byMonth(rows), id: \.title) { month in
                     Section(month.title) {
                         ForEach(month.rows) { row in rowView(row) }
                     }
@@ -86,7 +74,7 @@ struct CalendarImportSheet: View {
         }
     }
 
-    private func rowView(_ row: Row) -> some View {
+    private func rowView(_ row: CalendarEventRow) -> some View {
         let added = row.externalID.map(imported.contains) ?? false
         let selected = picked.contains(row.id)
         return Button {
@@ -115,65 +103,13 @@ struct CalendarImportSheet: View {
         .disabled(added)
     }
 
-    private func months(_ rows: [Row]) -> [(title: String, rows: [Row])] {
-        var groups: [(title: String, rows: [Row])] = []
-        for row in rows {
-            let title = row.start.formatted(.dateTime.month(.wide).year())
-            if groups.last?.title == title { groups[groups.count - 1].rows.append(row) } else { groups.append((title, [row])) }
-        }
-        return groups
-    }
-
     private func load() async {
-        let store = EKEventStore()
-        guard (try? await store.requestFullAccessToEvents()) == true else {
-            phase = .denied
-            return
-        }
-        let now = Date()
-        let predicate = store.predicateForEvents(withStart: now, end: now + CountdownImport.calendarWindow, calendars: nil)
-        // A repeating event shows once, at its next occurrence; a weekly meeting shouldn't fill the list.
-        var seen = Set<String>()
-        let rows: [Row] = store.events(matching: predicate)
-            .sorted { $0.startDate < $1.startDate }
-            .compactMap { event in
-                let key = event.calendarItemExternalIdentifier ?? event.eventIdentifier ?? UUID().uuidString
-                guard event.startDate > now, seen.insert(key).inserted else { return nil }
-                return Row(id: key, title: event.title ?? "Untitled Event", start: event.startDate, isAllDay: event.isAllDay,
-                           location: event.location, calendarColor: Color(cgColor: event.calendar.cgColor),
-                           repetition: Self.repetition(for: event.recurrenceRules?.first),
-                           externalID: event.calendarItemExternalIdentifier)
-            }
-        phase = .ready(rows)
-    }
-
-    /// The event's own repeat, when it's one we can follow; anything fancier imports as a one-off.
-    static func repetition(for rule: EKRecurrenceRule?) -> Repetition? {
-        guard let rule else { return nil }
-        // "The fourth Thursday of November" or "the last Friday of the month" move around the
-        // calendar; ours repeat on the same date, so those come in as one-offs.
-        let byWeekday = !(rule.daysOfTheWeek ?? []).isEmpty || !(rule.setPositions ?? []).isEmpty
-        if (rule.frequency == .yearly || rule.frequency == .monthly), byWeekday || !(rule.daysOfTheMonth ?? []).isEmpty && rule.daysOfTheMonth!.count > 1 {
-            return nil
-        }
-        switch (rule.frequency, rule.interval) {
-        case (.yearly, 1): return .yearly
-        case (.monthly, 1): return .monthly
-        case (.weekly, 1) where (rule.daysOfTheWeek?.count ?? 0) <= 1: return .weekly
-        case (.weekly, 1) where Set(rule.daysOfTheWeek?.map(\.dayOfTheWeek) ?? []) == [.monday, .tuesday, .wednesday, .thursday, .friday]:
-            return .weekdays
-        case let (.weekly, n) where (rule.daysOfTheWeek?.count ?? 0) <= 1: return .everyDays(7 * n)
-        case let (.daily, n): return .everyDays(n)
-        default: return nil
-        }
+        phase = await CalendarEvents.upcoming().map(Phase.ready) ?? .denied
     }
 
     private func add() {
         guard case let .ready(rows) = phase else { return }
-        let countdowns = rows.filter { picked.contains($0.id) }.map {
-            CountdownImport.event(title: $0.title, start: $0.start, location: $0.location,
-                                  repetition: $0.repetition, eventID: $0.externalID)
-        }
+        let countdowns = rows.filter { picked.contains($0.id) }.map(\.countdown)
         onImport(countdowns)
         dismiss()
     }

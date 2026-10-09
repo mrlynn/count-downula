@@ -41,6 +41,8 @@
             </array>
         </dict>
     </array>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Count Downcula shows your upcoming events so you can pick the ones to count down to. Events stay on your Mac; only the countdowns you add sync.</string>
     <key>LSUIElement</key>
     <true/>
     <key>NSHighResolutionCapable</key>

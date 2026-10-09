@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var editorWindow: NSWindow?
     private var paywallWindow: NSWindow?
     private var presentWindow: NSWindow?
+    private var importWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         installMainMenu()
@@ -36,7 +37,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             edit: { [weak self] countdown in self?.openEditor(for: countdown) },
             unlock: { [weak self] in self?.openPaywall() },
             quit: { NSApp.terminate(nil) },
-            present: { [weak self] countdown in self?.openPresentation(for: countdown) }
+            present: { [weak self] countdown in self?.openPresentation(for: countdown) },
+            importCalendar: { [weak self] in self?.openCalendarImport() }
         )
         let host = NSHostingController(rootView: PopoverView(store: store, navigation: navigation, actions: actions))
         host.sizingOptions = .preferredContentSize
@@ -64,6 +66,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
         if let countdown = named(value(after: "-openEditor")) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.openEditor(for: countdown) }
+        }
+        if value(after: "-openImport") == "calendar" {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.openCalendarImport() }
         }
         if arguments.contains("-openPaywall") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.openPaywall() }
@@ -186,6 +191,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
     }
 
+    // MARK: - From Calendar
+
+    private func openCalendarImport() {
+        popover.performClose(nil)
+        if let importWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            importWindow.makeKeyAndOrderFront(nil)
+            return
+        }
+        let view = CalendarImportView(store: store, onDone: { [weak self] in self?.importWindow?.close() },
+                                      onLimit: { [weak self] in self?.openPaywall() })
+        let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+        window.title = L("From Calendar")
+        window.styleMask = [.titled, .closable]
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        window.center()
+        importWindow = window
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
     // MARK: - Present
 
     /// The countdown full screen. With a second display connected (a TV, a projector), it goes there
@@ -239,6 +266,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if (notification.object as? NSWindow) === editorWindow { editorWindow = nil }
         if (notification.object as? NSWindow) === paywallWindow { paywallWindow = nil }
         if (notification.object as? NSWindow) === presentWindow { presentWindow = nil }
+        if (notification.object as? NSWindow) === importWindow { importWindow = nil }
     }
 
     // MARK: - Main menu

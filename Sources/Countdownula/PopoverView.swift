@@ -7,6 +7,8 @@ struct PopoverActions {
     var quit: () -> Void
     /// Opens the countdown full screen, for a TV, a projector or a second display.
     var present: (Countdown) -> Void
+    /// Picks events from Calendar to count down to.
+    var importCalendar: () -> Void
 }
 
 struct PopoverView: View {
@@ -64,13 +66,20 @@ private struct CountdownListView: View {
                     .buttonStyle(.borderless)
                     .help("Present \(next.title) full screen")
                 }
-                Button(action: actions.add) {
+                Menu {
+                    Button("New Countdown…", systemImage: "plus", action: actions.add)
+                    Button("From Calendar…", systemImage: "calendar", action: actions.importCalendar)
+                } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))
                         .frame(width: 26, height: 26)
+                } primaryAction: {
+                    actions.add()
                 }
-                .buttonStyle(.borderless)
-                .help("New countdown")
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.visible)
+                .fixedSize()
+                .help("New countdown, or hold for more")
             }
             .padding(.horizontal, 14)
             .padding(.top, 12)

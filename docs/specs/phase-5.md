@@ -158,7 +158,12 @@ Built (October 9, 2026), on iPhone. Decision: imports count toward the free limi
   - Monthly and yearly count from the original date, so the 31st and Feb 29 come back when they exist.
   - Grace periods shrink for frequent repeats: a day for yearly and monthly, 6 hours for weekly and every 3 or more days, and an hour for weekdays and daily.
 - **Debug launch argument:** `-openImport calendar` (or `contacts`) opens a picker at launch, for screenshots.
-- **Not built yet:** the Mac. It needs the calendar entitlement in the sandboxed build and its own picker. Countdowns imported on the iPhone sync to it as usual.
+- **The Mac (October 9, 2026):** the menu bar's **+** is now a menu with New Countdown… and From Calendar…. Clicking it still adds a countdown.
+  - From Calendar opens a window with the same list and rules as the iPhone, from the shared `CalendarEvents`.
+  - The sandboxed build has the calendars entitlement, and both builds carry `NSCalendarsFullAccessUsageDescription`. The GitHub build's hardened runtime gets the calendars entitlement too.
+  - Picks over the free limit stay ticked, with an Unlock Unlimited button. Unlock, then Add again.
+  - The debug launch argument `-openImport calendar` works on the Mac too.
+  - Not built on the Mac: birthdays from Contacts, which on the Mac would need full Contacts access rather than the iPhone's private picker.
 
 ### 5.5 System surfaces (size M)
 

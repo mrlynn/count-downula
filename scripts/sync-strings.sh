@@ -19,6 +19,10 @@ for pair in "Countdownula:platform=macOS" "CountdownulaiOS:generic/platform=iOS 
   # The Mac app and its widgets compile the same catalog, which now and then collides on the first try.
   build || build
 done
+# The screensaver has no scheme of its own; build its target into the same place.
+xcodebuild build -project Countdownula.xcodeproj -target CountdownculaSaver -configuration Debug \
+  OBJROOT="$PWD/$DERIVED/Build/Intermediates.noindex" SYMROOT="$PWD/$DERIVED/Build/Products" \
+  ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO SWIFT_EMIT_LOC_STRINGS=YES -quiet
 
 files=()
 while IFS= read -r -d '' file; do files+=(--stringsdata "$file"); done \
