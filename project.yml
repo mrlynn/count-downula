@@ -82,6 +82,8 @@ targets:
       - Sources/Shared
       # The layered app icon and Top Shelf images (scripts/render-tv-assets.swift).
       - Resources/TV/Assets.xcassets
+      - path: Resources/TV/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - target: CountdownculaTVTopShelf
     settings:

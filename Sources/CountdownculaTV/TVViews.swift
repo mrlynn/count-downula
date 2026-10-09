@@ -226,3 +226,28 @@ struct PresentingView: View {
         }
     }
 }
+
+// MARK: - Settings
+
+/// Share Analytics on Apple TV. tvOS has no Settings pane for apps, so the switch lives here.
+struct TVSettingsView: View {
+    @AppStorage(Analytics.enabledKey) private var shareAnalytics = true
+    @State private var resetDone = false
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Share Analytics", isOn: $shareAnalytics)
+                Button(resetDone ? L("Analytics ID Reset") : L("Reset Analytics ID")) {
+                    Analytics.resetInstallID()
+                    resetDone = true
+                }
+                .disabled(!shareAnalytics || resetDone)
+            } footer: {
+                Text("Anonymous counts, like how many countdowns get made. No titles, dates or names. Details in the privacy policy at countdowncula.com/privacy.")
+            }
+        }
+        .frame(maxWidth: 1100)
+        .onChange(of: shareAnalytics) { _, on in Analytics.setEnabled(on) }
+    }
+}

@@ -18,6 +18,9 @@ struct CountdownculaTVApp: App {
                 Tab("The Crypt", systemImage: "moon.stars", value: "crypt") {
                     CryptView(presenting: $presenting)
                 }
+                Tab("Settings", systemImage: "gearshape", value: "settings") {
+                    TVSettingsView()
+                }
             }
             .environment(store)
             .fullScreenCover(item: $presenting) { presentation in
