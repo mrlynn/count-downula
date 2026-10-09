@@ -9,6 +9,7 @@ import { t, type Locale } from "@/lib/i18n.ts";
 import { recapText, type Recap } from "@/lib/recapText.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
+import { reading } from "@/lib/units.ts";
 import CoffinPanel from "./CoffinPanel.tsx";
 import PoolPanel from "./PoolPanel.tsx";
 
@@ -38,14 +39,14 @@ function Dial({ remaining, accent }: { remaining: number; accent: string }) {
   );
 }
 
-function Unit({ value, label, pad = 2, fontFamily, fontWeight }: { value: number; label: string; pad?: number; fontFamily: string; fontWeight: number }) {
+function Unit({ value, label, pad = 2, fontFamily, fontWeight }: { value: number | string; label: string; pad?: number; fontFamily: string; fontWeight: number }) {
   return (
     <Box sx={{ minWidth: { xs: 64, sm: 96 }, textAlign: "center" }}>
       <Typography
         component="div"
         sx={{ fontFamily, fontWeight, fontSize: { xs: 44, sm: 72 }, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
       >
-        {String(value).padStart(pad, "0")}
+        {typeof value === "string" ? value : String(value).padStart(pad, "0")}
       </Typography>
       <Typography sx={{ fontSize: { xs: 13, sm: 15 }, opacity: 0.75, mt: 0.75, letterSpacing: 0.5 }}>{label}</Typography>
     </Box>
@@ -98,6 +99,8 @@ export function LiveCountdown({
   const created = new Date(countdown.createdAt);
   const countsUp = countdown.kind === "countUp";
   const p = timeParts(now, target, countsUp);
+  // In its own unit ("12 sleeps"): days on the countdown's zone until the browser takes over, then the viewer's.
+  const read = reading(countdown, now, target, locale, mounted ? undefined : countdown.timeZone);
   // Floating times pass at each viewer's own midnight, so the recap waits for this viewer's zero too.
   const words = recap && p.isPast ? recapText(recap, !!countdown.isPublic, locale) : null;
   // Kept counting up after zero: still say how many counted down to it.
@@ -175,11 +178,16 @@ export function LiveCountdown({
               {words.people ? <Typography sx={{ fontSize: { xs: 17, sm: 20 }, opacity: 0.85, mt: 1 }}>{words.people}</Typography> : null}
             </Box>
           ) : (
-            <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off">
+            <Stack direction="row" spacing={{ xs: 1, sm: 3 }} sx={{ flexWrap: "wrap" }} aria-live="off"
+                   aria-label={read?.text} suppressHydrationWarning>
+              {read ? read.tiles.map((tile) => (
+                <Unit key={tile.label} value={tile.value} label={tile.label} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              )) : <>
               <Unit value={p.days} label={t(locale, "days")} pad={1} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
               <Unit value={p.hours} label={t(locale, "hours")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
               <Unit value={p.minutes} label={t(locale, "min")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
               <Unit value={p.seconds} label={t(locale, "sec")} fontFamily={style.fontFamily} fontWeight={style.fontWeight} />
+              </>}
             </Stack>
           )}
           {countdown.details ? (

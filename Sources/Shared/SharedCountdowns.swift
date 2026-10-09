@@ -39,6 +39,9 @@ enum SharedCountdowns {
         // Joined through a custom link, the real slug is the one to keep: the name can change.
         countdown.extras.subscription = SharedSubscription(slug: remote.slug ?? slug, url: url, joinedAt: now,
                                                            remoteUpdatedAt: nil, memberCount: remote.memberCount)
+        // Starts in the owner's unit ("12 sleeps"); after that, which unit to read it in is the member's.
+        countdown.extras.unit = remote.unit
+        countdown.extras.bedtime = remote.bedtime
         return apply(remote, to: countdown)
     }
 
@@ -69,6 +72,9 @@ enum SharedCountdowns {
         // A host's custom link is the one to pass on.
         if let url = remote.url { countdown.extras.subscription?.url = url }
         countdown.extras.pool = remote.pool
+        // The zone the owner set the date in, so "8pm" shows as 8pm there and whenever that is here.
+        // Floating times (New Year's at each viewer's midnight) have none.
+        countdown.extras.timeZone = remote.floating == nil ? remote.timeZone : nil
         return countdown
     }
 
@@ -159,6 +165,11 @@ struct RemoteCountdown: Equatable {
     var isHosted = false
     /// The countdown's real slug; the link may use a custom name instead.
     var slug: String? = nil
+    /// What the owner counts it in, and their bedtime for sleeps.
+    var unit: CountUnit? = nil
+    var bedtime: Int? = nil
+    /// The zone the owner's date is set in. Nil for UTC, which is what older pages and floating times have.
+    var timeZone: String? = nil
 }
 
 extension RemoteCountdown {
@@ -185,6 +196,9 @@ extension RemoteCountdown {
         let keptCounting: Bool?
         let host: Bool?
         let slug: String?
+        let unit: Lenient<CountUnit>?
+        let bedtime: Int?
+        let timeZone: String?
     }
 
     /// A style or milestone list written by a newer app can fail to decode here; fall back rather
@@ -208,7 +222,9 @@ extension RemoteCountdown {
             hasPhoto: body.hasPhoto, memberCount: envelope.memberCount ?? 0, url: envelope.url,
             floating: body.floating, isPublic: body.isPublic ?? false, pool: body.pool?.value,
             keptCounting: body.keptCounting ?? false, recap: envelope.recap,
-            isHosted: body.host ?? false, slug: body.slug
+            isHosted: body.host ?? false, slug: body.slug,
+            unit: body.unit?.value.flatMap { $0 == .daysHours ? nil : $0 }, bedtime: body.bedtime,
+            timeZone: body.timeZone.flatMap { $0 == "UTC" || TimeZone(identifier: $0) == nil ? nil : $0 }
         )
     }
 

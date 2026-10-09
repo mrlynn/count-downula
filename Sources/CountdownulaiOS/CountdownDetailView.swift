@@ -43,6 +43,17 @@ struct CountdownDetailView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
+                            // Set in another zone: the line above is here, this one is there.
+                            if let there = countdown.timeThere() {
+                                Label {
+                                    Text(there)
+                                } icon: {
+                                    Image(systemName: "globe")
+                                }
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            }
+
                             if !parts.isPast {
                                 VStack(alignment: .leading, spacing: 6) {
                                     MilestoneProgressBar(countdown: countdown, now: now)
@@ -229,7 +240,8 @@ struct CountdownDetailView: View {
         let url = URL.temporaryDirectory.appending(path: "\(name.isEmpty ? "Countdown" : name).png")
         guard (try? png.write(to: url)) != nil else { return }
         Analytics.log(.imageExported, slug: countdown.extras.link?.slug ?? countdown.extras.subscription?.slug,
-                      source: countdown.hasReachedZero(at: now) ? "recap" : "notification")
+                      source: countdown.hasReachedZero(at: now) ? "recap" : "notification",
+                      unit: countdown.reading(at: now) != nil ? countdown.countUnit : nil)
         sharedCard = url
     }
 

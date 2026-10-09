@@ -57,13 +57,20 @@ enum LiveLinkAPI {
             let milestones: [Milestone]
             /// Always sent, so turning a pool off reaches the server. Older builds leave it out.
             let pool: Bool
+            /// What the page counts in ("sleeps"); always sent so switching back to days reaches it.
+            let unit: CountUnit
+            /// Minutes after midnight a sleep starts, for sleeps.
+            let bedtime: Int?
         }
 
-        init(_ countdown: Countdown, backdrop: Backdrop, timeZone: TimeZone = .current) {
+        /// The zone is the countdown's own when it has one ("landing in Tokyo"), else this device's.
+        init(_ countdown: Countdown, backdrop: Backdrop, timeZone: TimeZone? = nil) {
             self.countdown = Body(title: countdown.title, details: countdown.details, targetDate: countdown.targetDate,
-                                  createdAt: countdown.createdAt, kind: countdown.kind, timeZone: timeZone.identifier,
+                                  createdAt: countdown.createdAt, kind: countdown.kind,
+                                  timeZone: (timeZone ?? countdown.timeZone).identifier,
                                   style: countdown.style, milestones: countdown.milestones,
-                                  pool: countdown.extras.pool != nil)
+                                  pool: countdown.extras.pool != nil,
+                                  unit: countdown.countUnit, bedtime: countdown.extras.bedtime)
             self.backdrop = backdrop
         }
 

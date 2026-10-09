@@ -399,6 +399,80 @@
         }
       }
     },
+    "%@ in %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ in %2$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%2$@：%1$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ in %2$@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ en %2$@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ em %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ à %2$@"
+          }
+        }
+      }
+    },
+    "%@ of the way there": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ 経過"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ geschafft"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ del camino recorrido"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ do caminho"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ du chemin parcouru"
+          }
+        }
+      }
+    },
     "%@ saved": {
       "localizations": {
         "de": {
@@ -2546,6 +2620,430 @@
         }
       }
     },
+    "%lld sleeps": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld sleep"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld sleeps"
+                }
+              }
+            }
+          }
+        },
+        "ja": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "あと%lld回寝ると"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "noch %lld-mal schlafen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "noch %lld-mal schlafen"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld noche"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld noches"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld noite"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld noites"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld dodo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld dodos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld weekends": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weekend"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weekends"
+                }
+              }
+            }
+          }
+        },
+        "ja": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "週末%lld回"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Wochenende"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Wochenenden"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld fin de semana"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld fines de semana"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld fim de semana"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld fins de semana"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld week-end"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld week-ends"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld weeks": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld week"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weeks"
+                }
+              }
+            }
+          }
+        },
+        "ja": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld週間"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Woche"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Wochen"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semana"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semanas"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semana"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semanas"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semaine"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld semaines"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld workdays": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld workday"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld workdays"
+                }
+              }
+            }
+          }
+        },
+        "ja": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld営業日"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Arbeitstag"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld Arbeitstage"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld día laborable"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld días laborables"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld dia útil"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld dias úteis"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld jour ouvré"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%lld jours ouvrés"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld years": {
       "localizations": {
         "de": {
@@ -2973,6 +3471,80 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%lld min"
+          }
+        }
+      }
+    },
+    "%lldw": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld週"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld Wo."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld sem"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld sem"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%lld sem"
+          }
+        }
+      }
+    },
+    "%lldw %lldd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lldw %2$lldd"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld週%2$lld日"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld Wo. %2$lld T."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld sem %2$lld d"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld sem %2$lld d"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$lld sem %2$lld j"
           }
         }
       }
@@ -3557,6 +4129,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Um recado para quando chegar"
+          }
+        }
+      }
+    },
+    "A sleep each night before the day, counted from bedtime. Kids count to birthdays this way.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "その日までの毎晩を1回と数えます。寝る時間から数えます。子どもが誕生日を待つときの数え方です。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jede Nacht vor dem Tag zählt einmal, ab der Schlafenszeit. So zählen Kinder bis zum Geburtstag."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Una noche por cada noche antes del día, contando desde la hora de dormir. Así cuentan los niños hasta su cumpleaños."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uma noite para cada noite antes do dia, contando a partir da hora de dormir. É assim que as crianças contam até o aniversário."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Un dodo pour chaque nuit avant le jour, compté à partir de l’heure du coucher. C’est comme ça que les enfants comptent jusqu’à leur anniversaire."
           }
         }
       }
@@ -5338,6 +5944,40 @@
         }
       }
     },
+    "City or zone": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "都市またはタイムゾーン"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Stadt oder Zeitzone"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ciudad o zona"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cidade ou fuso"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ville ou fuseau"
+          }
+        }
+      }
+    },
     "Close Guessing": {
       "localizations": {
         "de": {
@@ -5983,6 +6623,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Contagem regressiva para tudo, em todo lugar."
+          }
+        }
+      }
+    },
+    "Count in": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "数え方"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zählen in"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contar en"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contar em"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Compter en"
           }
         }
       }
@@ -6765,6 +7439,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dias"
+          }
+        }
+      }
+    },
+    "Days and hours": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "日と時間"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tage und Stunden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Días y horas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dias e horas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jours et heures"
           }
         }
       }
@@ -8373,6 +9081,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Quanto falta"
+          }
+        }
+      }
+    },
+    "How much of the wait is behind you.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "待ち時間のうち、どれだけ過ぎたか。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wie viel vom Warten schon hinter dir liegt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cuánto de la espera ya pasó."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Quanto da espera já passou."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La part de l’attente déjà derrière vous."
           }
         }
       }
@@ -10973,6 +11715,40 @@
         }
       }
     },
+    "Percent": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "パーセント"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Prozent"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Porcentaje"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Porcentagem"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pourcentage"
+          }
+        }
+      }
+    },
     "Pick a countdown, or leave it empty to show the next one up.": {
       "localizations": {
         "de": {
@@ -11615,6 +12391,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Lendo…"
+          }
+        }
+      }
+    },
+    "Reads as weeks and days, down to the last week.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "最後の1週間までは週と日で表示します。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zeigt Wochen und Tage, bis zur letzten Woche."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Se muestra en semanas y días, hasta la última semana."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mostra semanas e dias, até a última semana."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "S’affiche en semaines et jours, jusqu’à la dernière semaine."
           }
         }
       }
@@ -13329,6 +14139,74 @@
         }
       }
     },
+    "Sleeps": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "回寝ると"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mal schlafen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noches"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noites"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dodos"
+          }
+        }
+      }
+    },
+    "Sleeps start at": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "寝る時間"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schlafenszeit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hora de dormir"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hora de dormir"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Heure du coucher"
+          }
+        }
+      }
+    },
     "Some Didn’t Fit": {
       "localizations": {
         "de": {
@@ -14315,6 +15193,40 @@
         }
       }
     },
+    "The date is in %@ time, wherever you are.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "日時は%@の時刻です。どこにいても変わりません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Zeit gilt in %@, egal wo du bist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La hora es la de %@, estés donde estés."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O horário é o de %@, onde quer que você esteja."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’heure est celle de %@, où que vous soyez."
+          }
+        }
+      }
+    },
     "The link stops working for everyone and the copy on Count Downcula's server is deleted.": {
       "localizations": {
         "de": {
@@ -14519,6 +15431,40 @@
         }
       }
     },
+    "There": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "経過"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geschafft"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recorrido"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Do caminho"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Parcouru"
+          }
+        }
+      }
+    },
     "There are no events in your calendars for the next 90 days.": {
       "localizations": {
         "de": {
@@ -14689,6 +15635,40 @@
         }
       }
     },
+    "Time Zone": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "タイムゾーン"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zeitzone"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zona horaria"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fuso horário"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fuseau horaire"
+          }
+        }
+      }
+    },
     "Time left until one of your countdowns.": {
       "localizations": {
         "de": {
@@ -14719,6 +15699,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tempo que falta para uma das suas contagens."
+          }
+        }
+      }
+    },
+    "Time zone": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "タイムゾーン"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zeitzone"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zona horaria"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fuso horário"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fuseau horaire"
           }
         }
       }
@@ -14855,6 +15869,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Título"
+          }
+        }
+      }
+    },
+    "Today and each weekday before the day, skipping weekends. Holidays aren't skipped yet.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "今日と、その日までの平日を数えます。週末は数えません。祝日はまだ除外されません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Heute und jeder Werktag bis zum Tag, ohne Wochenenden. Feiertage werden noch mitgezählt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hoy y cada día laborable antes del día, sin contar fines de semana. Los festivos todavía cuentan."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hoje e cada dia útil antes do dia, sem contar fins de semana. Feriados ainda são contados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aujourd’hui et chaque jour ouvré avant le jour, sans les week-ends. Les jours fériés sont encore comptés."
           }
         }
       }
@@ -15607,6 +16655,108 @@
         }
       }
     },
+    "Weekends": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "週末"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wochenenden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fines de semana"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fins de semana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Week-ends"
+          }
+        }
+      }
+    },
+    "Weekends left before the day, this one included.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "その日までに残っている週末の数。今週末も含みます。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wochenenden bis zum Tag, dieses mitgezählt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fines de semana que quedan antes del día, incluido este."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fins de semana que faltam antes do dia, incluindo este."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Week-ends restants avant le jour, celui-ci compris."
+          }
+        }
+      }
+    },
+    "Weeks": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "週"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wochen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Semanas"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Semanas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Semaines"
+          }
+        }
+      }
+    },
     "Weight": {
       "localizations": {
         "de": {
@@ -15739,6 +16889,74 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Onde"
+          }
+        }
+      }
+    },
+    "Where I am": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "現在地"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wo ich bin"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Donde estoy"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Onde estou"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Là où je suis"
+          }
+        }
+      }
+    },
+    "Workdays": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "営業日"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Arbeitstage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Días laborables"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dias úteis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jours ouvrés"
           }
         }
       }
@@ -16634,6 +17852,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "min"
+          }
+        }
+      }
+    },
+    "of the way there · %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "経過 · %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "geschafft · %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "del camino recorrido · %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "do caminho · %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "du chemin parcouru · %@"
           }
         }
       }

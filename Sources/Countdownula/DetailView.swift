@@ -40,13 +40,23 @@ struct DetailView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack(spacing: 8) {
-                        TimeBlock(value: parts.days, label: "Days", style: countdown.style)
-                        TimeBlock(value: parts.hours, label: "Hours", style: countdown.style)
-                        TimeBlock(value: parts.minutes, label: "Min", style: countdown.style)
-                        TimeBlock(value: parts.seconds, label: "Sec", style: countdown.style)
+                    if let reading = countdown.reading(at: store.now) {
+                        HStack(spacing: 8) {
+                            ForEach(reading.tiles, id: \.self) { tile in
+                                TimeBlock(value: tile.value, label: tile.label, style: countdown.style)
+                            }
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(reading.long)
+                    } else {
+                        HStack(spacing: 8) {
+                            TimeBlock(value: String(format: "%02d", parts.days), label: L("Days"), style: countdown.style)
+                            TimeBlock(value: String(format: "%02d", parts.hours), label: L("Hours"), style: countdown.style)
+                            TimeBlock(value: String(format: "%02d", parts.minutes), label: L("Min"), style: countdown.style)
+                            TimeBlock(value: String(format: "%02d", parts.seconds), label: L("Sec"), style: countdown.style)
+                        }
+                        .opacity(parts.isPast ? 0.5 : 1)
                     }
-                    .opacity(parts.isPast ? 0.5 : 1)
 
                     Label {
                         (countdown.countsUp ? Text("Since ") : Text(""))
@@ -57,6 +67,16 @@ struct DetailView: View {
                     }
                     .font(.callout)
                     .foregroundStyle(.secondary)
+
+                    if !countdown.countsUp, let there = countdown.timeThere() {
+                        Label {
+                            Text(there)
+                        } icon: {
+                            Image(systemName: "globe")
+                        }
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    }
 
                     if let next = countdown.nextMilestone(at: store.now) {
                         Label {
@@ -109,13 +129,13 @@ struct DetailView: View {
 }
 
 private struct TimeBlock: View {
-    let value: Int
+    let value: String
     let label: String
     var style = CountdownStyle.default
 
     var body: some View {
         VStack(spacing: 2) {
-            Text(String(format: "%02d", value))
+            Text(verbatim: value)
                 .font(style.font(size: 30))
                 .monospacedDigit()
                 .contentTransition(.numericText())

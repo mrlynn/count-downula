@@ -59,7 +59,7 @@ struct CircularComplication: View {
                     .widgetAccentable()
                     .padding(2)
 
-                centerLabel(parts: parts, target: countdown.targetDate)
+                centerLabel(parts: parts, target: countdown.targetDate, reading: countdown.reading(at: entry.date))
                     .offset(y: -3)
             } else {
                 FangMark()
@@ -71,10 +71,19 @@ struct CircularComplication: View {
     }
 
     @ViewBuilder
-    private func centerLabel(parts: TimeParts, target: Date) -> some View {
+    private func centerLabel(parts: TimeParts, target: Date, reading: UnitReading?) -> some View {
         if parts.isPast {
             Image(systemName: "checkmark")
                 .font(.system(size: 14, weight: .bold))
+        } else if let tile = reading?.tiles.first {
+            VStack(spacing: -2) {
+                Text(verbatim: tile.value)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.6)
+                Text(tile.label.uppercased())
+                    .font(.system(size: 7, weight: .semibold))
+                    .minimumScaleFactor(0.7)
+            }
         } else if parts.days > 0 || parts.hours > 0 {
             let value = parts.days > 0 ? parts.days : parts.hours
             let unit = parts.days > 0 ? (parts.days == 1 ? L("DAY") : L("DAYS")) : (parts.hours == 1 ? L("HR") : L("HRS"))
@@ -162,6 +171,8 @@ struct RectangularComplication: View {
         let parts = countdown.timeParts(at: entry.date)
         if isPast {
             Text("Done")
+        } else if let reading = countdown.reading(at: entry.date) {
+            Text(verbatim: reading.compact)
         } else if parts.days > 0 {
             Text("\(parts.days)d \(parts.hours)h")
         } else if parts.countsUp {
@@ -185,7 +196,9 @@ struct CornerComplication: View {
         ZStack {
             AccessoryWidgetBackground()
             Group {
-                if let parts, !parts.isPast {
+                if let countdown, let reading = countdown.reading(at: entry.date), reading.compact.count <= 5 {
+                    Text(verbatim: reading.compact)
+                } else if let parts, !parts.isPast {
                     Text(parts.days > 0 ? "\(parts.days)d" : parts.hours > 0 ? "\(parts.hours)h" : "\(max(parts.minutes, 1))m")
                 } else {
                     Image(systemName: countdown == nil ? "hourglass" : "checkmark")
@@ -217,6 +230,8 @@ struct InlineComplication: View {
             let parts = countdown.timeParts(at: entry.date)
             if parts.isPast {
                 Text("\(countdown.title) · Done")
+            } else if let reading = countdown.reading(at: entry.date) {
+                Text(verbatim: "\(countdown.title) · \(reading.compact)")
             } else if parts.days > 0 {
                 Text("\(countdown.title) · \(parts.days)d \(parts.hours)h")
             } else if parts.countsUp {

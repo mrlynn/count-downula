@@ -20,6 +20,8 @@ struct EditorView: View {
     @State private var imageUpdate: ImageUpdate = .unchanged
     @State private var isPinned: Bool
     @State private var isDropTargeted = false
+    /// Only the unit, bedtime and time zone are edited here; the rest is kept as is.
+    @State private var extras: CountdownExtras
 
     init(store: CountdownStore, original: Countdown?, onLimit: @escaping () -> Void = {},
          onFinish: @escaping (Countdown?) -> Void) {
@@ -34,7 +36,11 @@ struct EditorView: View {
             ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
         _previewImage = State(initialValue: original.flatMap { store.image(for: $0) })
         _isPinned = State(initialValue: original?.isPinned ?? false)
+        _extras = State(initialValue: original?.extras ?? CountdownExtras())
     }
+
+    /// The zone the date is typed in: the countdown's own, else this Mac's.
+    private var zone: TimeZone { extras.timeZone.flatMap(TimeZone.init(identifier:)) ?? .current }
 
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
 
@@ -65,6 +71,7 @@ struct EditorView: View {
 
                     if kind == .event {
                         DatePicker("Counts down to", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                            .environment(\.timeZone, extras.auto == nil ? zone : .current)
                     } else if kind == .countUp {
                         DatePicker("Started", selection: $targetDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
                     } else {
@@ -76,6 +83,16 @@ struct EditorView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
+                    }
+                }
+
+                Section {
+                    CountUnitFields(kind: kind, extras: $extras, targetDate: $targetDate)
+                } footer: {
+                    let unit = extras.unit.flatMap { $0.fits(kind) ? $0 : nil } ?? .daysHours
+                    let foreign = kind == .event && extras.timeZone != nil && zone.secondsFromGMT(for: targetDate) != TimeZone.current.secondsFromGMT(for: targetDate)
+                    if let footer = CountUnitFields.footer(for: unit, zone: foreign ? zone : nil) {
+                        Text(footer).font(.caption).foregroundStyle(.secondary)
                     }
                 }
 
@@ -184,6 +201,9 @@ struct EditorView: View {
         countdown.details = details.trimmingCharacters(in: .whitespacesAndNewlines)
         countdown.kind = kind
         countdown.isPinned = isPinned
+        countdown.extras.unit = extras.unit.flatMap { $0.fits(kind) ? $0 : nil }
+        countdown.extras.bedtime = countdown.extras.unit == .sleeps ? extras.bedtime : nil
+        countdown.extras.timeZone = kind == .event && countdown.extras.auto == nil ? extras.timeZone : nil
 
         if kind == .event || kind == .countUp {
             countdown.targetDate = targetDate

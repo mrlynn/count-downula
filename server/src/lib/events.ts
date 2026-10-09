@@ -1,5 +1,6 @@
 import type { Collection } from "mongodb";
 import { db } from "./mongo.ts";
+import { isUnit, type Unit } from "./units.ts";
 import { isSlug } from "./validate.ts";
 
 /**
@@ -29,6 +30,9 @@ export const CLIENT_EVENTS = [
   "notification_action",
   // A widget button or Control Center control (5.5): source is pin, lockscreen, quick_timer or open.
   "widget_action",
+  // Ways to count (5.8): an edit that switched a countdown to a unit. Creations and exported cards
+  // carry the unit too.
+  "unit_chosen",
 ] as const;
 
 export type EventName = (typeof SERVER_EVENTS)[number] | (typeof CLIENT_EVENTS)[number];
@@ -43,6 +47,8 @@ export interface EventDoc {
   appVersion?: string;
   /** How or where: "screenshot" for a countdown made from one, "free_limit" for a paywall, a referrer host for a view. */
   source?: string;
+  /** What the countdown counts in, when it isn't days and hours (5.8). */
+  unit?: Unit;
   installId?: string;
   at: Date;
 }
@@ -119,7 +125,7 @@ const MAX_SKEW_MS = 10 * 60_000;
 export type BatchResult = { ok: true; docs: EventDoc[]; dropped: number } | { ok: false; error: string };
 
 /**
- * Checks a batch from the app: `{ installId, platform, appVersion, events: [{ name, at, slug?, source? }] }`.
+ * Checks a batch from the app: `{ installId, platform, appVersion, events: [{ name, at, slug?, source?, unit? }] }`.
  * Unknown event names are dropped rather than refused, so a newer app never gets an error from an
  * older server.
  */
@@ -149,6 +155,7 @@ export function validateBatch(body: unknown, now = new Date()): BatchResult {
     };
     if (typeof e.slug === "string" && isSlug(e.slug)) doc.slug = e.slug;
     if (typeof e.source === "string" && SOURCE.test(e.source)) doc.source = e.source;
+    if (isUnit(e.unit) && e.unit !== "daysHours") doc.unit = e.unit;
     docs.push(doc);
   }
   return { ok: true, docs, dropped: b.events.length - docs.length };

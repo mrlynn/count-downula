@@ -193,7 +193,7 @@ struct ClipCard: View {
                     Text(countdown.title)
                         .font(style.font(.largeTitle))
                         .lineLimit(3)
-                    TimeBlocks(parts: countdown.timeParts(at: now), tileColor: style.foregroundColor.opacity(0.14),
+                    TimeBlocks(parts: countdown.timeParts(at: now), reading: countdown.reading(at: now), tileColor: style.foregroundColor.opacity(0.14),
                                size: 32, style: style)
                         .environment(\.colorScheme, style.hasLightText ? .dark : .light)
                 }

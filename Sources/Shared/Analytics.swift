@@ -25,6 +25,8 @@ enum Analytics {
         case countdownDeleted = "countdown_deleted"
         case notificationAction = "notification_action"
         case widgetAction = "widget_action"
+        /// An edit switched a countdown to a unit (sleeps, weeks...). Creations and exports carry it too.
+        case unitChosen = "unit_chosen"
     }
 
     struct Queued: Codable, Equatable {
@@ -32,6 +34,8 @@ enum Analytics {
         var at: Date
         var slug: String?
         var source: String?
+        /// What the countdown counts in, when it isn't days and hours.
+        var unit: String?
     }
 
     /// The Share Analytics setting (iPhone: the Settings app; Mac: the menu bar popover). On unless turned off.
@@ -112,11 +116,12 @@ enum Analytics {
 
     // MARK: - Logging
 
-    static func log(_ event: Event, slug: String? = nil, source: String? = nil, at now: Date = Date()) {
+    static func log(_ event: Event, slug: String? = nil, source: String? = nil, unit: CountUnit? = nil, at now: Date = Date()) {
         guard isEnabled else { return }
         let count: Int = lock.withLock {
             var queue = read()
-            queue.append(Queued(name: event.rawValue, at: now, slug: slug, source: source))
+            queue.append(Queued(name: event.rawValue, at: now, slug: slug, source: source,
+                                unit: unit == .daysHours ? nil : unit?.rawValue))
             if queue.count > queueLimit { queue.removeFirst(queue.count - queueLimit) }
             write(queue)
             return queue.count

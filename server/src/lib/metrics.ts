@@ -69,6 +69,16 @@ export async function sources(name: EventName, days = 30, now = new Date(), limi
   ]).toArray();
 }
 
+/** How many of each event carried each unit in the last `days`: countdowns made, switched and shared by unit (5.8). */
+export async function unitCounts(names: EventName[], days = 30, now = new Date()) {
+  const rows = await (await events()).aggregate<{ _id: { name: EventName; unit: string }; n: number }>([
+    { $match: { name: { $in: names }, unit: { $exists: true }, at: { $gte: daysAgo(days, now) } } },
+    { $group: { _id: { name: "$name", unit: "$unit" }, n: { $sum: 1 } } },
+  ]).toArray();
+  const out = new Map(rows.map((r) => [`${r._id.name}:${r._id.unit}`, r.n]));
+  return (name: EventName, unit: string) => out.get(`${name}:${unit}`) ?? 0;
+}
+
 /** How many of each event had each source in the last `days`: `{ countdown_deleted: { after_zero_30d: 4 } }`. */
 export async function sourceCounts(names: EventName[], days = 30, now = new Date()) {
   const rows = await (await events()).aggregate<{ _id: { name: EventName; source: string | null }; n: number }>([

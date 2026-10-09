@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { metricsAuthorized } from "@/lib/adminAuth.ts";
 import type { EventName } from "@/lib/events.ts";
-import { cohorts, monthly, newInstalls, sourceCounts, sources, sum, totals } from "@/lib/metrics.ts";
+import { cohorts, monthly, newInstalls, sourceCounts, sources, sum, totals, unitCounts } from "@/lib/metrics.ts";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Metrics · Count Downcula", robots: { index: false } };
@@ -48,11 +48,15 @@ const PARTICIPATION: [EventName, string][] = [
 
 const PLATFORMS = ["ios", "ipados", "macos", "watchos", "clip", "web", "unknown"];
 
+const UNITS: [string, string][] = [
+  ["weeks", "Weeks"], ["sleeps", "Sleeps"], ["workdays", "Workdays"], ["weekends", "Weekends"], ["percent", "Percent"],
+];
+
 export default async function MetricsPage() {
   // The proxy asks for the password; this makes sure nothing renders without it.
   if (!metricsAuthorized((await headers()).get("authorization"))) notFound();
 
-  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy, bySource] = await Promise.all([
+  const [months, last30, installs, cohortRows, viewSources, createdHow, paywallWhy, bySource, byUnit] = await Promise.all([
     monthly(),
     totals(30),
     newInstalls(30),
@@ -64,6 +68,7 @@ export default async function MetricsPage() {
       "countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported",
       "page_view", "calendar_subscribed",
     ]),
+    unitCounts(["countdown_created", "unit_chosen", "image_exported", "video_exported"]),
   ]);
   const finished = bySource("countdown_finished");
   const deletedSoon = bySource("countdown_deleted", "after_zero_30d");
@@ -174,6 +179,36 @@ export default async function MetricsPage() {
                   <TableCell>{label}</TableCell>
                   <TableCell align="right">{n}</TableCell>
                   <TableCell align="right" sx={{ opacity: 0.7 }}>{share}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Section>
+
+        <Section
+          title="Ways to count"
+          note="Countdowns made in each unit, as a share of all made; edits that switched to it; and share cards and videos made while it showed. Days and hours is everything else."
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                <TableCell align="right">Made</TableCell>
+                <TableCell align="right">Share of made</TableCell>
+                <TableCell align="right">Switched to</TableCell>
+                <TableCell align="right">Cards shared</TableCell>
+                <TableCell align="right">Videos</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {UNITS.map(([unit, label]) => (
+                <TableRow key={unit}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell align="right">{byUnit("countdown_created", unit)}</TableCell>
+                  <TableCell align="right" sx={{ opacity: 0.7 }}>{pct(ratio(byUnit("countdown_created", unit), count("countdown_created")))}</TableCell>
+                  <TableCell align="right">{byUnit("unit_chosen", unit)}</TableCell>
+                  <TableCell align="right">{byUnit("image_exported", unit)}</TableCell>
+                  <TableCell align="right">{byUnit("video_exported", unit)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -33,11 +33,19 @@ struct CountdownExtras: Codable, Hashable {
     /// The calendar event it was imported from (its external identifier), so a later version can
     /// offer to update it from Calendar.
     var calendarEventID: String?
+    /// What it counts in: weeks, sleeps, workdays... Nil is days and hours.
+    var unit: CountUnit?
+    /// When a sleep starts, in minutes after midnight, for counting sleeps. Nil is midnight.
+    var bedtime: Int?
+    /// The zone its date is set in ("Asia/Tokyo"), when it isn't wherever the device is.
+    /// `targetDate` stays the absolute moment, so builds that predate it still count to the right instant.
+    var timeZone: String?
 
     init() {}
 
     private enum CodingKeys: String, CodingKey {
         case streak, savings, repeatsYearly, yearlyAnchor, link, subscription, voice, auto, pool, keptCountingAt
+        case unit, bedtime, timeZone
         case repeatRule = "repeat"
         case calendarEventID = "calendarEvent"
     }
@@ -65,6 +73,9 @@ struct CountdownExtras: Codable, Hashable {
         pool = try? c.decodeIfPresent(DatePool.self, forKey: .pool)
         keptCountingAt = try? c.decodeIfPresent(Date.self, forKey: .keptCountingAt)
         calendarEventID = try? c.decodeIfPresent(String.self, forKey: .calendarEventID)
+        unit = try? c.decodeIfPresent(CountUnit.self, forKey: .unit)
+        bedtime = try? c.decodeIfPresent(Int.self, forKey: .bedtime)
+        timeZone = try? c.decodeIfPresent(String.self, forKey: .timeZone)
     }
 }
 
@@ -259,7 +270,8 @@ extension Countdown {
     static let yearlyGracePeriod: TimeInterval = 86_400
 
     /// The next occurrence once this one has passed (plus its grace period), or nil if nothing to do.
-    func nextRepeatOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+    func nextRepeatOccurrence(after now: Date, calendar: Calendar? = nil) -> Date? {
+        let calendar = calendar ?? eventCalendar
         guard let rule = extras.repetition, kind == .event, targetDate + rule.gracePeriod <= now else { return nil }
         if rule == .weekdays {
             // Day by day from this one, skipping Saturdays and Sundays.
@@ -281,13 +293,13 @@ extension Countdown {
     }
 
     /// The next yearly occurrence, for callers that only deal in yearly dates.
-    func nextYearlyOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+    func nextYearlyOccurrence(after now: Date, calendar: Calendar? = nil) -> Date? {
         extras.repetition == .yearly ? nextRepeatOccurrence(after: now, calendar: calendar) : nil
     }
 
     /// Moves a past repeating countdown to its next occurrence. The wait since the last one becomes
     /// the new progress range, and the alert and milestone celebrations are armed again.
-    mutating func rollToNextYear(at now: Date, calendar: Calendar = .current) -> Bool {
+    mutating func rollToNextYear(at now: Date, calendar: Calendar? = nil) -> Bool {
         guard let next = nextRepeatOccurrence(after: now, calendar: calendar) else { return false }
         if extras.yearlyAnchor == nil { extras.yearlyAnchor = targetDate }
         createdAt = targetDate
@@ -308,12 +320,12 @@ extension Countdown {
     }
 
     /// The date a repeating countdown is about to move on to, if it's due to.
-    func nextOccurrence(after now: Date, calendar: Calendar = .current) -> Date? {
+    func nextOccurrence(after now: Date, calendar: Calendar? = nil) -> Date? {
         nextRepeatOccurrence(after: now, calendar: calendar) ?? nextAutoOccurrence(after: now)
     }
 
     /// Moves a passed yearly or sunrise-style countdown on to its next date. Returns true if it moved.
-    mutating func rollForward(at now: Date, calendar: Calendar = .current) -> Bool {
+    mutating func rollForward(at now: Date, calendar: Calendar? = nil) -> Bool {
         if rollToNextYear(at: now, calendar: calendar) { return true }
         guard let next = nextAutoOccurrence(after: now) else { return false }
         createdAt = max(targetDate, now - 86_400)

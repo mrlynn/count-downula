@@ -75,7 +75,11 @@ struct CountdownEditorView: View {
         if kind != .event {
             extras.repetition = nil
             extras.auto = nil
+            extras.timeZone = nil
         }
+        if extras.auto != nil { extras.timeZone = nil }
+        if let unit = extras.unit, !unit.fits(kind) { extras.unit = nil }
+        if extras.unit != .sleeps { extras.bedtime = nil }
         // A new or moved date becomes the anchor the next repeats are counted from.
         if extras.repetition == nil || targetDate != original?.targetDate { extras.yearlyAnchor = nil }
         return extras
@@ -138,6 +142,7 @@ struct CountdownEditorView: View {
                         } else {
                             DatePicker(extras.pool.map { $0.isSettled ? "Happened" : "Best estimate" } ?? "Counts down to",
                                        selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                                .environment(\.timeZone, draft.timeZone)
                             if extras.pool == nil {
                                 repeatPicker
                             }
@@ -161,6 +166,14 @@ struct CountdownEditorView: View {
                         Text(repeatFooter)
                     default:
                         EmptyView()
+                    }
+                }
+
+                Section {
+                    CountUnitFields(kind: kind, extras: $extras, targetDate: $targetDate)
+                } footer: {
+                    if let footer = CountUnitFields.footer(for: draft.countUnit, zone: kind == .event ? draft.foreignTimeZone : nil) {
+                        Text(footer)
                     }
                 }
 

@@ -91,12 +91,15 @@ final class PhoneStore {
     func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged, source: String? = nil) {
         var countdown = countdown
         if !countdown.isPast(at: Date()) { countdown.hasNotified = false }
-        let isNew = self.countdown(id: countdown.id) == nil
+        let previous = self.countdown(id: countdown.id)
+        let isNew = previous == nil
         repository.upsert(countdown, image: image)
         reload()
         // Joined countdowns are counted by the server when they're joined.
         if isNew, countdown.extras.subscription == nil {
-            Analytics.log(.countdownCreated, source: source ?? Analytics.source(for: countdown))
+            Analytics.log(.countdownCreated, source: source ?? Analytics.source(for: countdown), unit: countdown.countUnit)
+        } else if let previous, countdown.countUnit != previous.countUnit, countdown.countUnit != .daysHours {
+            Analytics.log(.unitChosen, unit: countdown.countUnit)
         }
     }
 
@@ -276,7 +279,19 @@ final class PhoneStore {
         baby.style = CountdownStyle(background: .scene(.baby), font: .rounded, textColor: RGBAColor(hex: 0x3A3A5C),
                                     accent: RGBAColor(hex: 0xE57CA2))
         baby.extras.pool = DatePool()
+        baby.extras.unit = .weeks
         samples.append(baby)
+        // Ways to count: a kid's birthday in sleeps, the trip in workdays, a landing in Tokyo time.
+        samples[2].extras.unit = .sleeps
+        samples[0].extras.unit = .workdays
+        let tokyo = TimeZone(identifier: "Asia/Tokyo")!
+        var calendar = Calendar.current
+        calendar.timeZone = tokyo
+        let landing = calendar.date(bySettingHour: 18, minute: 40, second: 0, of: now + 23 * day) ?? now + 23 * day
+        var flight = Countdown(title: "Landing in Tokyo", details: "NH 7, Haneda", targetDate: landing, createdAt: now - 10 * day)
+        flight.style = CountdownStyle(background: .gradient(GradientSpec.presets[1].spec), font: .expanded)
+        flight.extras.timeZone = tokyo.identifier
+        samples.append(flight)
         samples.forEach { repository.upsert($0) }
     }
     #endif
