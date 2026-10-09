@@ -82,7 +82,8 @@ final class CountdownStore {
 
     // MARK: - Mutations
 
-    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged) {
+    /// `source` says how a new one was made ("calendar"), for the metrics; typed ones work it out.
+    func upsert(_ countdown: Countdown, image: ImageUpdate = .unchanged, source: String? = nil) {
         var countdown = countdown
         if !countdown.isPast(at: Date()) { countdown.hasNotified = false }
         let previous = self.countdown(id: countdown.id)
@@ -91,10 +92,19 @@ final class CountdownStore {
         reload()
         // Joined countdowns are counted by the server when they're joined.
         if isNew, countdown.extras.subscription == nil {
-            Analytics.log(.countdownCreated, source: Analytics.source(for: countdown), unit: countdown.countUnit)
+            Analytics.log(.countdownCreated, source: source ?? Analytics.source(for: countdown), unit: countdown.countUnit)
         } else if let previous, countdown.countUnit != previous.countUnit, countdown.countUnit != .daysHours {
             Analytics.log(.unitChosen, unit: countdown.countUnit)
         }
+    }
+
+    /// Adds imported countdowns that fit the free tier, soonest first. Returns the ones held back.
+    @discardableResult
+    func addImported(_ imported: [Countdown], source: String) -> [Countdown] {
+        let room = CountdownImport.room(in: countdowns, unlocked: entitlements.isUnlocked)
+        let (fits, heldBack) = CountdownImport.split(imported, room: room)
+        for countdown in fits { upsert(countdown, source: source) }
+        return heldBack
     }
 
     func delete(_ countdown: Countdown) {

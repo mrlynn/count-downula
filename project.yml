@@ -67,8 +67,9 @@ targets:
         com.apple.developer.aps-environment: development
         # Shares the countdown snapshot with the desktop widgets (SharedConfig.appGroup).
         com.apple.security.application-groups: [$(TeamIdentifierPrefix)com.countdownula.app]
+        # From Calendar reads upcoming events on the Mac (the user is asked first).
+        com.apple.security.personal-information.calendars: true
 
-  # Desktop and Notification Center widgets for the Mac app.
   # The screensaver (5.9 spike). Ships only with the GitHub build: the Mac App Store doesn't take
   # screensavers. Runs inside Apple's legacyScreenSaver host and reads the copy of the countdowns
   # the GitHub build mirrors into that host's container (SaverSnapshot).
@@ -106,6 +107,7 @@ targets:
         SKIP_INSTALL: YES
         CODE_SIGN_STYLE: Automatic
 
+  # Desktop and Notification Center widgets for the Mac app.
   CountdownulaMacWidgets:
     type: app-extension
     platform: macOS

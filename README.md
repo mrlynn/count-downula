@@ -39,6 +39,7 @@ The iPhone (and iPad) app lists your countdowns with the next one up as a full-b
 - **Repeats every year:** birthdays and anniversaries roll over to next year once the day has passed.
 - **Ways to count:** each countdown can count in days and hours, weeks, sleeps (from a bedtime you pick), workdays, weekends or percent of the way there, everywhere it shows: widgets, the watch, the menu bar, share cards and the live page. A date can be set in another time zone ("landing in Tokyo at 6:40pm"), and the detail screen shows it in both.
 - **Vampire hours:** built-in countdowns to the next sunrise, sunset and full moon that roll forward on their own.
+- **From Calendar and Contacts:** pick events from the next 90 days of your calendars (on iPhone and the Mac), or birthdays from your contacts (iPhone), and each becomes a countdown with a fitting scene, keeping the event's repeat when it's on a fixed date.
 - **From a screenshot:** share a ticket, invite or confirmation (image, PDF or text) to Count Downcula and it drafts the countdown: title, date, place and a fitting scene. Siri and Shortcuts can ask how long until a countdown, start a timer or add one, and countdowns show up in Spotlight.
 - **Share as image or video:** a 1080 × 1350 card, or a 6 second 1080 × 1920 video, of any countdown for Messages or Instagram.
 - **The Count's voice:** alerts and milestones written in Count Downcula's own voice, per countdown.
