@@ -62,7 +62,8 @@ struct StyledCountdownCard: View {
                     Text(countdown.title.isEmpty ? "Untitled" : countdown.title)
                         .font(style.font(.title))
                         .lineLimit(2)
-                    TimeBlocks(parts: parts, tileColor: style.foregroundColor.opacity(0.14), size: 30, style: style)
+                    TimeBlocks(parts: parts, reading: countdown.reading(at: now),
+                               tileColor: style.foregroundColor.opacity(0.14), size: 30, style: style)
                         .environment(\.colorScheme, style.hasLightText ? .dark : .light)
                 }
                 .foregroundStyle(style.foregroundColor)

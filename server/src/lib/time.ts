@@ -50,16 +50,25 @@ function longDate(d: Date, withYear: boolean, timeZone: string, locale: Locale =
   }
 }
 
-/** The big number and the line under it, as on the app's share card, in the viewer's language. */
+/**
+ * The big number and the line under it, as on the app's share card, in the viewer's language.
+ * `unit` is the countdown's reading in its own unit ("12 sleeps"), from units.ts.
+ */
 export function headline(
   now: Date,
   target: Date,
   kind: Kind,
   timeZone = "UTC",
   locale: Locale = "en",
+  unit: { text: string; isPercent: boolean } | null = null,
 ): { value: string; caption: string } {
   const countsUp = kind === "countUp";
   const p = timeParts(now, target, countsUp);
+  if (unit && !p.isPast) {
+    const date = longDate(target, countsUp, timeZone, locale);
+    if (countsUp) return { value: unit.text, caption: t(locale, "sinceLower", { date }) };
+    return { value: unit.text, caption: t(locale, unit.isPercent ? "ofTheWayOn" : "toGoOn", { date }) };
+  }
   if (countsUp) {
     return p.days > 0
       ? { value: t(locale, "daysLeft", { n: p.days }), caption: t(locale, "sinceLower", { date: longDate(target, true, timeZone, locale) }) }
@@ -76,9 +85,10 @@ export function headline(
  * Changes whenever the preview image would show a different number. Baked into the og:image URL
  * so chat apps that cache previews by URL fetch a fresh one.
  */
-export function previewKey(now: Date, target: Date, kind: Kind): string {
+export function previewKey(now: Date, target: Date, kind: Kind, unit: { text: string } | null = null): string {
   const p = timeParts(now, target, kind === "countUp");
   if (p.isPast) return "done";
+  if (unit) return `u${encodeURIComponent(unit.text)}`;
   if (p.days > 0) return `d${p.days}`;
   return `h${p.hours}`;
 }

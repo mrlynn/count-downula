@@ -130,7 +130,9 @@ struct TimeParts {
 
 enum CountdownFormat {
     /// `compact` for a countdown, or the time since a count-up began: "2y 3mo", "47d 3h", "3h 05m", "04:59".
+    /// In the countdown's own unit when it has one: "12 sleeps", "6w 5d", "82%".
     static func compact(_ countdown: Countdown, at now: Date) -> String {
+        if let reading = countdown.reading(at: now) { return reading.compact }
         guard countdown.countsUp else { return compact(from: now, to: countdown.targetDate) }
         let p = countdown.timeParts(at: now)
         if p.days >= 365 { return years(between: countdown.targetDate, and: now) }

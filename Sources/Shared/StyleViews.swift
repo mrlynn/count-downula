@@ -86,6 +86,8 @@ struct CountdownTimeText: View {
         let parts = countdown.timeParts(at: now)
         if parts.isPast {
             Text("Done")
+        } else if let reading = countdown.reading(at: now) {
+            Text(verbatim: reading.compact)
         } else if parts.days > 0 {
             Text(verbatim: CountdownFormat.compact(countdown, at: now))
         } else if parts.countsUp {

@@ -89,6 +89,7 @@ targets:
       - path: Sources/Shared/StyleViews.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
       - path: Sources/Shared/Astronomy.swift
     settings:
       base:
@@ -170,6 +171,7 @@ targets:
       - path: Sources/Shared/StyleViews.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
       - path: Sources/Shared/Astronomy.swift
     settings:
       base:
@@ -278,6 +280,7 @@ targets:
       - path: Sources/Shared/FangMark.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
       - path: Sources/Shared/Astronomy.swift
       - path: Sources/Shared/SharedCountdowns.swift
       - path: Sources/Shared/LiveLinkAPI.swift
@@ -338,6 +341,7 @@ targets:
       - path: Sources/Shared/FangMark.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
       - path: Sources/Shared/Astronomy.swift
       - path: Sources/Shared/SharedConfig.swift
       - path: Sources/Shared/Localization.swift
@@ -387,6 +391,7 @@ targets:
       - path: Sources/Shared/StyleViews.swift
       - path: Sources/Shared/Milestone.swift
       - path: Sources/Shared/CountdownExtras.swift
+      - path: Sources/Shared/CountUnits.swift
       - path: Sources/Shared/Astronomy.swift
     settings:
       base:

@@ -153,7 +153,8 @@ struct WatchCountdownDetail: View {
                         .font(countdown.style.font(.title3))
 
                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                        TimeGrid(parts: countdown.timeParts(at: context.date), style: countdown.style)
+                        TimeGrid(parts: countdown.timeParts(at: context.date), reading: countdown.reading(at: context.date),
+                                 style: countdown.style)
                     }
 
                     Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
@@ -194,25 +195,38 @@ struct WatchCountdownDetail: View {
 
 private struct TimeGrid: View {
     let parts: TimeParts
+    var reading: UnitReading?
     var style = CountdownStyle.default
 
     var body: some View {
+        if let reading {
+            HStack(spacing: 6) {
+                ForEach(reading.tiles, id: \.self) { tile in block(tile.value, tile.label.uppercased()) }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(reading.long)
+        } else {
+            clock
+        }
+    }
+
+    private var clock: some View {
         Grid(horizontalSpacing: 6, verticalSpacing: 6) {
             GridRow {
-                block(parts.days, L("DAYS"))
-                block(parts.hours, L("HRS"))
+                block(String(format: "%02d", parts.days), L("DAYS"))
+                block(String(format: "%02d", parts.hours), L("HRS"))
             }
             GridRow {
-                block(parts.minutes, L("MIN"))
-                block(parts.seconds, L("SEC"))
+                block(String(format: "%02d", parts.minutes), L("MIN"))
+                block(String(format: "%02d", parts.seconds), L("SEC"))
             }
         }
         .opacity(parts.isPast ? 0.5 : 1)
     }
 
-    private func block(_ value: Int, _ label: String) -> some View {
+    private func block(_ value: String, _ label: String) -> some View {
         VStack(spacing: 0) {
-            Text(String(format: "%02d", value))
+            Text(verbatim: value)
                 .font(style.font(size: 26))
                 .monospacedDigit()
                 .contentTransition(.numericText())

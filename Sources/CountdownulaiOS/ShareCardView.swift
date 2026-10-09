@@ -78,8 +78,15 @@ struct ShareCardView: View {
             if countdown.kind == .event, let counted = Recap.counted(countdown) { return (counted, L("counted · \(date)")) }
             return (L("It's here!"), date)
         }
+        let day = countdown.targetDate.formatted(.dateTime.month(.wide).day())
+        // In its own unit: "12 sleeps to go", "82% of the way there".
+        if let reading = countdown.reading(at: now) {
+            return countdown.countUnit == .percent
+                ? (reading.compact, L("of the way there · \(day)"))
+                : (reading.long, L("to go · \(day)"))
+        }
         if parts.days > 0 {
-            return (L("\(parts.days) days"), L("to go · \(countdown.targetDate.formatted(.dateTime.month(.wide).day()))"))
+            return (L("\(parts.days) days"), L("to go · \(day)"))
         }
         return (CountdownFormat.compact(countdown, at: now), L("to go"))
     }
@@ -97,7 +104,8 @@ struct ShareCard: Transferable {
             try await MainActor.run {
                 guard let data = card.renderPNG() else { throw CocoaError(.fileWriteUnknown) }
                 Analytics.log(.imageExported, slug: card.countdown.extras.link?.slug ?? card.countdown.extras.subscription?.slug,
-                              source: card.countdown.hasReachedZero(at: card.now) ? "recap" : nil)
+                              source: card.countdown.hasReachedZero(at: card.now) ? "recap" : nil,
+                              unit: card.countdown.reading(at: card.now) != nil ? card.countdown.countUnit : nil)
                 return data
             }
         }

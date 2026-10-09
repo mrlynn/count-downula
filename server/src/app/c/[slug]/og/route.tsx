@@ -5,6 +5,7 @@ import { getCountdown, getPhoto } from "@/lib/countdowns.ts";
 import { backdropSrc } from "@/lib/backdrop.ts";
 import { loadRecap, recapText } from "@/lib/recap.ts";
 import { pickLocale, t } from "@/lib/i18n.ts";
+import { reading } from "@/lib/units.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, headline } from "@/lib/time.ts";
 import { isSlug } from "@/lib/validate.ts";
@@ -33,7 +34,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const now = new Date();
   // Chat apps fetch previews without a language most of the time, so English is the usual answer.
   const locale = pickLocale(request.headers.get("accept-language"));
-  const live = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale);
+  const live = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale, reading(doc, now, doc.targetDate, locale, doc.timeZone));
   // After zero: "It happened." and who was there, instead of a date that's passed.
   const recap = doc.kind === "countUp" ? null : await loadRecap(doc, now);
   const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;

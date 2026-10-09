@@ -311,6 +311,33 @@ Depends on: nothing new.
 
 Measure: share of countdowns using each unit, and share cards made from them.
 
+Built (October 9, 2026), on iPhone, Mac, watch and the web:
+
+- **Units:** "Count in" in the iPhone and Mac editors: days and hours, weeks, sleeps, workdays, weekends or percent. Sleeps, workdays and weekends are for dates only; weeks also work for count-ups; percent also works for timers.
+  - The rules are in `Sources/Shared/CountUnits.swift` and `server/src/lib/units.ts`, with the same tests on both sides.
+  - Sleeps count each bedtime after now and no later than the date. Midnight is the default, and "Sleeps start at" changes it.
+  - Workdays count today and each weekday before the day. Weekends count this one if it's under way. In the app, weekends follow the region's calendar; on the web they're Saturday and Sunday. Holidays aren't skipped yet.
+  - In the final stretch (no sleeps or workdays left, or under a week of weeks), the ticking clock comes back.
+- **Where units show:**
+  - the detail tiles on iPhone, Mac and watch
+  - list rows, the menu bar and the Control Center control, which all use `CountdownFormat.compact`
+  - Home Screen and Up Next widgets, and every complication
+  - the share card and video headline, and Siri's answer
+  - the live page, embeds, the link preview text and the preview image
+- **Time zones:** an optional zone on dates.
+  - The date picker reads in that zone, and picking a zone keeps the time as typed.
+  - The detail view adds "6:40 PM in Tokyo" under the local date.
+  - Repeats step in that zone, so a 9am Tokyo meeting stays 9am in Tokyo across another country's daylight saving change.
+  - Publishing sends the countdown's zone instead of the device's.
+- **Sharing:** people who join start in the owner's unit and then choose their own. Everyone gets the owner's zone (except floating times), so a shared "8pm" also shows when that is for each person.
+- **Measure:**
+  - `countdown_created`, `image_exported` and `video_exported` carry a `unit` when it isn't days and hours.
+  - A new `unit_chosen` event marks an edit that switched to a unit.
+  - `/admin/metrics` has a "Ways to count" table.
+- **Not built:**
+  - public holidays for workdays
+  - a Lock Screen Live Activity in units (it stays a ticking timer, since it's only live in the last 8 hours)
+
 ### 5.9 The big screen (size S for the web, M for the Mac, L for Apple TV)
 
 What it is: put a countdown on a TV, a projector or an idle Mac, for the parties, launches and New Year's Eves where people watch zero together. Nobody owns this. The only Mac countdown screensaver is soffes/Countdown, open source and last updated about 7 years ago, and the Apple TV apps don't sync with anything.

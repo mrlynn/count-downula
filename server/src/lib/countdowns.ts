@@ -2,6 +2,7 @@ import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { Binary, type Collection } from "mongodb";
 import { db } from "./mongo.ts";
 import type { Kind } from "./time.ts";
+import type { Unit } from "./units.ts";
 import { makeSlug, type CountdownInput, type PhotoInput } from "./validate.ts";
 
 export interface CountdownDoc {
@@ -37,6 +38,10 @@ export interface CountdownDoc {
   host?: { since: Date; environment: string; transactionId: string };
   /** Its custom link, `/c/<alias>`, once a host sets one. The random slug keeps working too. */
   alias?: string;
+  /** What it counts in ("sleeps"); missing or "daysHours" is days and hours. */
+  unit?: Unit;
+  /** Minutes after midnight a sleep starts, for sleeps. */
+  bedtime?: number;
 }
 
 export interface PoolState {
@@ -83,6 +88,8 @@ export interface PublicCountdown {
   /** Hosted: custom link, no branding, bigger coffin, keepsake. */
   host?: boolean;
   alias?: string;
+  unit?: Unit;
+  bedtime?: number;
 }
 
 let indexesReady: Promise<unknown> | undefined;
@@ -110,6 +117,12 @@ function tokenMatches(token: string, hash: string): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+/** The input with cleared fields (null) left out, so they're unset rather than stored as null. */
+function withoutNulls(input: CountdownInput): Omit<CountdownInput, "bedtime"> & { bedtime?: number } {
+  const { bedtime, ...rest } = input;
+  return typeof bedtime === "number" ? { ...rest, bedtime } : rest;
+}
+
 export function toPublic(doc: CountdownDoc): PublicCountdown {
   return {
     slug: doc.slug,
@@ -132,6 +145,8 @@ export function toPublic(doc: CountdownDoc): PublicCountdown {
     ...(doc.keptCounting ? { keptCounting: true } : {}),
     ...(doc.host ? { host: true } : {}),
     ...(doc.alias ? { alias: doc.alias } : {}),
+    ...(doc.unit && doc.unit !== "daysHours" ? { unit: doc.unit } : {}),
+    ...(doc.unit === "sleeps" && doc.bedtime ? { bedtime: doc.bedtime } : {}),
   };
 }
 
@@ -152,7 +167,7 @@ export async function createCountdown(input: CountdownInput, photo: PhotoInput, 
   for (let attempt = 0; attempt < 5; attempt++) {
     const slug = makeSlug((n) => randomBytes(n));
     const doc: CountdownDoc = {
-      ...input,
+      ...withoutNulls(input),
       slug,
       ownerTokenHash: hashToken(ownerToken),
       updatedAt: now,
@@ -223,7 +238,7 @@ export async function updateCountdown(
   const kept = current ? keptCountingAfter(current, input) : undefined;
   const update: Record<string, object> = {
     $set: {
-      ...input,
+      ...withoutNulls(input),
       ...(kept ? { keptCounting: true } : {}),
       updatedAt: new Date(),
       ...(hasPhoto === undefined ? {} : { hasPhoto }),
@@ -233,6 +248,7 @@ export async function updateCountdown(
   // A settled pool stays: its result is history now.
   if (pool === false && current?.pool && !current.pool.answer) update.$unset = { pool: "" };
   if (kept === false) update.$unset = { ...(update.$unset ?? {}), keptCounting: "" };
+  if (input.bedtime === null) update.$unset = { ...(update.$unset ?? {}), bedtime: "" };
   const doc = await countdowns.findOneAndUpdate({ slug }, update, { returnDocument: "after" });
   return { result, doc: doc ?? undefined };
 }

@@ -141,7 +141,9 @@ private struct UpNextView: View {
             Spacer(minLength: 4)
 
             Group {
-                if parts.days > 0 {
+                if let reading = countdown.reading(at: entry.date) {
+                    Text(verbatim: reading.compact)
+                } else if parts.days > 0 {
                     Text("\(parts.days)d \(parts.hours)h")
                 } else {
                     Text(timerInterval: entry.date...countdown.targetDate, countsDown: true)

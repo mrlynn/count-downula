@@ -10,6 +10,7 @@ import { walletConfigured } from "@/lib/wallet.ts";
 import { getCountdown, memberCount, recordView, toPublic } from "@/lib/countdowns.ts";
 import { linkFor, publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
+import { reading } from "@/lib/units.ts";
 import { isSlug } from "@/lib/validate.ts";
 import { LiveCountdown } from "./LiveCountdown.tsx";
 
@@ -27,11 +28,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!doc) return { title: "Count Downcula" };
   const now = new Date();
   const locale = pickLocale((await headers()).get("accept-language"));
-  const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale);
+  const unit = reading(doc, now, doc.targetDate, locale, doc.timeZone);
+  const { value, caption } = headline(now, doc.targetDate, doc.kind, doc.timeZone, locale, unit);
   const recap = await loadRecap(doc, now);
   // After zero the preview tells the story instead of the date: "It happened. 23 counted down together."
   const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;
-  const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind)}${recap ? `&p=${recap.people}` : ""}`;
+  const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind, unit)}${recap ? `&p=${recap.people}` : ""}`;
   const description = words && doc.kind !== "countUp"
     ? [t(locale, "itHappened"), words.together ?? words.counted].filter(Boolean).join(" ")
     : `${value} ${caption}`;

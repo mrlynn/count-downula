@@ -113,7 +113,7 @@ struct HomeCountdownView: View {
                     .padding(.bottom, 4)
             }
 
-            bigTime(parts, target: countdown.targetDate, style: style)
+            bigTime(parts, target: countdown.targetDate, style: style, reading: countdown.reading(at: entry.date))
 
             if isSmall {
                 Text(countdown.title)
@@ -146,11 +146,28 @@ struct HomeCountdownView: View {
 
     /// "16 days 7 hrs" while there are days left, a live timer inside the last day, "Done" after.
     @ViewBuilder
-    private func bigTime(_ parts: TimeParts, target: Date, style: CountdownStyle) -> some View {
+    private func bigTime(_ parts: TimeParts, target: Date, style: CountdownStyle, reading: UnitReading?) -> some View {
         let valueSize: CGFloat = isSmall ? 44 : isLarge ? 64 : 48
         if parts.isPast {
             Label("Done", systemImage: "checkmark.circle.fill")
                 .font(style.font(size: valueSize * 0.6))
+        } else if let reading, let first = reading.tiles.first {
+            // "12 Sleeps", "6 Weeks 5 Days", "82% There".
+            HStack(alignment: .lastTextBaseline, spacing: 4) {
+                Text(verbatim: first.value)
+                    .font(style.font(size: valueSize))
+                    .widgetAccentable()
+                Text(verbatim: first.label)
+                    .font(style.font(size: valueSize * 0.34))
+                ForEach(reading.tiles.dropFirst(), id: \.self) { tile in
+                    Text(verbatim: "\(tile.value) \(tile.label)")
+                        .font(style.font(size: valueSize * 0.34))
+                        .foregroundStyle(style.foregroundColor.opacity(0.7))
+                }
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .accessibilityLabel(reading.long)
         } else if parts.days > 0 {
             HStack(alignment: .lastTextBaseline, spacing: 4) {
                 Text("\(parts.days)")

@@ -116,6 +116,11 @@ struct TimeUntilIntent: AppIntent {
         if countdown.countsUp {
             return "It's been \(CountdownFormat.elapsed(since: countdown.targetDate, to: now)) since \(countdown.title)."
         }
+        if let reading = countdown.reading(at: now) {
+            return countdown.countUnit == .percent
+                ? "\(countdown.title) is \(reading.long)."
+                : "\(countdown.title) is in \(reading.long)."
+        }
         let relative = CountdownFormat.relative(from: now, to: countdown.targetDate)
         return countdown.isPast(at: now)
             ? "\(countdown.title) was \(relative)."

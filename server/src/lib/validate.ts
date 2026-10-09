@@ -1,5 +1,6 @@
 // Pure validation for publish and update requests, kept free of server imports so it's easy to test.
 import type { Kind } from "./time.ts";
+import { isUnit, type Unit } from "./units.ts";
 
 export const LIMITS = {
   title: 120,
@@ -19,6 +20,10 @@ export interface CountdownInput {
   timeZone: string;
   style: Record<string, unknown>;
   milestones: unknown[];
+  /** What it counts in. Left out by apps that predate units, which leaves it alone. */
+  unit?: Unit;
+  /** Minutes after midnight a sleep starts; null clears it. Only sent along with a unit. */
+  bedtime?: number | null;
 }
 
 /** undefined: leave the photo alone. null: remove it. Buffer: replace it. */
@@ -71,9 +76,17 @@ export function validateCountdown(body: unknown): Result<CountdownInput> {
     return { ok: false, error: "Too many milestones." };
   }
 
+  // An unknown unit (from a newer app) reads as days and hours.
+  const unit = b.unit === undefined ? undefined : isUnit(b.unit) ? b.unit : "daysHours";
+  const bedtime = Number.isInteger(b.bedtime) && (b.bedtime as number) >= 0 && (b.bedtime as number) < 1_440
+    ? (b.bedtime as number) : null;
+
   return {
     ok: true,
-    value: { title, details, targetDate, createdAt, kind, timeZone: validTimeZone(b.timeZone), style, milestones },
+    value: {
+      title, details, targetDate, createdAt, kind, timeZone: validTimeZone(b.timeZone), style, milestones,
+      ...(unit === undefined ? {} : { unit, bedtime: unit === "sleeps" ? bedtime : null }),
+    },
   };
 }
 

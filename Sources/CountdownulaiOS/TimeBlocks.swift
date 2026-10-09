@@ -1,18 +1,31 @@
 import SwiftUI
 
-/// Days / hours / minutes / seconds tiles.
+/// Days / hours / minutes / seconds tiles, or the countdown's own unit: "12 SLEEPS", "6 WEEKS 5 DAYS".
 struct TimeBlocks: View {
     let parts: TimeParts
+    var reading: UnitReading?
     var tileColor = Color.primary.opacity(0.06)
     var size: CGFloat = 34
     var style = CountdownStyle.default
 
     var body: some View {
+        if let reading {
+            HStack(spacing: 8) {
+                ForEach(reading.tiles, id: \.self) { tile in block(tile.value, tile.label) }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(reading.long)
+        } else {
+            clock
+        }
+    }
+
+    private var clock: some View {
         HStack(spacing: 8) {
-            block(parts.days, L("Days"))
-            block(parts.hours, L("Hours"))
-            block(parts.minutes, L("Min"))
-            block(parts.seconds, L("Sec"))
+            block(String(format: "%02d", parts.days), L("Days"))
+            block(String(format: "%02d", parts.hours), L("Hours"))
+            block(String(format: "%02d", parts.minutes), L("Min"))
+            block(String(format: "%02d", parts.seconds), L("Sec"))
         }
         .opacity(parts.isPast ? 0.5 : 1)
         .accessibilityElement(children: .ignore)
@@ -21,9 +34,9 @@ struct TimeBlocks: View {
             : "\(parts.days) days, \(parts.hours) hours, \(parts.minutes) minutes, \(parts.seconds) seconds \(parts.countsUp ? L("so far") : L("left"))")
     }
 
-    private func block(_ value: Int, _ label: String) -> some View {
+    private func block(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(String(format: "%02d", value))
+            Text(verbatim: value)
                 .font(style.font(size: size))
                 .monospacedDigit()
                 .contentTransition(.numericText())

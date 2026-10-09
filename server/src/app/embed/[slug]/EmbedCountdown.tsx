@@ -6,6 +6,7 @@ import type { EmbedOptions } from "@/lib/embed.ts";
 import { t, type Locale } from "@/lib/i18n.ts";
 import { webStyle } from "@/lib/style.ts";
 import { timeParts, viewerTarget } from "@/lib/time.ts";
+import { reading } from "@/lib/units.ts";
 
 const THEMES = {
   dark: { background: "#14070C", text: "#FAF2E3", accent: "#D91733" },
@@ -45,6 +46,9 @@ export function EmbedCountdown({
   const target = countdown.floating && !mounted ? new Date(countdown.targetDate) : viewerTarget(countdown);
   const countsUp = countdown.kind === "countUp" || (options.end === "countup" && now >= target);
   const p = timeParts(now, target, countsUp);
+  // In its own unit ("12 sleeps"): on the countdown's zone until the browser takes over, then the viewer's days.
+  const read = reading({ ...countdown, kind: countsUp ? "countUp" : countdown.kind }, now, target, locale,
+                       mounted ? undefined : countdown.timeZone);
   const style = webStyle(countdown.style, !!photoURL);
   const theme =
     options.theme === "style"
@@ -63,10 +67,10 @@ export function EmbedCountdown({
   }, [finished, redirects, countdown.slug]);
   if (finished && options.end === "hide") return null;
 
-  const unit = (value: number, label: string, pad = 2) => (
-    <div style={{ textAlign: "center", minWidth: "18%" }}>
+  const unit = (value: number | string, label: string, pad = 2) => (
+    <div key={label} style={{ textAlign: "center", minWidth: "18%" }}>
       <div style={{ fontSize: "clamp(20px, 8.5vw, 60px)", fontWeight: style.fontWeight, lineHeight: 1, fontVariantNumeric: "tabular-nums", fontFamily: style.fontFamily }}>
-        {String(value).padStart(pad, "0")}
+        {typeof value === "string" ? value : String(value).padStart(pad, "0")}
       </div>
       <div style={{ fontSize: "clamp(10px, 2.6vw, 14px)", opacity: 0.75, marginTop: 4, letterSpacing: 0.5 }}>{label}</div>
     </div>
@@ -95,11 +99,13 @@ export function EmbedCountdown({
           ) : null}
         </div>
       ) : (
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "2vw" }} suppressHydrationWarning>
-          {unit(p.days, t(locale, "days"), 1)}
-          {unit(p.hours, t(locale, "hours"))}
-          {unit(p.minutes, t(locale, "min"))}
-          {unit(p.seconds, t(locale, "sec"))}
+        <div style={{ display: "flex", justifyContent: read ? "space-evenly" : "space-between", gap: "2vw" }} suppressHydrationWarning>
+          {read ? read.tiles.map((tile) => unit(tile.value, tile.label)) : [
+            unit(p.days, t(locale, "days"), 1),
+            unit(p.hours, t(locale, "hours")),
+            unit(p.minutes, t(locale, "min")),
+            unit(p.seconds, t(locale, "sec")),
+          ]}
         </div>
       )}
       {countdown.host ? null : (

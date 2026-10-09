@@ -84,6 +84,12 @@ const en = {
   notFoundTitle: "This countdown has vanished",
   categoryTitle: "{name} countdowns",
   counting: { one: "{n} counting", other: "{n} counting" },
+  // Units
+  uWeeks: "weeks", uSleeps: "sleeps", uWorkdays: "workdays", uWeekends: "weekends", uThere: "there",
+  nDays: { one: "{n} day", other: "{n} days" }, nWeeks: { one: "{n} week", other: "{n} weeks" },
+  nSleeps: { one: "{n} sleep", other: "{n} sleeps" }, nWorkdays: { one: "{n} workday", other: "{n} workdays" },
+  nWeekends: { one: "{n} weekend", other: "{n} weekends" }, weeksDays: "{weeks}, {days}",
+  ofTheWay: "of the way there", ofTheWayOn: "of the way there · {date}",
 } satisfies Record<string, Message>;
 
 export type Key = keyof typeof en;
@@ -136,6 +142,11 @@ const ja: Dictionary = {
   notFoundTitle: "このカウントダウンは消えてしまいました",
   categoryTitle: "{name}のカウントダウン",
   counting: { one: "{n}人がカウント中", other: "{n}人がカウント中" },
+  uWeeks: "週", uSleeps: "回寝ると", uWorkdays: "営業日", uWeekends: "回の週末", uThere: "経過",
+  nDays: { one: "{n}日", other: "{n}日" }, nWeeks: { one: "{n}週間", other: "{n}週間" },
+  nSleeps: { one: "あと{n}回寝ると", other: "あと{n}回寝ると" }, nWorkdays: { one: "{n}営業日", other: "{n}営業日" },
+  nWeekends: { one: "週末{n}回", other: "週末{n}回" }, weeksDays: "{weeks}と{days}",
+  ofTheWay: "経過", ofTheWayOn: "経過 · {date}",
 };
 
 const de: Dictionary = {
@@ -185,6 +196,11 @@ const de: Dictionary = {
   notFoundTitle: "Dieser Countdown ist verschwunden",
   categoryTitle: "Countdowns: {name}",
   counting: { one: "{n} zählt mit", other: "{n} zählen mit" },
+  uWeeks: "Wochen", uSleeps: "Mal schlafen", uWorkdays: "Arbeitstage", uWeekends: "Wochenenden", uThere: "geschafft",
+  nDays: { one: "{n} Tag", other: "{n} Tage" }, nWeeks: { one: "{n} Woche", other: "{n} Wochen" },
+  nSleeps: { one: "noch {n}-mal schlafen", other: "noch {n}-mal schlafen" }, nWorkdays: { one: "{n} Arbeitstag", other: "{n} Arbeitstage" },
+  nWeekends: { one: "{n} Wochenende", other: "{n} Wochenenden" }, weeksDays: "{weeks}, {days}",
+  ofTheWay: "geschafft", ofTheWayOn: "geschafft · {date}",
 };
 
 const es: Dictionary = {
@@ -234,6 +250,11 @@ const es: Dictionary = {
   notFoundTitle: "Esta cuenta atrás se ha desvanecido",
   categoryTitle: "Cuentas atrás: {name}",
   counting: { one: "{n} contando", other: "{n} contando" },
+  uWeeks: "semanas", uSleeps: "noches", uWorkdays: "días laborables", uWeekends: "fines de semana", uThere: "recorrido",
+  nDays: { one: "{n} día", other: "{n} días" }, nWeeks: { one: "{n} semana", other: "{n} semanas" },
+  nSleeps: { one: "{n} noche", other: "{n} noches" }, nWorkdays: { one: "{n} día laborable", other: "{n} días laborables" },
+  nWeekends: { one: "{n} fin de semana", other: "{n} fines de semana" }, weeksDays: "{weeks}, {days}",
+  ofTheWay: "del camino recorrido", ofTheWayOn: "del camino recorrido · {date}",
 };
 
 const ptBR: Dictionary = {
@@ -283,6 +304,11 @@ const ptBR: Dictionary = {
   notFoundTitle: "Esta contagem desapareceu",
   categoryTitle: "Contagens: {name}",
   counting: { one: "{n} contando", other: "{n} contando" },
+  uWeeks: "semanas", uSleeps: "noites", uWorkdays: "dias úteis", uWeekends: "fins de semana", uThere: "do caminho",
+  nDays: { one: "{n} dia", other: "{n} dias" }, nWeeks: { one: "{n} semana", other: "{n} semanas" },
+  nSleeps: { one: "{n} noite", other: "{n} noites" }, nWorkdays: { one: "{n} dia útil", other: "{n} dias úteis" },
+  nWeekends: { one: "{n} fim de semana", other: "{n} fins de semana" }, weeksDays: "{weeks} e {days}",
+  ofTheWay: "do caminho", ofTheWayOn: "do caminho · {date}",
 };
 
 const fr: Dictionary = {
@@ -332,6 +358,11 @@ const fr: Dictionary = {
   notFoundTitle: "Ce compte à rebours s’est volatilisé",
   categoryTitle: "Comptes à rebours : {name}",
   counting: { one: "{n} compte", other: "{n} comptent" },
+  uWeeks: "semaines", uSleeps: "dodos", uWorkdays: "jours ouvrés", uWeekends: "week-ends", uThere: "parcouru",
+  nDays: { one: "{n} jour", other: "{n} jours" }, nWeeks: { one: "{n} semaine", other: "{n} semaines" },
+  nSleeps: { one: "{n} dodo", other: "{n} dodos" }, nWorkdays: { one: "{n} jour ouvré", other: "{n} jours ouvrés" },
+  nWeekends: { one: "{n} week-end", other: "{n} week-ends" }, weeksDays: "{weeks} et {days}",
+  ofTheWay: "du chemin parcouru", ofTheWayOn: "du chemin parcouru · {date}",
 };
 
 const DICTIONARIES: Record<Locale, Dictionary> = { en, ja, de, es, "pt-BR": ptBR, fr };

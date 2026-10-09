@@ -278,7 +278,8 @@ struct ShareCardMenu: View {
         do {
             let url = try await ShareVideo.render(countdown, photo: photo, recap: recap) { progress = $0 }
             Analytics.log(.videoExported, source: countdown.hasReachedZero(at: now) ? "recap"
-                          : destination == .instagram ? "instagram" : "share_sheet")
+                          : destination == .instagram ? "instagram" : "share_sheet",
+                          unit: countdown.reading(at: now) != nil ? countdown.countUnit : nil)
             switch destination {
             case .sheet: videoURL = url
             case .instagram: InstagramStories.share(video: url)
