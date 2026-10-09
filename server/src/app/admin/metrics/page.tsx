@@ -66,7 +66,7 @@ export default async function MetricsPage() {
     sources("paywall_shown"),
     sourceCounts([
       "countdown_finished", "keep_counting", "countdown_deleted", "image_exported", "video_exported",
-      "page_view", "calendar_subscribed",
+      "page_view", "calendar_subscribed", "present_started", "present_zero",
     ]),
     unitCounts(["countdown_created", "unit_chosen", "image_exported", "video_exported"]),
   ]);
@@ -179,6 +179,28 @@ export default async function MetricsPage() {
                   <TableCell>{label}</TableCell>
                   <TableCell align="right">{n}</TableCell>
                   <TableCell align="right" sx={{ opacity: 0.7 }}>{share}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Section>
+
+        <Section
+          title="The big screen"
+          note="Countdowns put on a TV, projector or second display: the web's present page, the Mac's full screen, and an iPhone's external display. Joins from the room are live page views from the corner QR code."
+        >
+          <Table size="small">
+            <TableBody>
+              {[
+                ["Present pages opened (web)", count("present_view")],
+                ["Mac full screen", bySource("present_started", "mac")],
+                ["iPhone on a TV", bySource("present_started", "tv")],
+                ["Still on screen at zero", count("present_zero")],
+                ["Live page views from the room's QR code", bySource("page_view", "present")],
+              ].map(([label, n]) => (
+                <TableRow key={label as string}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell align="right">{n}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

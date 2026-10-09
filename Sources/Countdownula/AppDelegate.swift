@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var thumbnailCache: [String: NSImage] = [:]
     private var editorWindow: NSWindow?
     private var paywallWindow: NSWindow?
+    private var presentWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         installMainMenu()
@@ -34,7 +35,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             add: { [weak self] in self?.openEditor(for: nil) },
             edit: { [weak self] countdown in self?.openEditor(for: countdown) },
             unlock: { [weak self] in self?.openPaywall() },
-            quit: { NSApp.terminate(nil) }
+            quit: { NSApp.terminate(nil) },
+            present: { [weak self] countdown in self?.openPresentation(for: countdown) }
         )
         let host = NSHostingController(rootView: PopoverView(store: store, navigation: navigation, actions: actions))
         host.sizingOptions = .preferredContentSize
@@ -184,6 +186,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
     }
 
+    // MARK: - Present
+
+    /// The countdown full screen. With a second display connected (a TV, a projector), it goes there
+    /// and the Mac's own screen stays free. Escape or Command-W closes it.
+    private func openPresentation(for countdown: Countdown) {
+        popover.performClose(nil)
+        presentWindow?.close()
+        let id = countdown.id
+        let view = PresentationHost(store: store, id: id)
+        let screen = NSScreen.screens.first { $0 != NSScreen.main } ?? NSScreen.main
+        let window = PresentationWindow(contentRect: screen?.frame ?? .init(x: 0, y: 0, width: 1280, height: 720),
+                                        styleMask: [.titled, .closable, .resizable, .fullSizeContentView],
+                                        backing: .buffered, defer: false, screen: screen)
+        window.contentViewController = NSHostingController(rootView: view)
+        window.title = countdown.title
+        window.titlebarAppearsTransparent = true
+        window.collectionBehavior = [.fullScreenPrimary]
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        if let screen { window.setFrame(screen.frame, display: true) }
+        presentWindow = window
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        window.toggleFullScreen(nil)
+        Analytics.log(.presentStarted, slug: countdown.extras.link?.slug ?? countdown.extras.subscription?.slug, source: "mac")
+    }
+
     // MARK: - Unlimited
 
     private func openPaywall() {
@@ -209,6 +238,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         if (notification.object as? NSWindow) === editorWindow { editorWindow = nil }
         if (notification.object as? NSWindow) === paywallWindow { paywallWindow = nil }
+        if (notification.object as? NSWindow) === presentWindow { presentWindow = nil }
     }
 
     // MARK: - Main menu
@@ -243,5 +273,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         main.addItem(windowItem)
 
         NSApp.mainMenu = main
+    }
+}
+
+/// A full screen countdown window that Escape closes.
+private final class PresentationWindow: NSWindow {
+    override func cancelOperation(_ sender: Any?) { close() }
+}
+
+/// Keeps the presentation in step with edits and sync while it's up, and keeps the display awake.
+private struct PresentationHost: View {
+    let store: CountdownStore
+    let id: UUID
+    @State private var activity: NSObjectProtocol?
+
+    var body: some View {
+        Group {
+            if let countdown = store.countdown(id: id) {
+                PresentView(countdown: countdown, photo: store.image(for: countdown).map { Image(nsImage: $0) }) {
+                    Analytics.log(.presentZero, slug: countdown.extras.link?.slug ?? countdown.extras.subscription?.slug, source: "mac")
+                }
+            } else {
+                Color.black
+            }
+        }
+        .frame(minWidth: 640, minHeight: 360)
+        .onAppear {
+            activity = ProcessInfo.processInfo.beginActivity(options: [.idleDisplaySleepDisabled, .userInitiated],
+                                                             reason: "Presenting a countdown")
+        }
+        .onDisappear {
+            if let activity { ProcessInfo.processInfo.endActivity(activity) }
+        }
     }
 }

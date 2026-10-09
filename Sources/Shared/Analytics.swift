@@ -27,6 +27,10 @@ enum Analytics {
         case widgetAction = "widget_action"
         /// An edit switched a countdown to a unit (sleeps, weeks...). Creations and exports carry it too.
         case unitChosen = "unit_chosen"
+        /// A countdown put on a big screen: source "mac" (full screen) or "tv" (an iPhone's external display).
+        case presentStarted = "present_started"
+        /// Still on the big screen when it hit zero.
+        case presentZero = "present_zero"
     }
 
     struct Queued: Codable, Equatable {

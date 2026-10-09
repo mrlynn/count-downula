@@ -153,6 +153,8 @@ struct CountdownDetailView: View {
     private func actions(for countdown: Countdown, now: Date) -> some View {
         let _ = activityRevision
         VStack(spacing: 10) {
+            ExternalDisplayButton(countdown: countdown)
+
             Button {
                 store.togglePin(countdown)
             } label: {
