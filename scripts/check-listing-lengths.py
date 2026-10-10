@@ -17,4 +17,14 @@ for section in re.split(r"\n## ", text)[1:]:
         flag = "OK" if size <= limit else "TOO LONG"
         failed |= size > limit
         print(f"{language:28} {field:18} {size:5}/{limit:<5} {flag}")
+
+# What's New for each release (docs/whats-new-*.md): every fenced block is one platform's text.
+for notes in sorted(Path(__file__).resolve().parent.parent.joinpath("docs").glob("whats-new-*.md")):
+    body = notes.read_text()
+    for section in re.split(r"\n## ", body)[1:]:
+        language = section.splitlines()[0]
+        for platform, block in re.findall(r"### ([^\n]+)\n\n```\n(.*?)\n```", section, flags=re.S):
+            size, limit = len(block), 4000
+            failed |= size > limit
+            print(f"{notes.stem:14} {language[:22]:22} {platform[:28]:28} {size:5}/{limit:<5} {'OK' if size <= limit else 'TOO LONG'}")
 sys.exit(1 if failed else 0)

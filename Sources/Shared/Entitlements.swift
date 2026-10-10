@@ -38,6 +38,11 @@ final class Entitlements {
             Task { await loadProduct() }
             return
         }
+        // Screenshots without the free tier's notes on a machine that hasn't bought Unlimited.
+        if ProcessInfo.processInfo.arguments.contains("-unlocked") {
+            isUnlocked = true
+            return
+        }
         #endif
         isUnlocked = UserDefaults.standard.bool(forKey: Self.cacheKey)
         // Purchases from other devices, Ask to Buy approvals and refunds all arrive here.
