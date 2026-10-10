@@ -30,7 +30,8 @@ enum DraftExtractor {
 
     /// The soonest date that hasn't happened yet. Tickets often put the day and the time on separate
     /// lines ("Saturday, December 12" then "Doors 7:00 PM"), so a time on its own is joined to the day
-    /// before it rather than read as today. Dates without a time land at 9 am.
+    /// before it rather than read as today. Dates without a time land at 9 am. A time with no day at
+    /// all means that time today, or tomorrow if it has passed.
     static func date(in text: String, now: Date, calendar: Calendar = .current) -> Date? {
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.date.rawValue) else { return nil }
         struct Found { let date: Date; let text: String; let location: Int }
@@ -51,7 +52,15 @@ enum DraftExtractor {
             }
             return calendar.date(bySettingHour: 9, minute: 0, second: 0, of: day.date) ?? day.date
         }
-        if candidates.isEmpty { candidates = times.map(\.date) }
+        if candidates.isEmpty {
+            // The detector fills in today from the real clock, not `now`; anchor the time to `now`'s day.
+            candidates = times.compactMap { time in
+                let parts = calendar.dateComponents([.hour, .minute], from: time.date)
+                guard let today = calendar.date(bySettingHour: parts.hour ?? 9, minute: parts.minute ?? 0, second: 0, of: now)
+                else { return nil }
+                return today > now ? today : calendar.date(byAdding: .day, value: 1, to: today)
+            }
+        }
         return candidates.filter { $0 > now }.min()
     }
 
