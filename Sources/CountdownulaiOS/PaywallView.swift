@@ -83,6 +83,8 @@ struct PaywallView: View {
                             ProgressView()
                         } else if let product = entitlements.product {
                             Text("Unlock for \(product.displayPrice)")
+                        } else if entitlements.productLoadFailed {
+                            Text("Try Again")
                         } else {
                             Text("Connecting to the App Store…")
                         }
@@ -93,7 +95,13 @@ struct PaywallView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(Color.countdownulaBlood)
                 .controlSize(.large)
-                .disabled(entitlements.product == nil || entitlements.purchaseState == .purchasing)
+                // Disabled only while a load or purchase is under way; after a failed load it retries.
+                .disabled((entitlements.product == nil && !entitlements.productLoadFailed)
+                          || entitlements.purchaseState == .purchasing)
+
+                if entitlements.product == nil, entitlements.productLoadFailed, entitlements.purchaseState != .purchasing {
+                    status(L("Couldn't reach the App Store. Check your connection, then try again."))
+                }
 
                 switch entitlements.purchaseState {
                 case .pending:
