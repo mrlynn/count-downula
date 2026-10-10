@@ -29,9 +29,11 @@ fi
 xcodegen generate --quiet
 rm -rf "$ARCHIVE" "$EXPORT"
 mkdir -p build
+# Signed for distribution from the start: a tvOS development profile needs an Apple TV registered to
+# the team, and an App Store distribution profile needs no devices at all.
 xcodebuild -project Countdownula.xcodeproj -scheme CountdownculaTV -configuration Release \
   -destination 'generic/platform=tvOS' -archivePath "$ARCHIVE" \
-  CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+  CURRENT_PROJECT_VERSION="$BUILD_NUMBER" CODE_SIGN_IDENTITY="Apple Distribution" \
   -allowProvisioningUpdates ${AUTH[@]+"${AUTH[@]}"} -quiet archive
 
 DESTINATION=upload
