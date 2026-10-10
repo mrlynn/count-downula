@@ -177,6 +177,10 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 
 .cta-row { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
 .cta-note { font-size: 0.92rem; color: var(--bone-dim); }
+/* Apple's badge artwork, unmodified: it carries its own border and needs no button styling. */
+.store-badge { display: inline-flex; line-height: 0; border-radius: 9px; transition: transform 0.2s; }
+.store-badge img { height: 48px; width: auto; }
+.store-badge:hover { transform: translateY(-1px); }
 
 .tolling {
   margin: 3.2rem 0 0;
@@ -685,6 +689,14 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 }
 @media (max-width: 560px) {
   .slots { grid-template-columns: 1fr; }
+}
+
+/* ---------- together ---------- */
+
+.together {
+  background:
+    radial-gradient(55vw 35vw at 20% 30%, rgba(195, 17, 45, 0.18), transparent 70%),
+    var(--night);
 }
 
 /* ---------- iphone ---------- */
