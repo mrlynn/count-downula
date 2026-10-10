@@ -19,6 +19,12 @@ struct HostSection: View {
     private var hosted: Bool { link.isHosted == true }
 
     var body: some View {
+        // Offered only once the App Store has the pass: no greyed-out "Unavailable" button while the
+        // product isn't set up or can't be reached. A countdown that's already hosted always shows.
+        if hosted || hostPass.product != nil { card }
+    }
+
+    private var card: some View {
         VStack(alignment: .leading, spacing: 12) {
             if hosted { hostedContent } else { offer }
         }
@@ -57,7 +63,7 @@ struct HostSection: View {
                 }
             } label: {
                 Text(hostPass.state == .buying ? "Buying…"
-                     : hostPass.product.map { "Get Host Pass · \($0.displayPrice)" } ?? "Host Pass Unavailable")
+                     : hostPass.product.map { "Get Host Pass · \($0.displayPrice)" } ?? "")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
