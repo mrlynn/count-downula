@@ -96,6 +96,17 @@ struct CountdownListView: View {
                 CountdownDetailView(id: id, onEdit: { editorTarget = .edit($0) })
             }
             .toolbar {
+                // Always on screen for free users, even with an empty list, so the purchase is never hidden
+                // behind having made a countdown first (App Review couldn't find it in 1.1.0).
+                if !store.entitlements.isUnlocked {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Unlock Unlimited") {
+                            paywallReason = "toolbar"
+                            showingPaywall = true
+                        }
+                        .tint(Color.countdownulaBlood)
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
