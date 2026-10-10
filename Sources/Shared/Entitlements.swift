@@ -18,6 +18,10 @@ final class Entitlements {
     private(set) var isUnlocked: Bool
     private(set) var product: Product?
     private(set) var purchaseState: PurchaseState = .idle
+    /// Whether the App Store answered with the product. It can come back empty (no connection, a
+    /// slow sandbox during review, an agreement not yet active), so the paywall offers a retry
+    /// instead of a button that never wakes up.
+    private(set) var productLoadFailed = false
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
     /// Last known state, so an offline launch doesn't flash the paywall at someone who already paid.
@@ -86,14 +90,35 @@ final class Entitlements {
 
     // MARK: - StoreKit
 
+    /// Fetches the Unlimited product, trying three times with a short pause before giving up.
     func loadProduct() async {
         #if !DIRECT_DISTRIBUTION
         guard product == nil else { return }
-        product = try? await Product.products(for: [SharedConfig.unlimitedProductID]).first
+        productLoadFailed = false
+        #if DEBUG
+        // Testing: -failProductLoad makes the App Store answer with nothing, as it can during review.
+        let simulateFailure = ProcessInfo.processInfo.arguments.contains("-failProductLoad")
+        #else
+        let simulateFailure = false
+        #endif
+        for attempt in 0..<3 {
+            if attempt > 0 { try? await Task.sleep(for: .seconds(Double(attempt) * 1.5)) }
+            if !simulateFailure, let found = try? await Product.products(for: [SharedConfig.unlimitedProductID]).first {
+                product = found
+                return
+            }
+        }
+        productLoadFailed = true
         #endif
     }
 
     func purchase() async {
+        // Tapped before the product arrived, or after a failed load: try fetching it once more.
+        if product == nil {
+            purchaseState = .purchasing
+            await loadProduct()
+            purchaseState = .idle
+        }
         guard let product else { return }
         purchaseState = .purchasing
         do {

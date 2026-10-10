@@ -5236,12 +5236,6 @@
     },
     "Analytics ID Reset": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "分析IDをリセットしました"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -5254,16 +5248,22 @@
             "value": "ID de análisis restablecido"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "ID de análise redefinido"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Identifiant d’analyse réinitialisé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "分析IDをリセットしました"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ID de análise redefinido"
           }
         }
       }
@@ -5338,12 +5338,6 @@
     },
     "Anonymous counts, like how many countdowns get made. No titles, dates or names. Details in the privacy policy at countdowncula.com/privacy.": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "作成されたカウントダウンの数などの匿名の集計です。タイトル、日付、名前は含まれません。詳しくはcountdowncula.com/privacyのプライバシーポリシーをご覧ください。"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -5356,16 +5350,22 @@
             "value": "Recuentos anónimos, como cuántas cuentas atrás se crean. Sin títulos, fechas ni nombres. Más detalles en la política de privacidad en countdowncula.com/privacy."
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Contagens anônimas, como quantas contagens são criadas. Sem títulos, datas ou nomes. Detalhes na política de privacidade em countdowncula.com/privacy."
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Des comptages anonymes, comme le nombre de comptes à rebours créés. Ni titres, ni dates, ni noms. Détails dans la politique de confidentialité sur countdowncula.com/privacy."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "作成されたカウントダウンの数などの匿名の集計です。タイトル、日付、名前は含まれません。詳しくはcountdowncula.com/privacyのプライバシーポリシーをご覧ください。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contagens anônimas, como quantas contagens são criadas. Sem títulos, datas ou nomes. Detalhes na política de privacidade em countdowncula.com/privacy."
           }
         }
       }
@@ -6692,6 +6692,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Não foi possível conectar ao Count Downcula. Verifique sua conexão e tente de novo."
+          }
+        }
+      }
+    },
+    "Couldn't reach the App Store. Check your connection, then try again.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "App Storeに接続できませんでした。接続を確認してから、もう一度お試しください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Der App Store ist nicht erreichbar. Prüfe deine Verbindung und versuch es dann noch einmal."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se pudo conectar con el App Store. Revisa la conexión e inténtalo de nuevo."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível acessar a App Store. Verifique sua conexão e tente de novo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossible de joindre l’App Store. Vérifiez votre connexion, puis réessayez."
           }
         }
       }
@@ -14281,12 +14315,6 @@
     },
     "Settings": {
       "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "設定"
-          }
-        },
         "de": {
           "stringUnit": {
             "state": "needs_review",
@@ -14299,16 +14327,22 @@
             "value": "Ajustes"
           }
         },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Ajustes"
-          }
-        },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Réglages"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "設定"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajustes"
           }
         }
       }
@@ -16791,6 +16825,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Acompanhar o dinheiro economizado"
+          }
+        }
+      }
+    },
+    "Try Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Erneut versuchen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Reintentar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réessayer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "再試行"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tentar de novo"
           }
         }
       }
