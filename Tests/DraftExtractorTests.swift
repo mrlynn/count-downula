@@ -102,8 +102,20 @@ final class DraftExtractorTests: XCTestCase {
         XCTAssertEqual(draft.scene, .city)
     }
 
+    /// 9 am on October 8 in whatever zone the tests run in, so "today" means the same day everywhere.
+    private var morning: Date {
+        Calendar.current.date(from: DateComponents(year: 2026, month: 10, day: 8, hour: 9))!
+    }
+
     func testATimeAloneMeansToday() {
-        let draft = DraftExtractor.draft(from: "Standup at 4:30 PM", now: now)
-        XCTAssertEqual(Calendar.current.isDate(draft.date ?? .distantPast, inSameDayAs: now), true)
+        let draft = DraftExtractor.draft(from: "Standup at 4:30 PM", now: morning)
+        let parts = components(draft.date)
+        XCTAssertEqual([parts?.month, parts?.day, parts?.hour, parts?.minute], [10, 8, 16, 30])
+    }
+
+    func testATimeThatHasPassedMeansTomorrow() {
+        let draft = DraftExtractor.draft(from: "Standup at 8:15 AM", now: morning)
+        let parts = components(draft.date)
+        XCTAssertEqual([parts?.month, parts?.day, parts?.hour, parts?.minute], [10, 9, 8, 15])
     }
 }
