@@ -2,7 +2,7 @@
 
 Paste into App Store Connect, under the 1.2 version of each platform, in **What's New in This Version** (limit 4,000 characters). English is the base; the other languages are drafts awaiting native review, like the rest of the localization. `scripts/check-listing-lengths.py` checks the lengths.
 
-The Apple TV app is new, so it has no "What's New" text. Its description is at the end.
+The Apple TV app isn't in 1.2: it ships in a later release, once it has been tested on a real Apple TV. Its description is kept at the end for then.
 
 ---
 
@@ -21,7 +21,7 @@ The biggest update yet.
 • Widgets with buttons, Control Center controls, and an extra-large widget on iPad.
 • Plug into a TV and your countdown goes full screen, with a code for the room to join.
 • Host Pass for big events: a custom link, no branding and a bigger coffin.
-• Now on Apple TV, and in Japanese, German, Spanish, Portuguese and French.
+• Now in Japanese, German, Spanish, Portuguese and French.
 • Fixes, including a smoother Unlimited purchase.
 ```
 
@@ -56,7 +56,7 @@ The biggest update yet.
 • ボタン付きウィジェット、コントロールセンター、iPadの特大ウィジェット。
 • テレビにつなぐとカウントダウンが全画面に。会場の人はコードで参加できます。
 • 大きなイベント向けのホストパス：カスタムリンク、ブランド表示なし、大きな棺。
-• Apple TVに対応。日本語、ドイツ語、スペイン語、ポルトガル語、フランス語にも対応。
+• 日本語、ドイツ語、スペイン語、ポルトガル語、フランス語に対応。
 • 不具合の修正。Unlimitedの購入もよりスムーズに。
 ```
 
@@ -91,7 +91,7 @@ Das bisher größte Update.
 • Widgets mit Tasten, Steuerelemente im Kontrollzentrum, extragroßes Widget auf dem iPad.
 • Am Fernseher läuft dein Countdown im Vollbild, mit einem Code zum Mitzählen.
 • Host-Pass für große Anlässe: eigener Link, ohne Branding, größerer Sarg.
-• Jetzt auf Apple TV und auf Japanisch, Deutsch, Spanisch, Portugiesisch und Französisch.
+• Jetzt auf Japanisch, Deutsch, Spanisch, Portugiesisch und Französisch.
 • Fehlerbehebungen, darunter ein reibungsloserer Unlimited-Kauf.
 ```
 
@@ -126,7 +126,7 @@ La mayor actualización hasta ahora.
 • Widgets con botones, controles en el Centro de control y widget extragrande en iPad.
 • Conéctalo a una tele y tu cuenta atrás ocupa la pantalla, con un código para unirse.
 • Host Pass para grandes eventos: enlace propio, sin marca y un ataúd más grande.
-• Ya en Apple TV, y en japonés, alemán, español, portugués y francés.
+• Ya en japonés, alemán, español, portugués y francés.
 • Correcciones, incluida una compra de Unlimited más fluida.
 ```
 
@@ -161,7 +161,7 @@ A maior atualização até agora.
 • Widgets com botões, controles na Central de Controle e widget extragrande no iPad.
 • Ligue numa TV e sua contagem vai para a tela cheia, com um código para entrar.
 • Host Pass para grandes eventos: link próprio, sem marca e um caixão maior.
-• Agora na Apple TV, e em japonês, alemão, espanhol, português e francês.
+• Agora em japonês, alemão, espanhol, português e francês.
 • Correções, incluindo uma compra do Unlimited mais tranquila.
 ```
 
@@ -196,7 +196,7 @@ La plus grosse mise à jour à ce jour.
 • Widgets avec boutons, commandes du Centre de contrôle et widget très grand sur iPad.
 • Branchez une télé et votre compte à rebours passe en plein écran, avec un code pour rejoindre.
 • Host Pass pour les grands événements : lien personnalisé, sans marque et un plus grand cercueil.
-• Désormais sur Apple TV, et en japonais, allemand, espagnol, portugais et français.
+• Désormais en japonais, allemand, espagnol, portugais et français.
 • Corrections, dont un achat d’Unlimited plus fluide.
 ```
 
@@ -216,7 +216,7 @@ La plus grosse mise à jour à ce jour.
 
 ---
 
-## Apple TV description (English; new platform)
+## Apple TV description (English; for the release that adds Apple TV)
 
 ```
 Put your countdowns on the big screen. Count Downcula on Apple TV shows the countdowns you've made on your iPhone, iPad or Mac, synced through iCloud, full screen for the whole room: huge digits in each countdown's own style, the last ten seconds as one giant number, and confetti at zero. A code in the corner lets everyone in the room count down with you from their phones.

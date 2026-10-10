@@ -97,7 +97,7 @@ Apple doesn't allow third-party watch faces. To share a "Count Downcula face", s
 
 ## Apple TV
 
-The Apple TV app shows your countdowns, synced through iCloud from the iPhone, Mac and watch. It has the next one big and shelves of the rest, plus the Crypt, and any countdown goes full screen for the room at a press. Left and right on the remote step through them. When the app is in the top row, the Top Shelf shows what's coming up. Joined countdowns follow their owners' edits, and Crypt countdowns can be added from the TV.
+*Coming in a later release; it isn't part of 1.2.* The Apple TV app shows your countdowns, synced through iCloud from the iPhone, Mac and watch. It has the next one big and shelves of the rest, plus the Crypt, and any countdown goes full screen for the room at a press. Left and right on the remote step through them. When the app is in the top row, the Top Shelf shows what's coming up. Joined countdowns follow their owners' edits, and Crypt countdowns can be added from the TV.
 
 ## Download
 
