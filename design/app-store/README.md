@@ -7,7 +7,7 @@ Upload these on the app's version page in App Store Connect, under **Previews an
 | `iphone-6.3/` | iPhone with Dynamic Island (medium display) | 1206 × 2622 | List (with sleeps, workdays and weeks), countdown detail, date pool, the Crypt, appearance editor (occasion scenes), count-up, a birthday in sleeps, a date in Tokyo time, From Calendar |
 | `iphone/` | iPhone 6.9" (if App Store Connect asks for it) | 1320 × 2868 | The same nine, at full size |
 | `ipad/` | iPad 13" Display | 2064 × 2752 | List, countdown detail, the Crypt, a date in Tokyo time |
-| `appletv/` | Apple TV | 1920 × 1080 | Home, a countdown full screen, the Crypt |
+| `appletv/` | Apple TV (not in 1.2; for the release that adds tvOS) | 1920 × 1080 | Home, a countdown full screen, the Crypt |
 | `mac/` | Mac | 1440 × 900 | Menu bar list and detail, editor, free tier and Unlimited |
 | `watch/` | Apple Watch | 416 × 496 | Watch face with complications, list, detail |
 | `iap-review-paywall.png` | In-app purchase → Review Information → Screenshot | 1206 × 2622 | The Count Downcula Unlimited paywall (for Apple's reviewer only) |

@@ -412,6 +412,7 @@ Built (October 9, 2026): present mode on the web, full screen on the Mac, and th
     - The icon has three parallax layers: a burgundy night with stars, a red glow, and the Count with his dial.
     - The Top Shelf images (standard and wide, at 1x and 2x) show the Count beside the wordmark. Apple TV shows them when the app has no countdowns for its own Top Shelf.
   - **Checked in the tvOS 27 simulator:** the home screen, full screen and the Crypt, and the icon on the Apple TV Home Screen.
+  - **Not in 1.2 (October 10, 2026):** with no Apple TV to test on or register, tvOS can't get a development profile, and an untested new platform is a review risk. It ships in a later release. The code, icon, screenshots and description are ready; registering an Apple TV makes `scripts/release-tvos.sh` work as is.
   - **Not yet:** making or editing countdowns on the TV (by design: it shows), and a pass with a real remote.
 
 ### Considered, not planned
