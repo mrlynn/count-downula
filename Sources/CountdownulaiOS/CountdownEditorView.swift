@@ -25,16 +25,23 @@ struct CountdownEditorView: View {
     @State private var isLocating = false
     @State private var templateError: String?
     @State private var showingPaywall = false
+    @State private var confirmingDiscard = false
     /// "template" once a count-up template fills the editor, for the metrics dashboard.
     @State private var createdFrom: String?
+
+    /// Where the date and timer started, so Cancel only asks once something has changed.
+    private let initialTargetDate: Date
+    private let initialDuration: Int
 
     init(original: Countdown?) {
         self.original = original
         _title = State(initialValue: original?.title ?? "")
         _details = State(initialValue: original?.details ?? "")
         _kind = State(initialValue: original?.kind ?? .event)
-        _targetDate = State(initialValue: original?.targetDate
-            ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!)
+        let target = original?.targetDate ?? Calendar.current.date(byAdding: .day, value: 7, to: Date())!
+        initialTargetDate = target
+        _targetDate = State(initialValue: target)
+        var duration = 25 * 60
         _isPinned = State(initialValue: original?.isPinned ?? false)
         _style = State(initialValue: original?.style ?? .default)
         _milestones = State(initialValue: original?.milestones ?? [])
@@ -46,7 +53,9 @@ struct CountdownEditorView: View {
             _days = State(initialValue: remaining / 86_400)
             _hours = State(initialValue: remaining % 86_400 / 3_600)
             _minutes = State(initialValue: remaining % 3_600 / 60)
+            duration = remaining / 60 * 60
         }
+        initialDuration = duration
     }
 
     /// The countdown as it would be saved, for the live previews.
@@ -91,6 +100,17 @@ struct CountdownEditorView: View {
 
     private var durationSeconds: Int { days * 86_400 + hours * 3_600 + minutes * 60 }
 
+    /// Anything that would be lost by closing the editor without saving.
+    private var hasChanges: Bool {
+        if case .unchanged = imageUpdate {} else { return true }
+        return title != (original?.title ?? "") || details != (original?.details ?? "")
+            || kind != (original?.kind ?? .event) || isPinned != (original?.isPinned ?? false)
+            || style != (original?.style ?? .default) || milestones != (original?.milestones ?? [])
+            || extras != (original?.extras ?? CountdownExtras())
+            || tracksSavings != (original?.extras.savings != nil)
+            || targetDate != initialTargetDate || durationSeconds != initialDuration
+    }
+
     private var canSave: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty && (kind != .timer || durationSeconds > 0)
             && !isLoadingPhoto && !isLocating
@@ -109,19 +129,19 @@ struct CountdownEditorView: View {
                 }
 
                 Section {
+                    TextField("Title", text: $title, prompt: Text("Summer vacation"))
+                        .font(.headline)
+                    TextField("Description", text: $details, prompt: Text("Two weeks on the coast"), axis: .vertical)
+                        .lineLimit(2...5)
+                }
+
+                Section {
                     NavigationLink {
                         StyleEditorView(draft: draft, style: $style, previewImage: $previewImage,
                                         imageUpdate: $imageUpdate, isLoadingPhoto: $isLoadingPhoto)
                     } label: {
                         Label("Appearance", systemImage: "paintpalette")
                     }
-                }
-
-                Section {
-                    TextField("Title", text: $title, prompt: Text("Summer vacation"))
-                        .font(.headline)
-                    TextField("Description", text: $details, prompt: Text("Two weeks on the coast"), axis: .vertical)
-                        .lineLimit(2...5)
                 }
 
                 Section {
@@ -245,9 +265,19 @@ struct CountdownEditorView: View {
                 if new == .countUp, milestones.isEmpty { milestones = MilestonePreset.countUpDefaults() }
             }
             .navigationBarTitleDisplayMode(.inline)
+            // A swipe down on the form (to hide the keyboard, or look at the preview) used to close the
+            // sheet and quietly throw the countdown away. Once there's something to lose, only Cancel closes it.
+            .interactiveDismissDisabled(hasChanges)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        if hasChanges { confirmingDiscard = true } else { dismiss() }
+                    }
+                    .confirmationDialog(original == nil ? "Discard this countdown?" : "Discard your changes?",
+                                        isPresented: $confirmingDiscard, titleVisibility: .visible) {
+                        Button("Discard", role: .destructive) { dismiss() }
+                        Button("Keep Editing", role: .cancel) {}
+                    }
                 }
                 if original == nil {
                     ToolbarItem(placement: .principal) {
