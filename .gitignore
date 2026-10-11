@@ -6,3 +6,4 @@ build/
 Countdownula.xcodeproj/
 .vercel
 .env*
+.claude/
