@@ -10,6 +10,7 @@ import { recapText, type Recap } from "@/lib/recapText.ts";
 import { webStyle } from "@/lib/style.ts";
 import { dialRemaining, timeParts, viewerTarget } from "@/lib/time.ts";
 import { reading } from "@/lib/units.ts";
+import { eventDateText } from "@/lib/seo.ts";
 import CoffinPanel from "./CoffinPanel.tsx";
 import { OwnerBar } from "./OwnerBar.tsx";
 import PoolPanel from "./PoolPanel.tsx";
@@ -110,9 +111,10 @@ export function LiveCountdown({
   // Kept counting up after zero: still say how many counted down to it.
   const together = recap && countsUp ? recapText(recap, !!countdown.isPublic, locale).together : null;
   const style = webStyle(countdown.style, !!photoURL);
+  // Public pages write the day out in the HTML for search engines; the viewer's clock takes over once mounted.
   const dateLine = mounted
     ? target.toLocaleString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })
-    : "";
+    : countdown.isPublic ? eventDateText(countdown, locale) : "";
 
   return (
     <Box component="main" sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>

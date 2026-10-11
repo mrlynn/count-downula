@@ -487,6 +487,20 @@ a:hover { color: #fff; text-decoration-color: var(--fresh); }
 .facts dt { font-family: var(--display); font-size: 1.45rem; line-height: 1.15; margin-bottom: 0.4em; }
 .facts dd { margin: 0; color: var(--bone-dim); }
 
+/* ---------- questions ---------- */
+
+.faq { background: var(--night); padding-top: clamp(40px, 6vw, 80px); }
+.faq dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 40px clamp(28px, 4vw, 56px);
+  margin: 0;
+  max-width: 72rem;
+}
+.faq dt { font-family: var(--display); font-size: 1.3rem; line-height: 1.2; margin-bottom: 0.45em; }
+.faq dd { margin: 0; color: var(--bone-dim); }
+.faq a { color: inherit; }
+
 /* ---------- install ---------- */
 
 .install { background: linear-gradient(var(--night), var(--plum)); }

@@ -19,6 +19,54 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/young-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.countdowncula.com/#app",
+      "name": "Count Downcula",
+      "alternateName": "Count Downula",
+      "description": "A countdown and timer app for the Mac menu bar, iPhone and Apple Watch. Pin the countdowns that matter and watch them tick down next to your clock, on your Lock Screen and on your wrist.",
+      "url": "https://www.countdowncula.com/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "macOS 14 or later, iOS 17 or later, watchOS",
+      "softwareVersion": "1.1.1",
+      "downloadUrl": "https://github.com/mrlynn/count-downula/releases/download/v1.1.1/Countdownula-1.1.1.zip",
+      "image": "https://www.countdowncula.com/assets/app-icon.png",
+      "screenshot": [
+        "https://www.countdowncula.com/assets/popover.png",
+        "https://www.countdowncula.com/assets/iphone-lock.jpg",
+        "https://www.countdowncula.com/assets/watch-face.png"
+      ],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Michael Lynn" },
+      "sameAs": ["https://github.com/mrlynn/count-downula"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.countdowncula.com/#site",
+      "name": "Count Downcula",
+      "alternateName": "Count Downula",
+      "url": "https://www.countdowncula.com/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is Count Downcula free?", "acceptedAnswer": { "@type": "Answer", "text": "The Mac app you download from this site is free, with no limits. The iPhone and Apple Watch app is free for up to three active countdowns at a time; Count Downcula Unlimited removes the limit with a one-time $2.99 purchase. No subscription, no ads." } },
+        { "@type": "Question", "name": "Can I put a countdown in the Mac menu bar?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Count Downcula lives in the menu bar. Pin a countdown and it gets its own menu bar item with a thumbnail, its title and the time left, always in view next to your clock." } },
+        { "@type": "Question", "name": "Can I see a countdown on my iPhone Lock Screen?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. There are Home Screen and Lock Screen widgets, and in its last eight hours a pinned countdown shows up as a Live Activity on the Lock Screen and in the Dynamic Island. StandBy shows it big while the phone charges." } },
+        { "@type": "Question", "name": "Does it work on Apple Watch?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Apple Watch app works on its own, no iPhone needed, with circular, rectangular, corner and inline complications. It sets its own alerts, so it taps you when time is up." } },
+        { "@type": "Question", "name": "Can I use it as a focus or Pomodoro timer?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Start a timer for a set length of time, like 25 minutes, and you get a notification when it ends. On iPhone a new timer goes live on the Lock Screen right away." } },
+        { "@type": "Question", "name": "Can I share a countdown with other people?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Share any countdown as a live link that anyone can open in a browser, and people with the app can count down with you. You can also embed one on your own website, or join public countdowns to holidays, eclipses and big games in the Crypt at go.countdowncula.com/crypt." } },
+        { "@type": "Question", "name": "Does Count Downcula collect my data?", "acceptedAnswer": { "@type": "Answer", "text": "No sign-up, no tracking, no ads. Countdowns live on your devices and sync through your own private iCloud storage. Only countdowns you choose to share as a live link go anywhere else, plus anonymous usage counts you can turn off." } },
+        { "@type": "Question", "name": "What do I need to run it?", "acceptedAnswer": { "@type": "Answer", "text": "A Mac with macOS 14 Sonoma or later, Apple silicon or Intel. The iPhone app needs iOS 17 or later and also runs on iPad; the Apple Watch app comes with it." } }
+      ]
+    }
+  ]
+}
+</script>
 <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
@@ -141,8 +189,8 @@
             <span class="mb-clock" data-macclock>Wed Oct 7 4:25 AM</span>
           </div>
 
-          <img class="shot shot-list" src="/assets/popover.png" width="406" height="566" alt="">
-          <img class="shot shot-detail" src="/assets/detail.png" width="406" height="566" alt="">
+          <img class="shot shot-list" src="/assets/popover.png" width="406" height="566" alt="Count Downcula menu bar popover on a Mac, listing countdowns soonest first with progress bars">
+          <img class="shot shot-detail" src="/assets/detail.png" width="406" height="566" alt="A countdown's detail view on the Mac, with its photo and the days, hours, minutes and seconds left">
 
           <div class="stage-ghost"><span data-ghost>15d 23h 58m</span><small>until Sonoma Wine Weekend</small></div>
 
@@ -162,10 +210,10 @@
       <p>The iPhone app puts the next countdown up front, photo and all, with the rest lined up underneath. Add one in a few taps, start a quick timer from the + button, and let it find you wherever you look.</p>
     </div>
 
-    <div class="phones" aria-hidden="true">
-      <figure class="phone phone-a"><img src="/assets/iphone-app.jpg" width="600" height="1305" alt="" loading="lazy"><figcaption>The app</figcaption></figure>
-      <figure class="phone phone-b"><img src="/assets/iphone-lock.jpg" width="600" height="1305" alt="" loading="lazy"><figcaption>Lock Screen</figcaption></figure>
-      <figure class="phone phone-c"><img src="/assets/iphone-home.jpg" width="600" height="1305" alt="" loading="lazy"><figcaption>Home Screen</figcaption></figure>
+    <div class="phones">
+      <figure class="phone phone-a"><img src="/assets/iphone-app.jpg" width="600" height="1305" alt="Count Downcula iPhone app showing the next countdown up front with its photo, and the rest listed below" loading="lazy"><figcaption>The app</figcaption></figure>
+      <figure class="phone phone-b"><img src="/assets/iphone-lock.jpg" width="600" height="1305" alt="iPhone Lock Screen with Count Downcula countdown widgets" loading="lazy"><figcaption>Lock Screen</figcaption></figure>
+      <figure class="phone phone-c"><img src="/assets/iphone-home.jpg" width="600" height="1305" alt="iPhone Home Screen with Count Downcula countdown widgets in several sizes" loading="lazy"><figcaption>Home Screen</figcaption></figure>
     </div>
 
     <dl class="surfaces">
@@ -198,9 +246,9 @@
         </dl>
         <p class="wrist-note">Each complication can follow a countdown you choose, or Next Up: your soonest pinned countdown, or the soonest one if nothing is pinned.</p>
       </div>
-      <div class="watches" aria-hidden="true">
-        <div class="watch watch-a"><img src="/assets/watch-face.png" width="416" height="496" alt=""></div>
-        <div class="watch watch-b"><img src="/assets/watch-app.png" width="416" height="496" alt=""></div>
+      <div class="watches">
+        <div class="watch watch-a"><img src="/assets/watch-face.png" width="416" height="496" alt="Apple Watch face with Count Downcula complications showing time left"></div>
+        <div class="watch watch-b"><img src="/assets/watch-app.png" width="416" height="496" alt="Count Downcula Apple Watch app showing a live countdown"></div>
       </div>
     </div>
     <div class="sync">
@@ -277,6 +325,46 @@
     </dl>
   </section>
 
+  <section class="sec faq" id="faq" aria-labelledby="faq-title">
+    <div class="sec-head">
+      <h2 id="faq-title">Questions, answered.</h2>
+    </div>
+    <dl>
+      <div>
+        <dt>Is Count Downcula free?</dt>
+        <dd>The Mac app you download here is free, with no limits. The iPhone and Apple Watch app is free for up to three active countdowns at a time; Count Downcula Unlimited removes the limit with a one-time $2.99 purchase. No subscription, no ads.</dd>
+      </div>
+      <div>
+        <dt>Can I put a countdown in the Mac menu bar?</dt>
+        <dd>That's where it lives. Pin a countdown and it gets its own menu bar item with a thumbnail, its title and the time left, always in view next to your clock.</dd>
+      </div>
+      <div>
+        <dt>Can I see a countdown on my iPhone Lock Screen?</dt>
+        <dd>Yes. There are Home Screen and Lock Screen widgets, and in its last eight hours a pinned countdown shows up as a Live Activity on the Lock Screen and in the Dynamic Island. StandBy shows it big while the phone charges.</dd>
+      </div>
+      <div>
+        <dt>Does it work on Apple Watch?</dt>
+        <dd>Yes, on its own, no iPhone needed, with circular, rectangular, corner and inline complications. It sets its own alerts, so it taps you when time is up.</dd>
+      </div>
+      <div>
+        <dt>Can I use it as a focus or Pomodoro timer?</dt>
+        <dd>Yes. Start a timer for a set length of time, like 25 minutes, and you get a notification when it ends. On iPhone a new timer goes live on the Lock Screen right away.</dd>
+      </div>
+      <div>
+        <dt>Can I share a countdown with other people?</dt>
+        <dd>Share any countdown as a live link that anyone can open in a browser, and people with the app can count down with you. You can embed one on your own site, too, or join public countdowns to holidays, eclipses and big games in <a href="https://go.countdowncula.com/crypt">the Crypt</a>.</dd>
+      </div>
+      <div>
+        <dt>Does Count Downcula collect my data?</dt>
+        <dd>No sign-up, no tracking, no ads. Countdowns live on your devices and sync through your own private iCloud storage. Only countdowns you share as a live link go anywhere else, plus anonymous usage counts you can turn off. The <a href="/privacy">privacy policy</a> has the details.</dd>
+      </div>
+      <div>
+        <dt>What do I need to run it?</dt>
+        <dd>A Mac with macOS 14 Sonoma or later, Apple silicon or Intel. The iPhone app needs iOS 17 or later and also runs on iPad; the Apple Watch app comes with it.</dd>
+      </div>
+    </dl>
+  </section>
+
   <section class="sec install" id="install" aria-labelledby="install-title">
     <div class="sec-head">
       <h2 id="install-title">Invite it in.</h2>
@@ -329,6 +417,7 @@
   <p class="foot-word" aria-hidden="true">Count <em>Downcula</em></p>
   <div class="foot-row">
     <nav aria-label="Footer">
+      <a href="https://go.countdowncula.com/crypt">The Crypt</a>
       <a href="/support">Support</a>
       <a href="/privacy">Privacy</a>
       <a href="/terms">Terms</a>

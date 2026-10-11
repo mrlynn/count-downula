@@ -13,6 +13,7 @@ import { linkFor, publicOrigin } from "@/lib/http.ts";
 import { headline, previewKey } from "@/lib/time.ts";
 import { reading } from "@/lib/units.ts";
 import { isSlug } from "@/lib/validate.ts";
+import { countdownJsonLd, jsonLdHTML, titleWithYear } from "@/lib/seo.ts";
 import { LiveCountdown } from "./LiveCountdown.tsx";
 
 export const dynamic = "force-dynamic";
@@ -35,12 +36,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // After zero the preview tells the story instead of the date: "It happened. 23 counted down together."
   const words = recap ? recapText(recap, doc.visibility === "public", locale) : null;
   const image = `${publicOrigin()}/c/${slug}/og?d=${previewKey(now, doc.targetDate, doc.kind, unit)}${recap ? `&p=${recap.people}` : ""}`;
+  // Crypt entries answer the question people search for: "How many days until Halloween 2026?"
+  const searchable = doc.curated && doc.visibility === "public";
   const description = words && doc.kind !== "countUp"
     ? [t(locale, "itHappened"), words.together ?? words.counted].filter(Boolean).join(" ")
-    : `${value} ${caption}`;
+    : searchable
+      ? [`${value} ${caption}`, doc.details].filter(Boolean).join(" · ")
+      : `${value} ${caption}`;
   return {
-    title: `${doc.title} · Count Downcula`,
+    title: `${searchable ? t(locale, "daysUntil", { name: titleWithYear(doc.title, toPublic(doc)) }) : doc.title} · Count Downcula`,
     description,
+    // The alias and the random slug both open it; search engines should keep one.
+    alternates: { canonical: linkFor(doc) },
     openGraph: {
       title: doc.title,
       description,
@@ -70,7 +77,12 @@ export default async function CountdownPage({ params, searchParams }: Props) {
   after(() => logEvent("page_view", { headers: h }, { slug, source }));
 
   const photoURL = doc.hasPhoto ? `/c/${slug}/photo?v=${doc.updatedAt.getTime()}` : null;
+  const jsonLd = doc.curated && doc.visibility === "public"
+    ? jsonLdHTML(countdownJsonLd(toPublic(doc), linkFor(doc), `${publicOrigin()}/c/${slug}/og`))
+    : null;
   return (
+    <>
+    {jsonLd ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
     <LiveCountdown
       locale={pickLocale(h.get("accept-language"))}
       emailEnabled={editLinksEnabled()}
@@ -83,5 +95,6 @@ export default async function CountdownPage({ params, searchParams }: Props) {
       calendarURL={`${publicOrigin()}/c/${slug}/calendar.ics`}
       walletURL={walletConfigured() && doc.kind !== "countUp" ? `/c/${slug}/pass` : null}
     />
+    </>
   );
 }
