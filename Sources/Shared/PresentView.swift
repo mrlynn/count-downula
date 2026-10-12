@@ -15,7 +15,7 @@ struct PresentView: View {
     @State private var roomCode: CGImage?
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.25)) { context in
+        TimelineView(.every(0.25)) { context in
             let now = context.date
             GeometryReader { geo in
                 let unit = min(geo.size.width, geo.size.height * 16 / 9)

@@ -6,6 +6,8 @@ struct ConfettiView: View {
     var accent: Color = .countdownulaBlood
     var duration: TimeInterval = 3.5
     @State private var start = Date()
+    /// Stops the per-frame timeline once the burst is over; otherwise it redraws an empty canvas forever.
+    @State private var finished = false
 
     private static let palette: [Color] = [
         Color(hex: 0xFF4D6D), Color(hex: 0xFFD166), Color(hex: 0x06D6A0),
@@ -13,7 +15,7 @@ struct ConfettiView: View {
     ]
 
     var body: some View {
-        TimelineView(.animation) { timeline in
+        TimelineView(.animation(paused: finished)) { timeline in
             let t = timeline.date.timeIntervalSince(start)
             Canvas { context, size in
                 guard t < duration else { return }
@@ -51,5 +53,9 @@ struct ConfettiView: View {
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+        .task {
+            try? await Task.sleep(for: .seconds(duration))
+            finished = true
+        }
     }
 }

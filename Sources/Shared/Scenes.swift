@@ -40,11 +40,53 @@ enum SceneID: String, Codable, CaseIterable, Identifiable {
 
 struct SceneArt: View {
     let scene: SceneID
+    @Environment(\.rasterizesScenes) private var rasterizes
+    @Environment(\.displayScale) private var displayScale
 
     var body: some View {
+        if rasterizes {
+            // The blurs make a scene expensive to draw, and a Canvas redraws on every update: once a
+            // second under a ticking countdown, and again for each row that scrolls into view.
+            GeometryReader { proxy in
+                if let image = SceneArt.cachedImage(scene, size: proxy.size, scale: displayScale) {
+                    Image(decorative: image, scale: displayScale)
+                        .resizable()
+                } else {
+                    canvas
+                }
+            }
+        } else {
+            canvas
+        }
+    }
+
+    private var canvas: some View {
         Canvas { context, size in
             SceneArt.draw(scene, in: &context, size: size)
         }
+    }
+
+    // MARK: - Cache
+
+    @MainActor private static let cache: NSCache<NSString, CGImage> = {
+        let cache = NSCache<NSString, CGImage>()
+        cache.countLimit = 80
+        return cache
+    }()
+
+    @MainActor
+    private static func cachedImage(_ scene: SceneID, size: CGSize, scale: CGFloat) -> CGImage? {
+        let width = size.width.rounded(), height = size.height.rounded()
+        guard width >= 1, height >= 1 else { return nil }
+        let key = "\(scene.rawValue)-\(Int(width))x\(Int(height))@\(scale)" as NSString
+        if let image = cache.object(forKey: key) { return image }
+        let renderer = ImageRenderer(content: Canvas { context, size in
+            SceneArt.draw(scene, in: &context, size: size)
+        }.frame(width: width, height: height))
+        renderer.scale = scale
+        guard let image = renderer.cgImage else { return nil }
+        cache.setObject(image, forKey: key)
+        return image
     }
 
     // MARK: - Drawing
@@ -758,4 +800,10 @@ extension Color {
     init(hex: UInt32, opacity: Double = 1) {
         self = RGBAColor(hex: hex, opacity: opacity).color
     }
+}
+
+extension EnvironmentValues {
+    /// Draws scenes once and reuses the bitmap. On in the app's own screens; off where the view is
+    /// itself being rendered to an image (share cards, widgets), which draw it once anyway.
+    @Entry var rasterizesScenes = false
 }

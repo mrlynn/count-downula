@@ -19,7 +19,7 @@ struct CryptBrowser: View {
 
     var body: some View {
         NavigationStack {
-            TimelineView(.periodic(from: .now, by: 1)) { context in
+            TimelineView(.every(1)) { context in
                 List {
                     Section {
                         Picker("Category", selection: $category) {

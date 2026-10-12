@@ -153,7 +153,7 @@ struct WatchCountdownDetail: View {
                     Text(countdown.title)
                         .font(countdown.style.font(.title3))
 
-                    TimelineView(.periodic(from: .now, by: 1)) { context in
+                    TimelineView(.every(1)) { context in
                         TimeGrid(parts: countdown.timeParts(at: context.date), reading: countdown.reading(at: context.date),
                                  style: countdown.style)
                     }

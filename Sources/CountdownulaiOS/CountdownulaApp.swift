@@ -25,6 +25,7 @@ struct CountdownulaApp: App {
                 .environment(appDelegate.router)
                 .environment(joiner)
                 .tint(.countdownulaBlood)
+                .environment(\.rasterizesScenes, true)
                 .onOpenURL { url in open(url) }
                 // A tapped go.countdowncula.com link arrives as a web browsing activity. SwiftUI doesn't
                 // reliably pass it to onOpenURL once the view handles other activities (Spotlight below).

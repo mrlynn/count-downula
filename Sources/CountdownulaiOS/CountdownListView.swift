@@ -265,16 +265,25 @@ struct CountdownListView: View {
 /// The featured countdown (soonest pinned, else soonest): full-bleed photo with a live D/H/M/S readout.
 private struct HeroCard: View {
     let countdown: Countdown
+    /// Ticked by a task rather than a TimelineView: a TimelineView inside a List row redraws the
+    /// whole list every frame, which pinned the main thread and made scrolling stutter.
+    @State private var now = Date()
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            StyledCountdownCard(
-                countdown: countdown, now: context.date,
+        StyledCountdownCard(
+                countdown: countdown, now: now,
                 badge: countdown.isPinned ? L("PINNED") : L("UP NEXT"),
                 subtitle: countdown.countsUp
                     ? Text("Since \(countdown.targetDate.formatted(.dateTime.month().day().year()))")
                     : Text(countdown.targetDate, format: .dateTime.weekday(.abbreviated).month().day().hour().minute())
             )
+        .task {
+            while !Task.isCancelled {
+                // Wake on the next whole second so the readout flips with the clock.
+                let next = now.timeIntervalSinceReferenceDate.rounded(.down) + 1
+                try? await Task.sleep(for: .seconds(next - Date().timeIntervalSinceReferenceDate))
+                now = Date()
+            }
         }
     }
 }

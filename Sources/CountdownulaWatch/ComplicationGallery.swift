@@ -8,7 +8,7 @@ struct ComplicationGallery: View {
     @Environment(WatchStore.self) private var store
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
+        TimelineView(.every(1)) { context in
             let now = context.date
             let featured = store.countdowns.featured(at: now)
             let entry = CountdownEntry(

@@ -73,8 +73,10 @@ final class PhoneStore {
         guard countdown.hasImage else { return nil }
         if let cached = cache[countdown.imageCacheKey] { return cached }
         guard let data = load(countdown.id), let image = UIImage(data: data) else { return nil }
-        cache[countdown.imageCacheKey] = image
-        return image
+        // Decode now, once, rather than lazily on every draw while a list scrolls.
+        let decoded = image.preparingForDisplay() ?? image
+        cache[countdown.imageCacheKey] = decoded
+        return decoded
     }
 
     /// Prepares the display and thumbnail JPEGs that get stored and synced, from any photo's raw data.

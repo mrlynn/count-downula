@@ -21,7 +21,7 @@ struct CountdownDetailView: View {
 
     var body: some View {
         if let countdown = store.countdown(id: id) {
-            TimelineView(.periodic(from: .now, by: 1)) { context in
+            TimelineView(.every(1)) { context in
                 let now = context.date
                 let parts = countdown.timeParts(at: now)
 

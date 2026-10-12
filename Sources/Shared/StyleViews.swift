@@ -99,3 +99,11 @@ struct CountdownTimeText: View {
         }
     }
 }
+
+extension TimelineSchedule where Self == PeriodicTimelineSchedule {
+    /// Ticks on whole seconds, so readouts flip with the clock, and the schedule is the same on
+    /// every redraw (`.periodic(from: .now, by:)` makes a new one each time).
+    static func every(_ seconds: TimeInterval) -> PeriodicTimelineSchedule {
+        .periodic(from: Date(timeIntervalSinceReferenceDate: 0), by: seconds)
+    }
+}
