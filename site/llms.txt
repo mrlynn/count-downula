@@ -1,0 +1,41 @@
+# Count Downcula
+
+> Count Downcula is a countdown and timer app for the Mac menu bar, iPhone, iPad and Apple Watch. Pin the countdowns that matter (a trip, a launch, a birthday, or the next 25 minutes) and they tick down next to your clock, on your Lock Screen and on your wrist. The Mac app is a free download; the iPhone and Apple Watch app is in public beta.
+
+Key facts:
+
+- Formerly called Count Downula. The app bundle is still named Countdownula.app.
+- Mac: a menu bar app with no Dock icon. A pinned countdown gets its own menu bar item with a thumbnail, its title and the time left. Notifications when a countdown or timer ends. Needs macOS 14 Sonoma or later, Apple silicon or Intel.
+- iPhone and iPad: Home Screen and Lock Screen widgets, StandBy, and a Live Activity on the Lock Screen and in the Dynamic Island during a pinned countdown's last eight hours. Needs iOS 17 or later. Currently a free public beta through TestFlight.
+- Apple Watch: a standalone app with circular, rectangular, corner and inline complications. It comes with the iPhone app.
+- Countdowns to a date and time, count-ups, and timers for a set length (for example a 25-minute Pomodoro focus block). Each countdown can have a photo and a note.
+- Sync between Mac, iPhone and Apple Watch through the user's own private iCloud storage. No sign-up, no ads, no tracking.
+- Sharing: any countdown can be shared as a live link that opens in a browser, joined by people with the app, embedded on a website, or added to a calendar or Apple Wallet. Public countdowns to holidays, eclipses and big games are in the Crypt.
+- Price: the Mac app downloaded from countdowncula.com is free with no limits. The iPhone and Apple Watch app is free for up to three active countdowns at a time; Count Downcula Unlimited removes the limit with a one-time $2.99 purchase, with no subscription.
+- Native Swift app, source on GitHub, made by Michael Lynn.
+
+## Get the app
+
+- [Home page](https://www.countdowncula.com/): what it does, screenshots, a live demo and install steps
+- [Download for Mac](https://www.countdowncula.com/download): the current signed and notarized Mac app, as a zip
+- [Join the iPhone beta](https://www.countdowncula.com/beta): TestFlight invitation for iPhone, iPad and Apple Watch
+- [Release notes](https://github.com/mrlynn/count-downula/releases): every Mac version and what changed
+
+## Help and policies
+
+- [Support](https://www.countdowncula.com/support): common questions (opening the app the first time, finding it in the menu bar, notifications, pinning, iCloud sync, widgets, Live Activities, the watch app) and how to get help
+- [Privacy policy](https://www.countdowncula.com/privacy): what data the app and website handle
+- [Terms of use](https://www.countdowncula.com/terms)
+
+## Shared countdowns
+
+- [The Crypt](https://go.countdowncula.com/crypt): public countdowns anyone can join, to holidays, sky events, sports and fun days
+- [Holiday countdowns](https://go.countdowncula.com/crypt/holidays)
+- [Sky countdowns](https://go.countdowncula.com/crypt/sky): eclipses, meteor showers, solstices
+- [Sports countdowns](https://go.countdowncula.com/crypt/sports)
+- [Make a countdown on the web](https://go.countdowncula.com/new): create a shareable countdown link without the app
+
+## Optional
+
+- [Source code](https://github.com/mrlynn/count-downula): the Mac, iPhone and Apple Watch apps and the sharing server
+- [Cookie policy](https://www.countdowncula.com/cookies): the website sets no cookies
