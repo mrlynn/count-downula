@@ -124,7 +124,7 @@ private struct SaverRoot: View {
     @State private var photos: [String: Image] = [:]
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 5)) { context in
+        TimelineView(.every(5)) { context in
             Group {
                 if let countdown = SaverSnapshot.showing(countdowns, at: context.date) {
                     PresentView(countdown: countdown, photo: photos[countdown.imageCacheKey])

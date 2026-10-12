@@ -40,7 +40,7 @@ final class AfterZeroTests: XCTestCase {
 
     func testThePeopleLineMatchesTheServer() {
         let recap = Recap(counted: .init(days: 142, hours: 3_408), people: 23, notes: 41, closest: ["Dana"])
-        XCTAssertEqual(recap.peopleLine(), "23 of us · 41 notes in the coffin · Dana guessed closest")
+        XCTAssertEqual(recap.peopleLine(), "23 of us · 41 notes in the time capsule · Dana guessed closest")
         XCTAssertEqual(Recap(people: 1_204, notes: 0, closest: ["Ana", "Ben", "Cy"]).peopleLine(isPublic: true),
                        "1,204 counted down · \(["Ana", "Ben", "Cy"].formatted(.list(type: .and))) guessed closest",
                        "Names are joined the way the person's language joins them")

@@ -112,7 +112,7 @@ struct ClipView: View {
     }
 
     private func loaded(_ countdown: Countdown, photo: UIImage?, slug: String, url: URL) -> some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
+        TimelineView(.every(1)) { context in
             let now = context.date
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
