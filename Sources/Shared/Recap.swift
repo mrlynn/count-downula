@@ -1,7 +1,7 @@
 import Foundation
 
 /// What a countdown added up to once it reached zero: "Sonoma. 142 days counted." A shared one
-/// adds the people from the server: "23 of us · 41 notes in the coffin · Dana guessed closest".
+/// adds the people from the server: "23 of us · 41 notes in the time capsule · Dana guessed closest".
 /// The server's half is `server/src/lib/recapText.ts`; the words match.
 struct Recap: Codable, Equatable {
     struct Span: Codable, Equatable {
@@ -13,12 +13,12 @@ struct Recap: Codable, Equatable {
     var counted: Span?
     /// Everyone who counted down: the owner plus members.
     var people: Int
-    /// Notes and photos in the coffin, opened at zero.
+    /// Notes and photos in the time capsule, opened at zero.
     var notes: Int
     /// The closest guess or guesses, once a pool settled.
     var closest: [String]
 
-    /// "23 of us · 41 notes in the coffin · Dana guessed closest", or nil for a countdown nobody shared.
+    /// "23 of us · 41 notes in the time capsule · Dana guessed closest", or nil for a countdown nobody shared.
     func peopleLine(isPublic: Bool = false) -> String? {
         var parts: [String] = []
         if people > 1 { parts.append(isPublic ? L("\(people) counted down") : L("\(people) of us")) }
