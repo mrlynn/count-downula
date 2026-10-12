@@ -2086,7 +2086,7 @@
         }
       }
     },
-    "%lld notes in the coffin": {
+    "%lld notes in the time capsule": {
       "localizations": {
         "de": {
           "variations": {
@@ -2094,13 +2094,13 @@
               "one": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld Nachricht im Sarg"
+                  "value": "%lld Nachricht in der Zeitkapsel"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld Nachrichten im Sarg"
+                  "value": "%lld Nachrichten in der Zeitkapsel"
                 }
               }
             }
@@ -2112,13 +2112,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld note in the coffin"
+                  "value": "%lld note in the time capsule"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld notes in the coffin"
+                  "value": "%lld notes in the time capsule"
                 }
               }
             }
@@ -2130,13 +2130,13 @@
               "one": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld nota en el ataúd"
+                  "value": "%lld nota en la cápsula del tiempo"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld notas en el ataúd"
+                  "value": "%lld notas en la cápsula del tiempo"
                 }
               }
             }
@@ -2148,13 +2148,13 @@
               "one": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld mot dans le cercueil"
+                  "value": "%lld mot dans la capsule temporelle"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld mots dans le cercueil"
+                  "value": "%lld mots dans la capsule temporelle"
                 }
               }
             }
@@ -2166,7 +2166,7 @@
               "other": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "棺のメッセージ%lld件"
+                  "value": "タイムカプセルのメッセージ%lld件"
                 }
               }
             }
@@ -2178,13 +2178,13 @@
               "one": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld recado no caixão"
+                  "value": "%lld recado na cápsula do tempo"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "needs_review",
-                  "value": "%lld recados no caixão"
+                  "value": "%lld recados na cápsula do tempo"
                 }
               }
             }
@@ -4851,36 +4851,36 @@
         }
       }
     },
-    "Add to the Coffin": {
+    "Add to the Time Capsule": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "In den Sarg legen"
+            "value": "In die Zeitkapsel legen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Dejar en el ataúd"
+            "value": "Dejar en la cápsula del tiempo"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Déposer dans le cercueil"
+            "value": "Déposer dans la capsule temporelle"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "棺に入れる"
+            "value": "タイムカプセルに入れる"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Colocar no caixão"
+            "value": "Colocar na cápsula do tempo"
           }
         }
       }
@@ -5027,36 +5027,36 @@
         }
       }
     },
-    "After zero: every note, photo and video from the coffin, as a PDF guestbook and a ZIP.": {
+    "After zero: every note, photo and video from the time capsule, as a PDF guestbook and a ZIP.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Nach null: jede Nachricht, jedes Foto und Video aus dem Sarg, als PDF-Gästebuch und ZIP."
+            "value": "Nach null: jede Nachricht, jedes Foto und Video aus der Zeitkapsel, als PDF-Gästebuch und ZIP."
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Después de cero: cada nota, foto y video del ataúd, como libro de visitas en PDF y un ZIP."
+            "value": "Después de cero: cada nota, foto y video de la cápsula del tiempo, como libro de visitas en PDF y un ZIP."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Après zéro : chaque mot, photo et vidéo du cercueil, en livre d’or PDF et en ZIP."
+            "value": "Après zéro : chaque mot, photo et vidéo de la capsule temporelle, en livre d’or PDF et en ZIP."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "ゼロの後：棺のメッセージ、写真、ビデオをすべてPDFのゲストブックとZIPで。"
+            "value": "ゼロの後：タイムカプセルのメッセージ、写真、ビデオをすべてPDFのゲストブックとZIPで。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Depois do zero: todos os recados, fotos e vídeos do caixão, em um livro de visitas em PDF e um ZIP."
+            "value": "Depois do zero: todos os recados, fotos e vídeos da cápsula do tempo, em um livro de visitas em PDF e um ZIP."
           }
         }
       }
@@ -5706,40 +5706,6 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Reservar as passagens"
-          }
-        }
-      }
-    },
-    "Browse the Crypt": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Die Gruft durchsuchen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Explorar la Cripta"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Parcourir la Crypte"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "クリプトを見る"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Explorar a Cripta"
           }
         }
       }
@@ -6590,6 +6556,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Não foi possível participar"
+          }
+        }
+      }
+    },
+    "Couldn't load countdowns to explore": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Countdowns konnten nicht geladen werden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se pudieron cargar las cuentas atrás"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossible de charger les comptes à rebours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "カウントダウンを読み込めませんでした"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível carregar as contagens"
           }
         }
       }
@@ -8505,36 +8505,36 @@
         }
       }
     },
-    "Every note, photo and video from the coffin, as a PDF guestbook and a ZIP.": {
+    "Every note, photo and video from the time capsule, as a PDF guestbook and a ZIP.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Jede Nachricht, jedes Foto und Video aus dem Sarg, als PDF-Gästebuch und ZIP."
+            "value": "Jede Nachricht, jedes Foto und Video aus der Zeitkapsel, als PDF-Gästebuch und ZIP."
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Cada nota, foto y video del ataúd, como libro de visitas en PDF y un ZIP."
+            "value": "Cada nota, foto y video de la cápsula del tiempo, como libro de visitas en PDF y un ZIP."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Chaque mot, photo et vidéo du cercueil, en livre d’or PDF et en ZIP."
+            "value": "Chaque mot, photo et vidéo de la capsule temporelle, en livre d’or PDF et en ZIP."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "棺のメッセージ、写真、ビデオをすべてPDFのゲストブックとZIPで。"
+            "value": "タイムカプセルのメッセージ、写真、ビデオをすべてPDFのゲストブックとZIPで。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Todos os recados, fotos e vídeos do caixão, em um livro de visitas em PDF e um ZIP."
+            "value": "Todos os recados, fotos e vídeos da cápsula do tempo, em um livro de visitas em PDF e um ZIP."
           }
         }
       }
@@ -8671,6 +8671,74 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Todos com o link veem seu palpite. O mais próximo vence quando a data real for definida."
+          }
+        }
+      }
+    },
+    "Explore": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Entdecken"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "探す"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorar"
+          }
+        }
+      }
+    },
+    "Explore Countdowns": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Countdowns entdecken"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorar cuentas atrás"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorer les comptes à rebours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "カウントダウンを探す"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Explorar contagens"
           }
         }
       }
@@ -11753,6 +11821,40 @@
         }
       }
     },
+    "Nothing to Explore Yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noch nichts zu entdecken"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aún no hay nada que explorar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rien à explorer pour l’instant"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "まだ何もありません"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ainda não há nada para explorar"
+          }
+        }
+      }
+    },
     "Nothing to count down to… yet": {
       "localizations": {
         "de": {
@@ -11821,36 +11923,36 @@
         }
       }
     },
-    "One pass hosts this countdown. Everyone counting down gets the bigger coffin too.": {
+    "One pass hosts this countdown. Everyone counting down gets the bigger time capsule too.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Ein Pass richtet diesen Countdown aus. Alle, die mitzählen, bekommen auch den größeren Sarg."
+            "value": "Ein Pass richtet diesen Countdown aus. Alle, die mitzählen, bekommen auch die größere Zeitkapsel."
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Un pase organiza esta cuenta atrás. Todos los que cuentan también tienen el ataúd más grande."
+            "value": "Un pase organiza esta cuenta atrás. Todos los que cuentan también tienen la cápsula del tiempo más grande."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Un pass organise ce compte à rebours. Tous ceux qui comptent profitent aussi du cercueil agrandi."
+            "value": "Un pass organise ce compte à rebours. Tous ceux qui comptent profitent aussi de la capsule temporelle agrandie."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "1つのパスでこのカウントダウンを主催できます。一緒にカウントダウンする全員が大きな棺を使えます。"
+            "value": "1つのパスでこのカウントダウンを主催できます。一緒にカウントダウンする全員が大きなタイムカプセルを使えます。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Um passe organiza esta contagem. Todos que contam também ganham o caixão maior."
+            "value": "Um passe organiza esta contagem. Todos que contam também ganham a cápsula do tempo maior."
           }
         }
       }
@@ -12093,36 +12195,36 @@
         }
       }
     },
-    "Open the Coffin": {
+    "Open the Time Capsule": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Den Sarg öffnen"
+            "value": "Zeitkapsel öffnen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Abrir el ataúd"
+            "value": "Abrir la cápsula del tiempo"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Ouvrir le cercueil"
+            "value": "Ouvrir la capsule temporelle"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "棺を開ける"
+            "value": "タイムカプセルを開ける"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Abrir o caixão"
+            "value": "Abrir a cápsula do tempo"
           }
         }
       }
@@ -14137,40 +14239,6 @@
         }
       }
     },
-    "Sealed Coffin": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Versiegelter Sarg"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Ataúd sellado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Cercueil scellé"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "封印された棺"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Caixão lacrado"
-          }
-        }
-      }
-    },
     "Sealed until %@. Nobody sees it before then, not even the owner. %lld/%lld": {
       "localizations": {
         "de": {
@@ -14823,36 +14891,36 @@
         }
       }
     },
-    "Shown with your note when the coffin opens.": {
+    "Shown with your note when the time capsule opens.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Wird mit deiner Nachricht gezeigt, wenn sich der Sarg öffnet."
+            "value": "Wird mit deiner Nachricht gezeigt, wenn sich die Zeitkapsel öffnet."
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Se muestra con tu nota cuando se abre el ataúd."
+            "value": "Se muestra con tu nota cuando se abre la cápsula del tiempo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Affiché avec votre mot à l’ouverture du cercueil."
+            "value": "Affiché avec votre mot à l’ouverture de la capsule temporelle."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "棺が開いた時、メッセージと一緒に表示されます。"
+            "value": "タイムカプセルが開いた時、メッセージと一緒に表示されます。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Aparece com seu recado quando o caixão abrir."
+            "value": "Aparece com seu recado quando a cápsula do tempo abrir."
           }
         }
       }
@@ -15741,138 +15809,36 @@
         }
       }
     },
-    "The Coffin Is Empty": {
+    "The Time Capsule Is Empty": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Der Sarg ist leer"
+            "value": "Die Zeitkapsel ist leer"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "El ataúd está vacío"
+            "value": "La cápsula del tiempo está vacía"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Le cercueil est vide"
+            "value": "La capsule temporelle est vide"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "棺は空です"
+            "value": "タイムカプセルは空です"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "O caixão está vazio"
-          }
-        }
-      }
-    },
-    "The Crypt": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Die Gruft"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "La Cripta"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "La Crypte"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "クリプト"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "A Cripta"
-          }
-        }
-      }
-    },
-    "The Crypt Is Empty": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Die Gruft ist leer"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "La Cripta está vacía"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "La Crypte est vide"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "クリプトは空です"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "A Cripta está vazia"
-          }
-        }
-      }
-    },
-    "The Crypt is out of reach": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Die Gruft ist gerade nicht erreichbar"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "No se puede llegar a la Cripta"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "La Crypte est hors d’atteinte"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "クリプトに接続できません"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "A Cripta está fora de alcance"
+            "value": "A cápsula do tempo está vazia"
           }
         }
       }
@@ -15941,74 +15907,6 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "O palpite mais próximo vence, os palpites são encerrados e a contagem muda para esta data para todos. Já aconteceu? Escolha quando."
-          }
-        }
-      }
-    },
-    "The coffin is empty, so there's nothing to keep yet.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Der Sarg ist leer, es gibt noch nichts zu behalten."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "El ataúd está vacío, así que aún no hay nada que guardar."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Le cercueil est vide, il n’y a encore rien à garder."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "棺は空なので、まだ保存するものはありません。"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "O caixão está vazio, então ainda não há nada para guardar."
-          }
-        }
-      }
-    },
-    "The coffin is open": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Der Sarg ist offen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "El ataúd está abierto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Le cercueil est ouvert"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "棺が開きました"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "O caixão está aberto"
           }
         }
       }
@@ -16251,6 +16149,74 @@
         }
       }
     },
+    "The time capsule is empty, so there's nothing to keep yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Zeitkapsel ist leer, es gibt noch nichts zu behalten."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La cápsula del tiempo está vacía, así que aún no hay nada que guardar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La capsule temporelle est vide, il n’y a encore rien à garder."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "タイムカプセルは空なので、まだ保存するものはありません。"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A cápsula do tempo está vazia, então ainda não há nada para guardar."
+          }
+        }
+      }
+    },
+    "The time capsule is open": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Zeitkapsel ist offen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La cápsula del tiempo está abierta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La capsule temporelle est ouverte"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "タイムカプセルが開きました"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A cápsula do tempo está aberta"
+          }
+        }
+      }
+    },
     "The wait is over!": {
       "localizations": {
         "de": {
@@ -16485,6 +16451,40 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Hora"
+          }
+        }
+      }
+    },
+    "Time Capsule": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zeitkapsel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cápsula del tiempo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Capsule temporelle"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "タイムカプセル"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cápsula do tempo"
           }
         }
       }

@@ -97,7 +97,7 @@ struct CountdownulaApp: App {
 @Observable
 final class Router {
     var path: [UUID] = []
-    /// Set by a notification action ("Share", "Open the Coffin"); the countdown's screen does it and clears it.
+    /// Set by a notification action ("Share", "Open the Time Capsule"); the countdown's screen does it and clears it.
     var pending: PendingAction?
 
     func show(_ id: UUID) {

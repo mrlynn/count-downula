@@ -17,8 +17,8 @@ test("the browser's language picks the page's", () => {
 test("plurals follow each language's rules", () => {
   assert.equal(t("en", "countingDown", { n: 1 }), "1 person is counting down");
   assert.equal(t("en", "countingDown", { n: 1204 }), "1,204 people are counting down");
-  assert.equal(t("fr", "notesInCoffin", { n: 0 }), "0 mot dans le cercueil", "French treats zero as singular");
-  assert.equal(t("de", "notesInCoffin", { n: 0 }), "0 Nachrichten im Sarg");
+  assert.equal(t("fr", "notesInCoffin", { n: 0 }), "0 mot dans la capsule temporelle", "French treats zero as singular");
+  assert.equal(t("de", "notesInCoffin", { n: 0 }), "0 Nachrichten in der Zeitkapsel");
   assert.equal(t("ja", "countingDown", { n: 1 }), "1人がカウントダウン中");
   assert.equal(t("de", "together", { n: 1204 }), "1.204 haben gemeinsam runtergezählt", "Numbers are written the local way");
 });
@@ -42,7 +42,7 @@ test("every language keeps English's placeholders", () => {
 test("recaps and headlines speak the viewer's language", () => {
   const words = recapText({ counted: { days: 142, hours: 3408 }, people: 23, notes: 41, closest: ["Dana", "Sam"] }, false, "de");
   assert.equal(words.counted, "142 Tage gezählt");
-  assert.equal(words.people, `Wir 23 · 41 Nachrichten im Sarg · ${listOf("de", ["Dana", "Sam"])} lag am nächsten dran`);
+  assert.equal(words.people, `Wir 23 · 41 Nachrichten in der Zeitkapsel · ${listOf("de", ["Dana", "Sam"])} lag am nächsten dran`);
   const now = new Date("2026-10-09T12:00:00Z");
   const ja = headline(now, new Date("2026-10-24T15:00:00Z"), "event", "Asia/Tokyo", "ja");
   assert.equal(ja.value, "あと15日");

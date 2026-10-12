@@ -63,7 +63,7 @@ export async function applyHostPass(slug: string, transaction: SignedTransaction
 
 /** Words a custom link can't be, so they never shadow a route or look official. */
 const RESERVED = new Set([
-  "admin", "api", "app", "c", "crypt", "embed", "help", "new", "support", "www", "countdowncula", "countdownula",
+  "admin", "api", "app", "c", "crypt", "embed", "explore", "help", "new", "support", "www", "countdowncula", "countdownula",
   "count-downcula", "privacy", "terms", "login", "signin", "settings", "official", "apple", "test",
 ]);
 

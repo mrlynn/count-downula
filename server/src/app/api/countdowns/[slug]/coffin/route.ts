@@ -72,7 +72,7 @@ export async function POST(request: Request, { params }: Context) {
 
   const collection = await contributions();
   if ((await collection.countDocuments({ slug, removedAt: { $exists: false } })) >= COFFIN_LIMITS.perCountdown) {
-    return errorResponse(409, "This coffin is full.");
+    return errorResponse(409, "This time capsule is full.");
   }
   // A browser's first drop: a key of its own, kept in its storage, to see and remove it later.
   const issued = role === null ? await addGuest(slug) : null;

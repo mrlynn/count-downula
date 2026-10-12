@@ -115,9 +115,9 @@ export async function addGuest(slug: string): Promise<{ token: string; tokenHash
 
 /** Whether a countdown takes drops at all: shared by link, counting down, not yet open. */
 export function coffinRefusal(doc: Pick<CountdownDoc, "kind" | "visibility" | "targetDate">, now = new Date()): string | null {
-  if (doc.kind === "countUp") return "Count-ups don't have a coffin.";
-  if (doc.visibility === "public") return "Public countdowns don't have a coffin.";
-  if (isOpen(doc, now)) return "The coffin is already open.";
+  if (doc.kind === "countUp") return "Count-ups don't have a time capsule.";
+  if (doc.visibility === "public") return "Public countdowns don't have a time capsule.";
+  if (isOpen(doc, now)) return "The time capsule is already open.";
   return null;
 }
 

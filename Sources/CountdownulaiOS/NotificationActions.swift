@@ -18,7 +18,7 @@ enum NotificationActions {
                                          options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "square.and.arrow.up"))
         let recap = UNNotificationAction(identifier: Action.recap.rawValue, title: L("Share the Recap"),
                                          options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "square.and.arrow.up"))
-        let coffin = UNNotificationAction(identifier: Action.coffin.rawValue, title: L("Open the Coffin"),
+        let coffin = UNNotificationAction(identifier: Action.coffin.rawValue, title: L("Open the Time Capsule"),
                                           options: [.foreground], icon: UNNotificationActionIcon(systemImageName: "sparkles"))
         let actions: [NotificationPlan.Category: [UNNotificationAction]] = [
             .soon: [lockScreen, share],

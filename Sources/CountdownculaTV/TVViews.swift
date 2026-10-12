@@ -128,7 +128,7 @@ struct CryptView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 40) {
                 if failed {
-                    ContentUnavailableView("The Crypt is out of reach", systemImage: "wifi.slash",
+                    ContentUnavailableView("Couldn't load countdowns to explore", systemImage: "wifi.slash",
                                            description: Text("Check the network and try again."))
                 }
                 ForEach(categories) { category in

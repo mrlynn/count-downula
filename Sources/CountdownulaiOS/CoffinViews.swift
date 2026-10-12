@@ -27,13 +27,13 @@ struct CoffinSection: View {
                 .fullScreenCover(isPresented: $revealing) {
                     CoffinRevealView(countdown: countdown, access: access, initial: state)
                 }
-                // "Open the Coffin" under the alert at zero.
+                // "Open the Time Capsule" under the alert at zero.
                 .onChange(of: router.pending, initial: true) { _, pending in
                     guard pending == .openCoffin(countdown.id), countdown.isPast(at: Date()) || countdown.countsUp else { return }
                     router.pending = nil
                     revealing = true
                 }
-                .alert("Sealed Coffin", isPresented: Binding(get: { errorMessage != nil },
+                .alert("Time Capsule", isPresented: Binding(get: { errorMessage != nil },
                                                             set: { if !$0 { errorMessage = nil } })) {
                     Button("OK", role: .cancel) {}
                 } message: {
@@ -50,7 +50,7 @@ struct CoffinSection: View {
             HStack(spacing: 10) {
                 Text("🦇").font(.title2)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Sealed Coffin").font(.headline)
+                    Text("Time Capsule").font(.headline)
                     Text(summary(open: open, count: count))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -61,7 +61,7 @@ struct CoffinSection: View {
                 Button {
                     revealing = true
                 } label: {
-                    Label(count == 0 ? "The Coffin Is Empty" : "Open the Coffin", systemImage: "sparkles")
+                    Label(count == 0 ? "The Time Capsule Is Empty" : "Open the Time Capsule", systemImage: "sparkles")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -88,7 +88,7 @@ struct CoffinSection: View {
                 Button {
                     composing = true
                 } label: {
-                    Label("Add to the Coffin", systemImage: "plus")
+                    Label("Add to the Time Capsule", systemImage: "plus")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -156,7 +156,7 @@ struct CoffinComposeSheet: View {
                         .textContentType(.name)
                         .onChange(of: name) { _, new in if new.count > Coffin.maxName { name = String(new.prefix(Coffin.maxName)) } }
                 } footer: {
-                    Text("Shown with your note when the coffin opens.")
+                    Text("Shown with your note when the time capsule opens.")
                 }
                 Section {
                     TextField("A note for when it's here", text: $text, axis: .vertical)
@@ -195,7 +195,7 @@ struct CoffinComposeSheet: View {
                     Text("Sealed until \(countdown.targetDate.formatted(.dateTime.month(.wide).day().hour().minute())). Nobody sees it before then, not even the owner. \(text.count)/\(Coffin.maxText)")
                 }
             }
-            .navigationTitle("Add to the Coffin")
+            .navigationTitle("Add to the Time Capsule")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -278,7 +278,7 @@ struct CoffinRevealView: View {
             ScrollView {
                 LazyVStack(spacing: 16) {
                     Text("🦇").font(.system(size: 56))
-                    Text("The coffin is open")
+                    Text("The time capsule is open")
                         .font(countdown.style.font(.largeTitle))
                         .multilineTextAlignment(.center)
                     Text(countdown.title)

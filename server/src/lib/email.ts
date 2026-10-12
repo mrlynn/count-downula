@@ -27,7 +27,7 @@ export async function sendReportEmail(report: ReportEmail, env = process.env): P
     body: JSON.stringify({
       from: env.REPORT_FROM ?? "Count Downcula <onboarding@resend.dev>",
       to: [env.REPORT_TO],
-      subject: `Reported in the coffin: ${report.countdownTitle}`,
+      subject: `Reported in a time capsule: ${report.countdownTitle}`,
       html,
       ...replyTo(env),
     }),

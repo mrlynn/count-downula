@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// "Browse the Crypt": public countdowns anyone can join, from holidays to eclipses.
+/// "Explore Countdowns": public countdowns anyone can join, from holidays to eclipses.
 struct CryptBrowser: View {
     @Environment(PhoneStore.self) private var store
     @Environment(Router.self) private var router
@@ -38,12 +38,12 @@ struct CryptBrowser: View {
                 .overlay {
                     if loading { ProgressView() }
                     else if entries.isEmpty {
-                        ContentUnavailableView("The Crypt Is Empty", systemImage: "moon.stars",
+                        ContentUnavailableView("Nothing to Explore Yet", systemImage: "moon.stars",
                                                description: Text("Check back soon."))
                     }
                 }
             }
-            .navigationTitle("The Crypt")
+            .navigationTitle("Explore")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

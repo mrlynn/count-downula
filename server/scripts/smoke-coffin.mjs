@@ -40,7 +40,7 @@ assert.deepEqual(view.contributions.map((c) => c.name), ["Ana"]);
 assert.equal((await fetch(`${coffin}/${owners.id}/photo`, json("GET", undefined, member))).status, 404, "No photo, no peek");
 assert.equal((await fetch(`${coffin}/${anas.id}/photo`, json("GET", undefined, ownerToken))).status, 403, "Still sealed");
 assert.equal((await fetch(`${coffin}/${anas.id}/photo`, json("GET", undefined, member))).status, 200, "Your own photo");
-assert.match(await (await fetch(`${base}/c/${slug}`)).text(), /2 sealed in the coffin/);
+assert.match(await (await fetch(`${base}/c/${slug}`)).text(), /2 sealed so far/);
 console.log("sealed ok");
 
 // After zero: everything, for people in the countdown.

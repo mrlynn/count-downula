@@ -14,7 +14,7 @@ The name stays **Count Downcula** everywhere. Keywords aren't translations of th
 
 ### Promotional text
 
-> みんなでカウントダウン：ライブリンクを共有したり、友だちと日付を予想したり、クリプトのカウントダウンに参加したり。写真ウィジェット、ライブアクティビティ、Apple Watchアプリも。
+> みんなでカウントダウン：ライブリンクを共有したり、友だちと日付を予想したり、「探す」からカウントダウンに参加したり。写真ウィジェット、ライブアクティビティ、Apple Watchアプリも。
 
 ### Keywords
 
@@ -46,9 +46,9 @@ Count Downculaは、待つ価値のあるものへカウントダウンします
 ライブリンクを共有すれば、アプリからでもブラウザからでも、みんなで同じ瞬間へカウントダウン。
 • 友だちはワンタップで参加して、自分のウィジェットやロック画面に表示
 • 変更はみんなに届き、全員一緒にゼロを迎えます
-• メッセージや写真を棺に封印：ゼロになるまで誰にも見えません
+• メッセージや写真をタイムカプセルに封印：ゼロになるまで誰にも見えません
 • 日付当て：いつになるか分からない？友だちが予想して、一番近い人が自慢できます
-• クリプトで共有したくなるカウントダウンを探そう：祝日、日食、流星群、大きな試合。どれも現地時間で進みます
+• 「探す」で共有したくなるカウントダウンを見つけよう：祝日、日食、流星群、大きな試合。どれも現地時間で進みます
 
 途中のマイルストーン
 「折り返し地点」「あと1週間」など、途中の節目を記録。それぞれに通知と紙吹雪のお祝いがあります。
@@ -86,7 +86,7 @@ Countdowns, Hochzähler, Timer
 
 ### Promotional text
 
-> Zählt gemeinsam runter: Teile einen Live-Link, lass Freunde das Datum tippen oder zähl in der Gruft mit. Foto-Widgets, Live-Aktivitäten und eine Apple Watch App.
+> Zählt gemeinsam runter: Teile einen Live-Link, lass Freunde das Datum tippen oder zähl bei „Entdecken“ mit. Foto-Widgets, Live-Aktivitäten und eine Apple Watch App.
 
 ### Keywords
 
@@ -118,9 +118,9 @@ GEMEINSAM RUNTERZÄHLEN
 Teile einen Live-Link, und alle zählen zum selben Moment runter, in der App oder in jedem Browser.
 • Freunde treten mit einem Tippen bei und haben ihn in ihren eigenen Widgets und auf dem Sperrbildschirm
 • Änderungen erreichen alle, und die ganze Gruppe erreicht gemeinsam null
-• Versiegle Nachrichten und Fotos im Sarg: Niemand sieht sie vor null
+• Versiegle Nachrichten und Fotos in einer Zeitkapsel: Niemand sieht sie vor null
 • Datums-Tippspiel: Nicht sicher, wann es so weit ist? Freunde tippen, und wer am nächsten dran liegt, darf angeben
-• Stöbere in der Gruft nach Countdowns zum Teilen: Feiertage, Finsternisse, Sternschnuppen und große Spiele, jeweils nach deiner Ortszeit
+• Entdecke Countdowns zum Teilen: Feiertage, Finsternisse, Sternschnuppen und große Spiele, jeweils nach deiner Ortszeit
 
 MEILENSTEINE UNTERWEGS
 Markiere die Momente dazwischen, etwa „Halbzeit“ oder „Noch 1 Woche“. Jeder bekommt eine eigene Mitteilung und eine Ladung Konfetti.
@@ -158,7 +158,7 @@ Cuentas atrás y temporizadores
 
 ### Promotional text
 
-> Cuenta atrás en grupo: comparte un enlace en directo, deja que tus amigos adivinen la fecha o únete a la Cripta. Widgets con fotos, Actividades en vivo y Apple Watch.
+> Cuenta atrás en grupo: comparte un enlace en directo, deja que tus amigos adivinen la fecha o únete a una desde Explorar. Widgets con fotos, Actividades en vivo y Apple Watch.
 
 ### Keywords
 
@@ -190,9 +190,9 @@ CUENTA ATRÁS EN GRUPO
 Comparte un enlace en directo y todos cuentan hacia el mismo momento, desde la app o cualquier navegador.
 • Tus amigos se unen con un toque y la tienen en sus propios widgets y en la pantalla bloqueada
 • Los cambios llegan a todos y el grupo entero llega a cero a la vez
-• Sella notas y fotos en el ataúd: nadie las ve hasta cero
+• Sella notas y fotos en una cápsula del tiempo: nadie las ve hasta cero
 • Porra de fechas: ¿no sabes cuándo pasará? Tus amigos apuestan y la más cercana gana el derecho a presumir
-• Explora la Cripta en busca de cuentas atrás para compartir: festivos, eclipses, lluvias de estrellas y grandes partidos, cada una a tu hora local
+• Explora cuentas atrás para compartir: festivos, eclipses, lluvias de estrellas y grandes partidos, cada una a tu hora local
 
 HITOS POR EL CAMINO
 Marca los momentos intermedios, como «A mitad de camino» o «Falta 1 semana». Cada uno trae su propio aviso y una lluvia de confeti.
@@ -230,7 +230,7 @@ Contagem regressiva e timers
 
 ### Promotional text
 
-> Contem juntos: compartilhe um link ao vivo, deixe os amigos darem palpites ou entre em uma contagem da Cripta. Widgets com fotos, Atividades ao Vivo e Apple Watch.
+> Contem juntos: compartilhe um link ao vivo, deixe os amigos darem palpites ou entre em uma contagem pelo Explorar. Widgets com fotos, Atividades ao Vivo e Apple Watch.
 
 ### Keywords
 
@@ -262,9 +262,9 @@ CONTEM JUNTOS
 Compartilhe um link ao vivo e todos fazem a contagem para o mesmo momento, pelo app ou em qualquer navegador.
 • Os amigos entram com um toque e a contagem aparece nos widgets e na Tela Bloqueada deles
 • As alterações chegam a todos, e o grupo inteiro chega ao zero junto
-• Lacre recados e fotos no caixão: ninguém vê até o zero
+• Lacre recados e fotos em uma cápsula do tempo: ninguém vê até o zero
 • Bolão de datas: não sabe quando vai acontecer? Os amigos dão palpites, e o mais próximo ganha o direito de se gabar
-• Explore a Cripta atrás de contagens para compartilhar: feriados, eclipses, chuvas de meteoros e grandes jogos, cada uma no seu horário local
+• Explore contagens para compartilhar: feriados, eclipses, chuvas de meteoros e grandes jogos, cada uma no seu horário local
 
 MARCOS PELO CAMINHO
 Marque os momentos intermediários, como "Metade do caminho" ou "Falta 1 semana". Cada um ganha sua própria notificação e uma chuva de confete.
@@ -302,7 +302,7 @@ Comptes à rebours et minuteurs
 
 ### Promotional text
 
-> Comptez ensemble : partagez un lien en direct, laissez vos amis pronostiquer la date ou rejoignez la Crypte. Widgets photo, Activités en direct et Apple Watch.
+> Comptez ensemble : partagez un lien en direct, laissez vos amis pronostiquer la date ou rejoignez-en un depuis Explorer. Widgets photo, Activités en direct et Apple Watch.
 
 ### Keywords
 
@@ -334,9 +334,9 @@ COMPTEZ ENSEMBLE
 Partagez un lien en direct et tout le monde compte vers le même moment, depuis l’app ou n’importe quel navigateur.
 • Vos amis le rejoignent d’un geste et le retrouvent dans leurs propres widgets et sur leur écran verrouillé
 • Les modifications arrivent à tout le monde, et le groupe entier atteint zéro ensemble
-• Scellez des mots et des photos dans le cercueil : personne ne les voit avant zéro
+• Scellez des mots et des photos dans une capsule temporelle : personne ne les voit avant zéro
 • Pronostics de date : pas sûr du jour ? Vos amis pronostiquent, et le plus proche gagne le droit de s’en vanter
-• Parcourez la Crypte pour trouver des comptes à rebours à partager : fêtes, éclipses, pluies d’étoiles filantes et grands matchs, chacun à votre heure locale
+• Explorez des comptes à rebours à partager : fêtes, éclipses, pluies d’étoiles filantes et grands matchs, chacun à votre heure locale
 
 DES ÉTAPES EN CHEMIN
 Marquez les moments intermédiaires, comme « À mi-chemin » ou « Plus qu’une semaine ». Chacun a droit à sa notification et à une pluie de confettis.

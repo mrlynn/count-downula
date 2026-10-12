@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${t(locale, "crypt")} · Count Downcula`,
     description: t(locale, "cryptDescription"),
-    alternates: { canonical: `${publicOrigin()}/crypt` },
+    alternates: { canonical: `${publicOrigin()}/explore` },
   };
 }
 

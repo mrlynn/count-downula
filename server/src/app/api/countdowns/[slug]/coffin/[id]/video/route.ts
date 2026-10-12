@@ -18,8 +18,8 @@ export async function POST(request: Request, { params }: Context) {
   const token = bearer(request);
   const { doc, role } = await loadCountdownAndRole(slug, token);
   if (!doc || !role) return errorResponse(404, "Not found.");
-  if (!doc.host) return errorResponse(402, "Videos in the coffin come with a Host Pass.");
-  if (isOpen(doc)) return errorResponse(409, "The coffin is already open.");
+  if (!doc.host) return errorResponse(402, "Videos in the time capsule come with a Host Pass.");
+  if (isOpen(doc)) return errorResponse(409, "The time capsule is already open.");
   const collection = await contributions();
   const contribution = await collection.findOne({ _id, slug, removedAt: { $exists: false } });
   if (!contribution || contribution.authorTokenHash !== hashToken(token!)) return errorResponse(403, "Add a video to your own note.");
