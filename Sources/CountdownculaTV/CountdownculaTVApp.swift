@@ -15,7 +15,7 @@ struct CountdownculaTVApp: App {
                 Tab("Countdowns", systemImage: "hourglass", value: "countdowns") {
                     HomeView(presenting: $presenting)
                 }
-                Tab("The Crypt", systemImage: "moon.stars", value: "crypt") {
+                Tab("Explore", systemImage: "moon.stars", value: "crypt") {
                     CryptView(presenting: $presenting)
                 }
                 Tab("Settings", systemImage: "gearshape", value: "settings") {

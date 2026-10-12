@@ -9,7 +9,7 @@ const zero = new Date("2026-10-31T00:00:00Z");
 test("a recap reads like the spec: days, people, notes, the winner", () => {
   const words = recapText({ counted: { days: 142, hours: 3_408 }, people: 23, notes: 41, closest: ["Dana"] });
   assert.equal(words.counted, "142 days counted");
-  assert.equal(words.people, "23 of us · 41 notes in the coffin · Dana guessed closest");
+  assert.equal(words.people, "23 of us · 41 notes in the time capsule · Dana guessed closest");
   assert.equal(words.together, "23 counted down together");
 });
 

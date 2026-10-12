@@ -41,7 +41,7 @@ const FUNNEL: [EventName, string][] = [
 
 const PARTICIPATION: [EventName, string][] = [
   ["join", "Joins"],
-  ["coffin_drop", "Coffin drops"],
+  ["coffin_drop", "Time capsule drops"],
   ["pool_guess", "Pool guesses"],
   ["wallet_pass_add", "Wallet passes added"],
 ];
@@ -244,7 +244,7 @@ export default async function MetricsPage() {
           <Table size="small">
             <TableBody>
               {[
-                ["Coffin drops from the web", last30.get("coffin_drop")?.get("web") ?? 0],
+                ["Time capsule drops from the web", last30.get("coffin_drop")?.get("web") ?? 0],
                 ["Pool guesses from the web", last30.get("pool_guess")?.get("web") ?? 0],
                 ["Calendar subscriptions", bySource("calendar_subscribed")],
                 ["…in Google Calendar", bySource("calendar_subscribed", "google")],

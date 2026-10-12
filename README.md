@@ -66,12 +66,12 @@ The Countdown widget follows **Next Up** (soonest pinned, otherwise soonest) or 
 - **Join:** anyone with the link can count down with you in the app. Their copy follows your edits, with their own pin and alerts. No accounts: a random key in the iCloud Keychain.
 - **App Clip:** people without the app open the link and get the countdown in an App Clip, with Keep It and Share.
 - **Synchronized zero:** every phone in a shared countdown starts its Live Activity in the final 8 hours and celebrates at the same second.
-- **Sealed coffin:** notes and photos people leave stay sealed on the server until zero, then open for everyone at once.
+- **Time capsule:** notes and photos people leave stay sealed on the server until zero, then open for everyone at once.
 - **Date pools:** not sure when it happens (a baby, a ship date, the first snow)? Friends guess from the app or the web, and when the owner sets the real date the closest guess wins. Bragging rights only.
 - **Apple Wallet:** add a shared countdown as a pass that comes to the Lock Screen on the day, with a QR code back to the live page. Owner edits update it.
 - **Make one on the web:** no iPhone needed. [go.countdowncula.com/new](https://go.countdowncula.com/new) makes a live countdown with a scene, gradient or photo, editable from that browser or with an emailed edit link. Live pages offer it as **Make your own**.
 - **The big screen:** put a countdown on a TV or projector for the party. The live page's **Present** button opens `/c/<slug>/present`: full screen in the countdown's style, with the last ten seconds as one huge number, confetti at zero, the screen kept awake, and a QR code in the corner so the room can join. The Mac app's **Present** (in the popover header and on each countdown) does the same full screen, on a second display if one is connected. An iPhone connected to a TV by AirPlay or a cable shows the countdown there instead of mirroring, and stays the remote.
-- **The Crypt:** a curated list of public countdowns (holidays, eclipses, meteor showers, big games) at [go.countdowncula.com/crypt](https://go.countdowncula.com/crypt) and in the app. Holidays tick to midnight on each viewer's own clock.
+- **Explore:** a curated list of public countdowns (holidays, eclipses, meteor showers, big games) at [go.countdowncula.com/explore](https://go.countdowncula.com/explore) and in the app. Holidays tick to midnight on each viewer's own clock.
 
 ## Apple Watch
 
@@ -97,7 +97,7 @@ Apple doesn't allow third-party watch faces. To share a "Count Downcula face", s
 
 ## Apple TV
 
-*Coming in a later release; it isn't part of 1.2.* The Apple TV app shows your countdowns, synced through iCloud from the iPhone, Mac and watch. It has the next one big and shelves of the rest, plus the Crypt, and any countdown goes full screen for the room at a press. Left and right on the remote step through them. When the app is in the top row, the Top Shelf shows what's coming up. Joined countdowns follow their owners' edits, and Crypt countdowns can be added from the TV.
+*Coming in a later release; it isn't part of 1.2.* The Apple TV app shows your countdowns, synced through iCloud from the iPhone, Mac and watch. It has the next one big and shelves of the rest, plus Explore, and any countdown goes full screen for the room at a press. Left and right on the remote step through them. When the app is in the top row, the Top Shelf shows what's coming up. Joined countdowns follow their owners' edits, and countdowns from Explore can be added from the TV.
 
 ## Download
 
@@ -177,5 +177,5 @@ Countdowns live in a SwiftData store (`~/Library/Application Support/Countdownul
 | `Sources/CountdownulaWidgets/` | Configuration intent, timeline provider and accessory views shared by the watch complications and iPhone Lock Screen widgets |
 | `Sources/CountdownulaClip/` | App Clip: opens a shared countdown from its link without the app |
 | `Sources/CountdownulaShare/` | Share Extension: drafts a countdown from an image, PDF or text |
-| `server/` | Next.js server on Vercel for live links, shared countdowns, the coffin, date pools, Wallet passes and the Crypt ([README](server/README.md)) |
+| `server/` | Next.js server on Vercel for live links, shared countdowns, the time capsule, date pools, Wallet passes and Explore ([README](server/README.md)) |
 | `site/` | The countdowncula.com marketing site ([README](site/README.md)) |

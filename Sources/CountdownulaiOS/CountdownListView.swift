@@ -111,7 +111,7 @@ struct CountdownListView: View {
                     Menu {
                         Button("New Countdown", systemImage: "calendar.badge.plus") { addCountdown() }
                         Button("Join Shared Countdown…", systemImage: "person.2.badge.plus") { showingJoin = true }
-                        Button("Browse the Crypt", systemImage: "moon.stars") { showingCrypt = true }
+                        Button("Explore Countdowns", systemImage: "moon.stars") { showingCrypt = true }
                         Section("Add From") {
                             Button("Calendar…", systemImage: "calendar") { showingCalendarImport = true }
                             Button("Birthdays from Contacts…", systemImage: "gift") { showingContactPicker = true }

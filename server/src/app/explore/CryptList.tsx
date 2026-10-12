@@ -64,9 +64,9 @@ export function CategoryTabs({ categories, current, allLabel = "All" }: {
 }) {
   return (
     <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", rowGap: 1, mb: 3 }}>
-      <Button size="small" variant={current ? "outlined" : "contained"} href="/crypt">{allLabel}</Button>
+      <Button size="small" variant={current ? "outlined" : "contained"} href="/explore">{allLabel}</Button>
       {categories.map((c) => (
-        <Button key={c.slug} size="small" variant={current === c.slug ? "contained" : "outlined"} href={`/crypt/${c.slug}`}>
+        <Button key={c.slug} size="small" variant={current === c.slug ? "contained" : "outlined"} href={`/explore/${c.slug}`}>
           {c.name}
         </Button>
       ))}

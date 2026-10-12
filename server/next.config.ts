@@ -7,6 +7,13 @@ const config: NextConfig = {
     "/c/[slug]/pass": ["./assets/**", "./public/scenes/**"],
     "/api/wallet/v1/passes/[passType]/[serial]": ["./assets/**", "./public/scenes/**"],
   },
+  // The public list was "the Crypt" at /crypt before it became Explore.
+  async redirects() {
+    return [
+      { source: "/crypt", destination: "/explore", permanent: true },
+      { source: "/crypt/:category", destination: "/explore/:category", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

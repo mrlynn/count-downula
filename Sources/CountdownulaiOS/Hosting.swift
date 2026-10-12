@@ -51,7 +51,7 @@ struct HostSection: View {
             VStack(alignment: .leading, spacing: 6) {
                 feature("link", "A custom link, like /c/sarah-and-tom")
                 feature("eye.slash", "No Count Downcula branding on the page or embeds")
-                feature("photo.stack", "Several photos and a short video in each coffin note")
+                feature("photo.stack", "Several photos and a short video in each time capsule note")
                 feature("book.closed", "A keepsake of every note and photo after zero")
             }
             .font(.subheadline)
@@ -70,7 +70,7 @@ struct HostSection: View {
             .disabled(hostPass.product == nil || hostPass.state == .buying)
             Text(hostPass.state == .pending
                  ? "Waiting for approval. It's applied as soon as it goes through."
-                 : "One pass hosts this countdown. Everyone counting down gets the bigger coffin too.")
+                 : "One pass hosts this countdown. Everyone counting down gets the bigger time capsule too.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -114,8 +114,8 @@ struct HostSection: View {
         .buttonStyle(.bordered)
         .disabled(makingKeepsake || !countdown.isPast(at: now) && !countdown.countsUp)
         Text(countdown.isPast(at: now) || countdown.countsUp
-             ? "Every note, photo and video from the coffin, as a PDF guestbook and a ZIP."
-             : "After zero: every note, photo and video from the coffin, as a PDF guestbook and a ZIP.")
+             ? "Every note, photo and video from the time capsule, as a PDF guestbook and a ZIP."
+             : "After zero: every note, photo and video from the time capsule, as a PDF guestbook and a ZIP.")
             .font(.footnote)
             .foregroundStyle(.secondary)
     }
@@ -176,7 +176,7 @@ enum Keepsake {
 
     enum Failure: LocalizedError {
         case empty
-        var errorDescription: String? { L("The coffin is empty, so there's nothing to keep yet.") }
+        var errorDescription: String? { L("The time capsule is empty, so there's nothing to keep yet.") }
     }
 
     @MainActor

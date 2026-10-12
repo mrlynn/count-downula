@@ -14,7 +14,7 @@ Countdowns, count-ups & timers
 
 Can be changed any time without a new build, so use it for what's timely.
 
-> Count down together: share a live link, let friends guess the date, or join a countdown from the Crypt. Photo widgets, Live Activities and an Apple Watch app.
+> Count down together: share a live link, let friends guess the date, or join one from Explore. Photo widgets, Live Activities and an Apple Watch app.
 
 > Count down to the trip, the wedding, the birthday. Count up from the day you quit. Photo widgets, Live Activities and an Apple Watch app that keep it in view.
 
@@ -54,9 +54,9 @@ COUNT DOWN TOGETHER
 Share a live link and everyone counts down to the same moment, from the app or any browser.
 • Friends join with one tap and get it on their own widgets and Lock Screen
 • Edits reach everyone, and the whole group hits zero together
-• Seal notes and photos in the coffin: nobody sees them until zero
+• Seal notes and photos in a time capsule: nobody sees them until zero
 • Date pools: not sure when it'll happen? Friends guess, and the closest guess wins bragging rights
-• Browse the Crypt for countdowns worth sharing: holidays, eclipses, meteor showers and big games, each ticking to your own local time
+• Explore countdowns worth sharing: holidays, eclipses, meteor showers and big games, each ticking to your own local time
 
 MILESTONES ALONG THE WAY
 Mark the moments in between, like "Halfway there" or "1 week to go." Each one gets its own notification and a burst of confetti when it arrives.

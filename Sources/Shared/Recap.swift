@@ -22,7 +22,7 @@ struct Recap: Codable, Equatable {
     func peopleLine(isPublic: Bool = false) -> String? {
         var parts: [String] = []
         if people > 1 { parts.append(isPublic ? L("\(people) counted down") : L("\(people) of us")) }
-        if notes > 0 { parts.append(L("\(notes) notes in the coffin")) }
+        if notes > 0 { parts.append(L("\(notes) notes in the time capsule")) }
         if !closest.isEmpty {
             let names = Array(closest.prefix(3)).formatted(.list(type: .and))
             parts.append(L("\(names) guessed closest"))

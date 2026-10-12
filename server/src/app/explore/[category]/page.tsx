@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${known ? t(locale, "categoryTitle", { name: t(locale, category as Key) }) : t(locale, "crypt")} · Count Downcula`,
     description: t(locale, "cryptDescription"),
-    ...(known ? { alternates: { canonical: `${publicOrigin()}/crypt/${category}` } } : {}),
+    ...(known ? { alternates: { canonical: `${publicOrigin()}/explore/${category}` } } : {}),
   };
 }
 

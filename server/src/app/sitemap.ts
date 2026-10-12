@@ -9,8 +9,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = publicOrigin();
   const entries = await listCrypt();
   return [
-    { url: `${origin}/crypt`, changeFrequency: "daily" },
-    ...CATEGORIES.map((c) => ({ url: `${origin}/crypt/${c.slug}`, changeFrequency: "daily" as const })),
+    { url: `${origin}/explore`, changeFrequency: "daily" },
+    ...CATEGORIES.map((c) => ({ url: `${origin}/explore/${c.slug}`, changeFrequency: "daily" as const })),
     ...entries.map(({ countdown }) => ({ url: linkFor(countdown), lastModified: new Date(countdown.updatedAt) })),
   ];
 }
