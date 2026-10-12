@@ -8,6 +8,7 @@ Static marketing site. No build step, no dependencies, no cookies, no third-part
 | `support.html`, `privacy.html`, `terms.html`, `cookies.html` | Generated from `_src/*.html` |
 | `assets/site.css`, `assets/site.js` | Shared styles and behaviour |
 | `assets/fonts/` | Self-hosted Young Serif and Instrument Sans (SIL OFL) |
+| `llms.txt` | Plain summary for AI search ([llmstxt.org](https://llmstxt.org)). Update it, and the FAQ in `index.html`, when pricing changes or the iPhone app leaves TestFlight |
 | `vercel.json` | Clean URLs, security headers, `/download` (the current Mac zip) and `/beta` (TestFlight) redirects |
 
 After editing a page body in `_src/`, or the header/footer in `index.html`, rebuild the secondary pages:
